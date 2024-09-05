@@ -1,17 +1,17 @@
+// src/index.tsx or src/App.tsx
+
 import React from 'react';
-import ReactDOM from 'react-dom/client'; // Import from react-dom/client
-import { Provider } from 'react-redux';
-import { store } from './store/store'; // Adjust the path if necessary
+import ReactDOM from 'react-dom/client';
 import App from './App';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
 
-// Create a root
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement // Make sure you provide the correct type
-);
 
-// Render the app
+const root = ReactDOM.createRoot(document.getElementById('root')!);
 root.render(
   <Provider store={store}>
-    <App />
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
   </Provider>
 );

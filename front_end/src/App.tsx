@@ -1,14 +1,12 @@
-import Navbar from './components/Navbar';
-import Welcome from './components/Welcome';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import LoginComponent from "./components/Login";
 
 function App() {
-    return (
-  <div>
+  return (
+    <div>
       <h1> Redux <br/> Auth with Northwind </h1>
- <Navbar/>
-    </div>       
-    );
+      <LoginComponent/>
+    </div>
+  );
 }
 
 export default App;

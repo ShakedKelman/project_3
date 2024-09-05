@@ -1,14 +1,11 @@
-import { configureStore } from "@reduxjs/toolkit";
-import authSlice from "./slices/authSlice";
-export type AppDispatch = typeof store.dispatch
+import { configureStore } from '@reduxjs/toolkit';
+import authReducer from './slices/authSlice';
 
-// store, made of all slices
 export const store = configureStore({
-    reducer: {
-        authSlicer: authSlice,
-        // productsSlice: productsSlice,
-    }
-})
+  reducer: {
+    auth: authReducer,
+  },
+});
 
-// for typing
 export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
