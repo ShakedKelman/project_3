@@ -1,0 +1,44 @@
+"isAdmin" must be a boolean
+Cannot read properties of undefined (reading 'length')
+Cannot read properties of undefined (reading '0')
+Failed to retrieve user ID after insertion.
+Duplicate entry 'dan.doe@example.com' for key 'email'
+Failed to retrieve user ID after insertion.
+Failed to retrieve user ID after insertion.
+Database error while inserting new user.
+Failed to retrieve user ID after insertion.
+"firstName" is required
+Database error while inserting new user.
+Failed to retrieve user ID after insertion.
+Database error while inserting new user.
+Failed to retrieve user ID after insertion.
+Database error while inserting new user.
+Failed to retrieve user ID after insertion.
+Database error while updating user token.
+Database error while updating user token.
+Database error while inserting new user.
+"firstName" is required, "lastName" is required
+Data too long for column 'token' at row 1
+Email already exists
+Email already exists
+Cannot read properties of undefined (reading 'id')
+Expected double-quoted property name in JSON at position 86 (line 4 column 5)
+Cannot read properties of undefined (reading 'id')
+Cannot read properties of undefined (reading 'id')
+Cannot read properties of undefined (reading 'id')
+Cannot read properties of undefined (reading 'id')
+Cannot read properties of undefined (reading 'id')
+Cannot read properties of undefined (reading 'id')
+Cannot read properties of undefined (reading 'id')
+Cannot read properties of undefined (reading 'id')
+Cannot read properties of undefined (reading 'id')
+Cannot read properties of undefined (reading 'id')
+Cannot read properties of undefined (reading 'id')
+Cannot read properties of undefined (reading 'id')
+Cannot read properties of undefined (reading 'id')
+Cannot read properties of undefined (reading 'id')
+User data is incomplete or missing
+User data is incomplete or missing
+Email already exists
+Expected double-quoted property name in JSON at position 90 (line 5 column 5)
+Wrong credentials
