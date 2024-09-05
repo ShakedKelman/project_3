@@ -42,3 +42,14 @@ User data is incomplete or missing
 Email already exists
 Expected double-quoted property name in JSON at position 90 (line 5 column 5)
 Wrong credentials
+"imageFileName" is not allowed to be empty
+"imageFileName" must be a string
+Incorrect date value: '2024-11-04T22:00:00.000Z' for column `vacations`.`vacations`.`startDate` at row 1
+Expected double-quoted property name in JSON at position 217 (line 8 column 1)
+Incorrect date value: '2024-11-04T22:00:00.000Z' for column `vacations`.`vacations`.`startDate` at row 1
+"destination" is not allowed to be empty, "description" is not allowed to be empty, "startDate" must be a valid date, "endDate" must be a valid date, "price" must be a positive number, "imageFileName" is not allowed to be empty
+"imageFileName" is not allowed to be empty
+"imageFileName" is not allowed to be empty
+"imageFileName" is not allowed to be empty
+Incorrect date value: '2024-12-01T00:00:00.000Z' for column `vacations`.`vacations`.`startDate` at row 1
+Column 'imageFileName' cannot be null

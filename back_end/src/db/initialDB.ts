@@ -25,7 +25,7 @@ const createTables = async () => {
             startDate DATE NOT NULL,
             endDate DATE NOT NULL,
             price DECIMAL(10, 2) NOT NULL,
-            imageFileName VARCHAR(255) NOT NULL
+            imageFileName VARCHAR(255) NULL
         );
     `;
     await runQuery(Q);
