@@ -1,7 +1,7 @@
-import UserModel from "../models/usersModel";
 import { createToken } from "../utils/authUtils";
 import { UnauthorizedError, ValidationError } from "../models/exceptions";
 import runQuery from "../db/dal";
+import UserModel from "../models/UsersModel";
 
 
 export async function register(user: UserModel): Promise<string> {

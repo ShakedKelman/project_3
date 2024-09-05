@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { appConfig } from "./appConfig";
 import { UnauthorizedError } from "../models/exceptions";
-import UserModel from "../models/usersModel";
+import UserModel from "../models/UsersModel";
 
 export function verifyToken(token: string, adminRequired: boolean = false) {
     if (!token) {

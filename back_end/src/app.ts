@@ -5,6 +5,7 @@ import { isDbServerUp } from "./utils/helpers";
 import { userRoutes } from "./controllers/userControllers";
 import catchAll from "./middlewares/catchAll";
 import { logMW } from "./middlewares/logMW";
+import { vacationRoutes } from "./controllers/vacationsController";
 
 
 // create server
@@ -23,6 +24,8 @@ server.use(express.json());
 
 // register controllers
 server.use("/", userRoutes);
+server.use("/", vacationRoutes);
+
 
 
 
