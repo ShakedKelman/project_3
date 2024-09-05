@@ -53,3 +53,8 @@ Incorrect date value: '2024-11-04T22:00:00.000Z' for column `vacations`.`vacatio
 "imageFileName" is not allowed to be empty
 Incorrect date value: '2024-12-01T00:00:00.000Z' for column `vacations`.`vacations`.`startDate` at row 1
 Column 'imageFileName' cannot be null
+"firstName" is not allowed to be empty, "password" is not allowed to be empty, "email" is not allowed to be empty
+"email" must be a valid email
+Email already exists
+Email already exists
+"lastName" length must be at least 2 characters long

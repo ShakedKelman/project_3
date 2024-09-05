@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '../store/store';
 import { loginUser } from '../api/authThunks';
 
 const LoginComponent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate(); // Initialize navigate function
   const authStatus = useSelector((state: RootState) => state.auth.status);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,6 +17,7 @@ const LoginComponent: React.FC = () => {
       .unwrap()
       .then(() => {
         setLoginSuccess(true); // Update state to show success message
+        navigate('/vacations'); // Redirect to vacations list page
       })
       .catch(() => {
         setLoginSuccess(false); // Handle failure if needed
