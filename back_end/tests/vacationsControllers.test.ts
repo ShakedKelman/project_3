@@ -17,6 +17,25 @@ describe("vacations Controllers", () => {
         console.log("before all running ... ");
     })    
 
+    it("Should add a new vacation", async () => {
+        const newVacation = {
+             "destination": "israel",
+            "description": "A wonderful trip to Paris",
+            "startDate": "2024-09-30T21:00:00.000Z",
+            "endDate": "2024-10-09T21:00:00.000Z",
+            "price": "1500.00",
+            "imageFileName": ""
+       }
+        const response = await request(app)
+        .post(appConfig.routePrefix + "/vacations")
+        .send(newVacation)
+        .set("Authorization", `Bearer ${VALID_TOKEN}`);
+
+    expect(response.status).toBe(StatusCode.Created);
+    expect(response.body).toHaveProperty("message", "Vacation added successfully");
+});
+
+
     it("Should return list of vacations", async () => {
         const response = await request(app)
             .get(appConfig.routePrefix + "/vacations")
