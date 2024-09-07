@@ -1,44 +1,90 @@
-import { createToken } from "../utils/authUtils";
+import { createToken, encryptPassword } from "../utils/authUtils";
 import { UnauthorizedError, ValidationError } from "../models/exceptions";
 import runQuery from "../db/dal";
 import UserModel from "../models/UsersModel";
+import { ResultSetHeader } from "mysql2";
 
 
 export async function register(user: UserModel): Promise<string> {
+    // Validate user input
     user.validate();
 
-    // Check if email already exists
+    // Check if the email already exists in the database
     const emailCheckQuery = "SELECT COUNT(*) as count FROM users WHERE email = ?";
     const emailCheckResult = await runQuery(emailCheckQuery, [user.email]);
     if (emailCheckResult[0].count > 0) {
         throw new ValidationError("Email already exists");
     }
 
-    // Insert new user
+    // Hash the user's password before storing it
+    const hashedPassword = await encryptPassword(user.password);
+
+    // Insert the new user into the database
     const insertQuery = `
         INSERT INTO users (FirstName, LastName, password, email, isAdmin)
         VALUES (?, ?, ?, ?, ?)
     `;
-    await runQuery(insertQuery, [
+    const insertParams = [
         user.firstName,
         user.lastName,
-        user.password, // Note: Ensure password is hashed before this point
+        hashedPassword, // Use the hashed password here
         user.email,
-        user.isAdmin
-    ]);
+        user.isAdmin || false // Assuming isAdmin defaults to false if not provided
+    ];
 
-    // Get the inserted user's ID
-    const idQuery = "SELECT id FROM users WHERE email = ?";
-    const idResult = await runQuery(idQuery, [user.email]);
-    user.id = idResult[0].id;
+    // Execute the insert query
+    const insertedInfo = (await runQuery(insertQuery, insertParams)) as ResultSetHeader | any;
+    const userId = insertedInfo.insertId;
 
-    // Create and update token
-    user.token = createToken(user); // Implement createToken function
+    // Assign the inserted ID to the user object
+    user.id = userId;
+
+    // Generate a token for the user
+    user.token = createToken(user);
+
+    // Update the user record with the generated token
     const updateTokenQuery = "UPDATE users SET token = ? WHERE id = ?";
-    await runQuery(updateTokenQuery, [user.token, user.id]);
+    const updateTokenParams = [user.token, user.id];
+    await runQuery(updateTokenQuery, updateTokenParams);
 
+    // Return the generated token
     return user.token;
 }
+// export async function register(user: UserModel): Promise<string> {
+//     user.validate();
+
+//     // Check if email already exists
+//     const emailCheckQuery = "SELECT COUNT(*) as count FROM users WHERE email = ?";
+//     const emailCheckResult = await runQuery(emailCheckQuery, [user.email]);
+//     if (emailCheckResult[0].count > 0) {
+//         throw new ValidationError("Email already exists");
+//     }
+
+//     // Insert new user
+//     const insertQuery = `
+//         INSERT INTO users (FirstName, LastName, password, email, isAdmin)
+//         VALUES (?, ?, ?, ?, ?)
+//     `;
+//     await runQuery(insertQuery, [
+//         user.firstName,
+//         user.lastName,
+//         user.password, // Note: Ensure password is hashed before this point
+//         user.email,
+//         user.isAdmin
+//     ]);
+
+//     // Get the inserted user's ID
+//     const idQuery = "SELECT id FROM users WHERE email = ?";
+//     const idResult = await runQuery(idQuery, [user.email]);
+//     user.id = idResult[0].id;
+
+//     // Create and update token
+//     user.token = createToken(user); // Implement createToken function
+//     const updateTokenQuery = "UPDATE users SET token = ? WHERE id = ?";
+//     await runQuery(updateTokenQuery, [user.token, user.id]);
+
+//     return user.token;
+// }
 
 
 

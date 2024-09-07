@@ -11,7 +11,7 @@ import { vacationRoutes } from "./controllers/vacationsController";
 // create server
 const server = express();
 
-server.use(cors());
+server.use(cors({origin:"http://localhost:3000"}));
 
 // Doorman security chcek
 // server.use(doorman);

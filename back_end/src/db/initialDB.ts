@@ -8,7 +8,7 @@ const createTables = async () => {
             FirstName VARCHAR(50) NOT NULL,
             LastName VARCHAR(50) NOT NULL,
             email VARCHAR(100) NOT NULL UNIQUE,
-            password VARCHAR(255) NOT NULL,
+            hashedPassword VARCHAR(255) NOT NULL,
             isAdmin TINYINT(1) NOT NULL DEFAULT 0,
             token VARCHAR(1024) DEFAULT NULL 
 
@@ -53,7 +53,7 @@ const insertData = async () => {
 
                                 // // Insert sample data into users
     // let Q = `
-    // INSERT INTO users (FirstName, LastName, email, password, isAdmin, token)
+    // INSERT INTO users (FirstName, LastName, email, hashedPassword, isAdmin, token)
     // VALUES 
     //     ('John', 'Doe', 'john.doe@example.com', 'hashed_password', 0, NULL),
     //     ('Jane', 'Smith', 'jane.smith@example.com', 'hashed_password', 1, NULL);
