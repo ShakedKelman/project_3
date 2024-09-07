@@ -60,3 +60,7 @@ Email already exists
 "lastName" length must be at least 2 characters long
 "destination" is not allowed to be empty, "description" is not allowed to be empty, "startDate" must be a valid date, "endDate" must be a valid date, "price" must be a positive number
 Email already exists
+Table 'vacations.user' doesn't exist
+Table 'vacations.user' doesn't exist
+Table 'vacations.user' doesn't exist
+Wrong credentials

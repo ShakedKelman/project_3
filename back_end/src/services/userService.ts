@@ -1,4 +1,4 @@
-import { createToken, encryptPassword } from "../utils/authUtils";
+import { createToken, encryptPassword, validatePassword } from "../utils/authUtils";
 import { UnauthorizedError, ValidationError } from "../models/exceptions";
 import runQuery from "../db/dal";
 import UserModel from "../models/UsersModel";
@@ -29,7 +29,7 @@ export async function register(user: UserModel): Promise<string> {
         user.lastName,
         hashedPassword, // Use the hashed password here
         user.email,
-        user.isAdmin || false // Assuming isAdmin defaults to false if not provided
+        user.isAdmin || false 
     ];
 
     // Execute the insert query
@@ -50,74 +50,54 @@ export async function register(user: UserModel): Promise<string> {
     // Return the generated token
     return user.token;
 }
-// export async function register(user: UserModel): Promise<string> {
-//     user.validate();
 
-//     // Check if email already exists
-//     const emailCheckQuery = "SELECT COUNT(*) as count FROM users WHERE email = ?";
-//     const emailCheckResult = await runQuery(emailCheckQuery, [user.email]);
-//     if (emailCheckResult[0].count > 0) {
-//         throw new ValidationError("Email already exists");
+export async function login(email: string, password: string) {
+    let q = `SELECT * FROM users WHERE email=?;`;
+    const res = await runQuery(q, [email]);
+    if (res.length === 0 || !(await validatePassword(password, res[0].password))) {
+        throw new UnauthorizedError("Wrong credentials");
+    }
+    const user = new UserModel(res[0]);
+    if (!user.token) {
+        user.token = createToken(user);
+        q = `UPDATE user SET token=? WHERE id=?;`;
+        await runQuery(q, [user.token, user.id]);
+    }
+    return user.token;
+}
+
+
+
+// export async function login(email: string, password: string) {
+//     let q = `SELECT id, FirstName, LastName, email, password, isAdmin, token FROM users WHERE email = ? AND password = ?;`;
+//     const result = await runQuery(q, [email, password]);
+//     console.log('Query result:', result);
+
+//     const rows = result; // Use the result directly if it's an array
+    
+//     if (rows.length === 0) {
+//         throw new UnauthorizedError("Wrong credentials");
 //     }
 
-//     // Insert new user
-//     const insertQuery = `
-//         INSERT INTO users (FirstName, LastName, password, email, isAdmin)
-//         VALUES (?, ?, ?, ?, ?)
-//     `;
-//     await runQuery(insertQuery, [
-//         user.firstName,
-//         user.lastName,
-//         user.password, // Note: Ensure password is hashed before this point
-//         user.email,
-//         user.isAdmin
-//     ]);
+//     const userData = rows[0];
 
-//     // Get the inserted user's ID
-//     const idQuery = "SELECT id FROM users WHERE email = ?";
-//     const idResult = await runQuery(idQuery, [user.email]);
-//     user.id = idResult[0].id;
+//     console.log('First row:', userData);
 
-//     // Create and update token
-//     user.token = createToken(user); // Implement createToken function
-//     const updateTokenQuery = "UPDATE users SET token = ? WHERE id = ?";
-//     await runQuery(updateTokenQuery, [user.token, user.id]);
+//     if (!userData || !userData.id) {
+//         throw new Error("User data is incomplete or missing");
+//     }
+
+//     const user = new UserModel(userData);
+//     console.log('User object:', user);
+
+//     if (!user.token) {
+//         user.token = createToken(user);
+//         q = `UPDATE users SET token = ? WHERE id = ?;`;
+//         await runQuery(q, [user.token, user.id]);
+//     }
 
 //     return user.token;
 // }
-
-
-
-export async function login(email: string, password: string) {
-    let q = `SELECT id, FirstName, LastName, email, password, isAdmin, token FROM users WHERE email = ? AND password = ?;`;
-    const result = await runQuery(q, [email, password]);
-    console.log('Query result:', result);
-
-    const rows = result; // Use the result directly if it's an array
-    
-    if (rows.length === 0) {
-        throw new UnauthorizedError("Wrong credentials");
-    }
-
-    const userData = rows[0];
-
-    console.log('First row:', userData);
-
-    if (!userData || !userData.id) {
-        throw new Error("User data is incomplete or missing");
-    }
-
-    const user = new UserModel(userData);
-    console.log('User object:', user);
-
-    if (!user.token) {
-        user.token = createToken(user);
-        q = `UPDATE users SET token = ? WHERE id = ?;`;
-        await runQuery(q, [user.token, user.id]);
-    }
-
-    return user.token;
-}
 
 
 // export async function getAllUsers() {
