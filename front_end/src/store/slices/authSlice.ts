@@ -30,8 +30,29 @@ const authSlice = createSlice({
       state.user = null;
       state.status = 'idle';
     },
-  },
-});
+    registerRequest(state) {
+        state.status = 'loading';
+        state.error = null;
+      },
+      registerSuccess(state, action: PayloadAction<UserModel>) {
+        state.user = action.payload;
+        state.status = 'succeeded';
+        state.error = null;
+      },
+      registerFailure(state, action: PayloadAction<string>) {
+        state.error = action.payload;
+        state.status = 'failed';
+      },
+    },
+  });
 
-export const { loginSuccess, loginFailure, logout } = authSlice.actions;
-export default authSlice.reducer;
+  export const {
+    loginSuccess,
+    loginFailure,
+    logout,
+    registerRequest,
+    registerSuccess,
+    registerFailure,
+  } = authSlice.actions;
+  
+  export default authSlice.reducer;

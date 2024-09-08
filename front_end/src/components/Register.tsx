@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserModel } from '../model/UserModel'; // Adjust import path as needed
-import { register } from '../api/auth-api'; // Adjust import path as needed
+import { useDispatch } from 'react-redux';
+import { UserModel } from '../model/UserModel';
+import { register } from '../api/auth-api';
 import { Form, Button, Alert, Container } from 'react-bootstrap';
 import axios, { AxiosError } from 'axios';
+import { registerFailure, registerRequest, registerSuccess } from '../store/slices/authSlice';
 
-// Define an interface for the error response
 interface ErrorResponse {
   message: string;
 }
@@ -19,45 +20,41 @@ const RegisterComponent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleRegister = async () => {
-    // Check if all fields are filled
     if (!email || !password || !firstName || !lastName) {
       setError('All fields are required.');
       return;
     }
 
-    // Validate email
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
       setError('Please enter a valid email address.');
       return;
     }
 
-    // Validate password
     if (password.length < 4) {
       setError('Password must be at least 4 characters long.');
       return;
     }
 
-    try {
-      const user: UserModel = {
-        email,
-        password,
-        firstName,
-        lastName,
-        isAdmin
-      };
+    dispatch(registerRequest()); // Dispatch request action
 
+    try {
+      const user: UserModel = { email, password, firstName, lastName, isAdmin };
       await register(user);
+      dispatch(registerSuccess(user)); // Dispatch success action
       setSuccess(true);
-      navigate('/vacations'); 
+      navigate('/vacations');
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        // Safely extract the error message from the Axios error
         const axiosError = error as AxiosError<ErrorResponse>;
-        setError(axiosError.response?.data?.message || 'Registration failed. Please try again.');
+        const errorMessage = axiosError.response?.data?.message || 'Registration failed. Please try again.';
+        dispatch(registerFailure(errorMessage)); // Dispatch failure action
+        setError(errorMessage);
       } else {
+        dispatch(registerFailure('Registration failed. Please try again.'));
         setError('Registration failed. Please try again.');
       }
     }

@@ -6,6 +6,7 @@ import RegisterComponent from './Register';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import AddVacationForm from './AddVactionForm';
+import Logout from './Logout'; // Import Logout component
 
 const SiteRoutes: React.FC = () => {
   const authStatus = useSelector((state: RootState) => state.auth.status);
@@ -16,8 +17,11 @@ const SiteRoutes: React.FC = () => {
       <Route path="/login" element={<LoginComponent />} />
       <Route path="/register" element={<RegisterComponent />} />
       
-      {/* Redirect home to login page */}
-      <Route path="/" element={<Navigate to="/login" />} />
+      {/* Home Redirect */}
+      <Route 
+        path="/" 
+        element={authStatus === 'succeeded' ? <Navigate to="/vacations" /> : <Navigate to="/login" />} 
+      />
       
       {/* Protected Routes */}
       <Route
@@ -27,6 +31,10 @@ const SiteRoutes: React.FC = () => {
       <Route
         path="/add-vacation"
         element={authStatus === 'succeeded' ? <AddVacationForm /> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/logout"
+        element={authStatus === 'succeeded' ? <Logout /> : <Navigate to="/login" />}
       />
     </Routes>
   );

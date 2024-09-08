@@ -38,5 +38,5 @@ export const registerUser = createAsyncThunk<UserModel, UserModel>(
 );
 
 export const logoutUser = () => (dispatch: AppDispatch) => {
-  dispatch(logout());
-};
+    dispatch(logout());
+  };
