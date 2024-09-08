@@ -125,3 +125,6 @@ New POST to: /api/v1/login
 New GET to: /api/v1/vacations
 New POST to: /api/v1/vacation
 New POST to: /api/v1/vacations
+New GET to: /api/v1/vacations
+New POST to: /api/v1/vacations
+New GET to: /api/v1/allUsers

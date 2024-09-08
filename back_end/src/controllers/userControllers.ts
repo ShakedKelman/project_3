@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { appConfig } from "../utils/appConfig";
 import { StatusCode } from "../models/statusEnum";
 import { register, login, getAllUsers } from "../services/userService";
 import UserModel from "../models/UsersModel";
+import { appConfig } from "../utils/appConfig";
 
 export const userRoutes = Router();
 
