@@ -21,9 +21,10 @@ export async function register(user: UserModel): Promise<string> {
 
     // Insert the new user into the database
     const insertQuery = `
-        INSERT INTO users (FirstName, LastName, password, email, isAdmin)
-        VALUES (?, ?, ?, ?, ?)
-    `;
+    INSERT INTO users (FirstName, LastName, hashedPassword, email, isAdmin)
+    VALUES (?, ?, ?, ?, ?)
+`;
+
     const insertParams = [
         user.firstName,
         user.lastName,
@@ -54,7 +55,7 @@ export async function register(user: UserModel): Promise<string> {
 export async function login(email: string, password: string) {
     let q = `SELECT * FROM users WHERE email=?;`;
     const res = await runQuery(q, [email]);
-    if (res.length === 0 || !(await validatePassword(password, res[0].password))) {
+    if (res.length === 0 || !(await validatePassword(password, res[0].hashedPassword))) {
         throw new UnauthorizedError("Wrong credentials");
     }
     const user = new UserModel(res[0]);
@@ -120,7 +121,7 @@ export async function getAllUsers() {
         id: u.id,
         firstName: u.FirstName,
         lastName: u.LastName,
-        password: u.password,
+        password: u.hashedPassword,
         email: u.email,
         isAdmin: u.isAdmin,
         token: u.token
