@@ -4,6 +4,7 @@ import { login, register } from './auth-api';
 import { UserModel } from '../model/UserModel';
 import { AppDispatch } from '../store/store';
 
+
 interface LoginUserArgs {
   email: string;
   password: string;
@@ -14,7 +15,8 @@ export const loginUser = createAsyncThunk<UserModel, LoginUserArgs>(
   async ({ email, password }: LoginUserArgs, { dispatch }) => {
     try {
       const user: UserModel = await login(email, password);
-      dispatch(loginSuccess(user)); // Dispatch with the full user object
+      const timestamp = Date.now();
+      dispatch(loginSuccess({ user, timestamp }));
       return user;
     } catch (error: any) {
       dispatch(loginFailure(error.message));
@@ -28,7 +30,8 @@ export const registerUser = createAsyncThunk<UserModel, UserModel>(
   async (user: UserModel, { dispatch }) => {
     try {
       const registeredUser: UserModel = await register(user);
-      dispatch(loginSuccess(registeredUser));
+      const timestamp = Date.now();
+      dispatch(loginSuccess({ user: registeredUser, timestamp }));
       return registeredUser;
     } catch (error: any) {
       dispatch(loginFailure(error.message));

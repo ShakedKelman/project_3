@@ -1,39 +1,41 @@
 import React from 'react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom'; // Import Link and useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../store/store'; // Adjust import path as needed
-import { logoutUser } from '../api/authThunks'; // Adjust import path as needed
+import { RootState, AppDispatch } from '../store/store';
+import { logoutUser } from '../api/authThunks';
 
 const NavbarWeb: React.FC = () => {
     const authStatus = useSelector((state: RootState) => state.auth.status);
-    const dispatch = useDispatch<AppDispatch>(); // Use AppDispatch here
+    const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
 
     const handleLogout = () => {
         if (window.confirm('Are you sure you want to logout?')) {
-            dispatch(logoutUser()); // Log the user out
-            navigate('/login'); // Redirect to login page after logout
+            dispatch(logoutUser());
+            navigate('/login');
         }
     };
 
+    // Check if user is logged in based on the timestamp
+    const isLoggedIn = authStatus === 'succeeded';
+    
     return (
         <Navbar className="navbar-lilac" variant="light">
             <Container>
-                <Navbar.Brand as={Link} to={authStatus === 'succeeded' ? "/" : "/login"}>
-                    {authStatus === 'succeeded' ? 'Home' : 'Login'}
+                <Navbar.Brand as={Link} to={isLoggedIn ? "/" : "/login"}>
+                    {isLoggedIn ? 'Vacations' : 'Login'}
                 </Navbar.Brand>
                 <Nav className="me-auto">
-                    {authStatus === 'succeeded' && (
+                    {isLoggedIn && (
                         <>
-                            <Nav.Link as={Link} to="/vacations">Vacations</Nav.Link> {/* Link to Vacations page */}
-                            <Nav.Link as="button" onClick={handleLogout}>Logout</Nav.Link> {/* Button for Logout */}
-                            <Nav.Link as={Link} to="/add-vacation">add vacation</Nav.Link> {/* Button for Logout */}
-
+                            <Nav.Link as={Link} to="/vacations">Vacations</Nav.Link>
+                            <Nav.Link as={Link} to="/add-vacation">Add Vacation</Nav.Link>
+                            <Nav.Link as="button" onClick={handleLogout}>Logout</Nav.Link>
                         </>
                     )}
-                    {authStatus !== 'succeeded' && (
-                        <Nav.Link as={Link} to="/register">A new user?</Nav.Link>
+                    {!isLoggedIn && (
+                        <Nav.Link as={Link} to="/register">A New User?</Nav.Link>
                     )}
                 </Nav>
             </Container>
