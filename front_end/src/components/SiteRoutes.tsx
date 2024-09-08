@@ -14,6 +14,8 @@ const SiteRoutes: React.FC = () => {
       <Route path="/login" element={<LoginComponent />} />
       {/* <Route path="/register" element={<RegisterComponent />} /> */}
       <Route path="/register" element={<RegisterComponent />} />
+      <Route path="/" element={<RegisterComponent />} />
+
 
       <Route 
         path="/vacations" 
