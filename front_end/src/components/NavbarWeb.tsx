@@ -28,6 +28,8 @@ const NavbarWeb: React.FC = () => {
                         <>
                             <Nav.Link as={Link} to="/vacations">Vacations</Nav.Link> {/* Link to Vacations page */}
                             <Nav.Link as="button" onClick={handleLogout}>Logout</Nav.Link> {/* Button for Logout */}
+                            <Nav.Link as={Link} to="/add-vacation">add vacation</Nav.Link> {/* Button for Logout */}
+
                         </>
                     )}
                     {authStatus !== 'succeeded' && (

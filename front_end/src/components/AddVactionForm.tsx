@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { VacationModel } from '../model/VacationModel';
 import { addVacation } from '../api/vactions-api';
 import { useNavigate } from 'react-router-dom';
+import { Form, Button, Alert } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddVacationForm: React.FC = () => {
     const [newVacation, setNewVacation] = useState<VacationModel>(new VacationModel({}));
@@ -14,8 +16,24 @@ const AddVacationForm: React.FC = () => {
         setNewVacation(prev => ({ ...prev, [name]: value }));
     };
 
+    const isDateInThePast = (date: string) => {
+        return new Date(date) < new Date();
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Validate dates
+        if (isDateInThePast(newVacation.startDate) || isDateInThePast(newVacation.endDate)) {
+            setError("Start Date and End Date must be in the future.");
+            return;
+        }
+        
+        if (new Date(newVacation.startDate) > new Date(newVacation.endDate)) {
+            setError("End Date must be after Start Date.");
+            return;
+        }
+
         try {
             await addVacation(newVacation);
             setSuccess("Vacation added successfully");
@@ -30,71 +48,82 @@ const AddVacationForm: React.FC = () => {
     };
 
     return (
-        <div>
-            <h2>Add New Vacation</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {success && <p style={{ color: 'green' }}>{success}</p>}
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Destination:
-                    <input
+        <div className="container">
+            <h2 className="my-4">Add New Vacation</h2>
+            {error && <Alert variant="danger">{error}</Alert>}
+            {success && <Alert variant="success">{success}</Alert>}
+            <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="formDestination">
+                    <Form.Label>Destination</Form.Label>
+                    <Form.Control
                         type="text"
                         name="destination"
                         value={newVacation.destination}
                         onChange={handleInputChange}
                         required
+                        placeholder="Enter destination"
                     />
-                </label>
-                <label>
-                    Description:
-                    <textarea
+                </Form.Group>
+
+                <Form.Group controlId="formDescription">
+                    <Form.Label>Description</Form.Label>
+                    <Form.Control
+                        as="textarea"
                         name="description"
                         value={newVacation.description}
                         onChange={handleInputChange}
                         required
+                        placeholder="Enter description"
                     />
-                </label>
-                <label>
-                    Start Date:
-                    <input
+                </Form.Group>
+
+                <Form.Group controlId="formStartDate">
+                    <Form.Label>Start Date</Form.Label>
+                    <Form.Control
                         type="date"
                         name="startDate"
                         value={newVacation.startDate}
                         onChange={handleInputChange}
                         required
                     />
-                </label>
-                <label>
-                    End Date:
-                    <input
+                </Form.Group>
+
+                <Form.Group controlId="formEndDate">
+                    <Form.Label>End Date</Form.Label>
+                    <Form.Control
                         type="date"
                         name="endDate"
                         value={newVacation.endDate}
                         onChange={handleInputChange}
                         required
                     />
-                </label>
-                <label>
-                    Price:
-                    <input
+                </Form.Group>
+
+                <Form.Group controlId="formPrice">
+                    <Form.Label>Price</Form.Label>
+                    <Form.Control
                         type="number"
                         name="price"
                         value={newVacation.price}
                         onChange={handleInputChange}
                         required
+                        placeholder="Enter price"
                     />
-                </label>
-                <label>
-                    Image File Name:
-                    <input
+                </Form.Group>
+
+                <Form.Group controlId="formImageFileName">
+                    <Form.Label>Image File Name</Form.Label>
+                    <Form.Control
                         type="text"
                         name="imageFileName"
                         value={newVacation.imageFileName || ''}
                         onChange={handleInputChange}
+                        placeholder="Enter image file name"
                     />
-                </label>
-                <button type="submit">Add Vacation</button>
-            </form>
+                </Form.Group>
+
+                <Button variant="success" type="submit" className="mt-3">Add Vacation</Button>
+            </Form>
         </div>
     );
 };
