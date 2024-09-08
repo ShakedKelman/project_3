@@ -51,7 +51,7 @@ const RegisterComponent: React.FC = () => {
 
       await register(user);
       setSuccess(true);
-      navigate('/login'); // Redirect to login page on successful registration
+      navigate('/vacations'); 
     } catch (error) {
       if (axios.isAxiosError(error)) {
         // Safely extract the error message from the Axios error

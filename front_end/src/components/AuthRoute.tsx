@@ -11,7 +11,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element }) => {
   const authStatus = useSelector((state: RootState) => state.auth.status);
 
   if (authStatus !== 'succeeded') {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" />; // Corrected to redirect to login if not authenticated
   }
 
   return element;

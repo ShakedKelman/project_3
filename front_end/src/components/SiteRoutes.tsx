@@ -5,6 +5,7 @@ import LoginComponent from './Login';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import RegisterComponent from './Register';
+import AddVacationForm from './AddVactionForm';
 
 const SiteRoutes: React.FC = () => {
   const authStatus = useSelector((state: RootState) => state.auth.status);
@@ -16,11 +17,12 @@ const SiteRoutes: React.FC = () => {
       <Route path="/register" element={<RegisterComponent />} />
       <Route path="/" element={<RegisterComponent />} />
 
-
       <Route 
         path="/vacations" 
         element={authStatus === 'succeeded' ? <VacationCard /> : <Navigate to="/login" />} 
       />
+                <Route path="/add-vacation" element={<AddVacationForm />} />
+
     </Routes>
   );
 };

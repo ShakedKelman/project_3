@@ -1,4 +1,6 @@
+// src/components/VacationCard.tsx
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { VacationModel } from '../model/VacationModel';
 import { addVacation, getVacations } from '../api/vactions-api';
 
@@ -12,6 +14,7 @@ const VacationCard: React.FC = () => {
         price: 0,
         imageFileName: ''
     });
+    const navigate = useNavigate(); // Initialize useNavigate
 
     useEffect(() => {
         const fetchVacations = async () => {
@@ -26,15 +29,9 @@ const VacationCard: React.FC = () => {
         fetchVacations();
     }, []);
 
-    const handleAddVacation = async () => {
-        try {
-            await addVacation(newVacation);
-            // Optionally, refetch or update the vacation list
-            const updatedVacations = await getVacations();
-            setVacations(updatedVacations);
-        } catch (error) {
-            console.error("Error adding vacation:", error);
-        }
+    const handleAddVacation = () => {
+        // Navigate to the AddVacationForm component
+        navigate('/add-vacation');
     };
 
     return (
