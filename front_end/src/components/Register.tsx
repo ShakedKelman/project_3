@@ -5,7 +5,7 @@ import { UserModel } from '../model/UserModel';
 import { register } from '../api/auth-api';
 import { Form, Button, Alert, Container } from 'react-bootstrap';
 import axios, { AxiosError } from 'axios';
-import { registerFailure, registerRequest, registerSuccess } from '../store/slices/authSlice';
+import { registerFailure, registerRequest, registerSuccess, loginSuccess } from '../store/slices/authSlice';
 
 interface ErrorResponse {
   message: string;
@@ -18,7 +18,6 @@ const RegisterComponent: React.FC = () => {
   const [lastName, setLastName] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -39,19 +38,24 @@ const RegisterComponent: React.FC = () => {
       return;
     }
 
-    dispatch(registerRequest()); // Dispatch request action
+    dispatch(registerRequest());
 
     try {
       const user: UserModel = { email, password, firstName, lastName, isAdmin };
       await register(user);
-      dispatch(registerSuccess(user)); // Dispatch success action
-      setSuccess(true);
+
+      // Immediately log in the user after successful registration
+      dispatch(registerSuccess(user));
+      const timestamp = Date.now();
+      dispatch(loginSuccess({ user, timestamp }));
+
+      // Navigate to the vacations page as the user is considered logged in
       navigate('/vacations');
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError<ErrorResponse>;
         const errorMessage = axiosError.response?.data?.message || 'Registration failed. Please try again.';
-        dispatch(registerFailure(errorMessage)); // Dispatch failure action
+        dispatch(registerFailure(errorMessage));
         setError(errorMessage);
       } else {
         dispatch(registerFailure('Registration failed. Please try again.'));
@@ -64,7 +68,6 @@ const RegisterComponent: React.FC = () => {
     <Container className="mt-4">
       <h2>Register</h2>
       {error && <Alert variant="danger">{error}</Alert>}
-      {success && <Alert variant="success">Registration successful! Please log in.</Alert>}
       <Form>
         <Form.Group className="mb-3" controlId="formFirstName">
           <Form.Label>First Name</Form.Label>
