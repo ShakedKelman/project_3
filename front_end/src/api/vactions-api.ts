@@ -22,3 +22,18 @@ export const addVacation = async (vacation: VacationModel): Promise<void> => {
         throw error;
     }
 };
+
+
+// Edit an existing vacation
+export const editVacation = async (id: number, vacation: VacationModel, token: string): Promise<void> => {
+    try {
+        await axios.put(`http://localhost:4000/api/v1/vacation/${id}`, vacation, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+    } catch (error) {
+        console.error("Error editing vacation:", error);
+        throw error;
+    }
+};

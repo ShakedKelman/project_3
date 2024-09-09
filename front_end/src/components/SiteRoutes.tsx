@@ -9,6 +9,7 @@ import AddVacationForm from './AddVactionForm';
 import Logout from './Logout';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
+import EditVacationForm from './EditVacationForm';
 
 
 const SiteRoutes: React.FC = () => {
@@ -38,6 +39,10 @@ const SiteRoutes: React.FC = () => {
         path="/add-vacation"
         element={isAuthenticated && isAdmin ? <AddVacationForm /> : <Navigate to="/vacations" />} // Only admins can access
       />
+      <Route
+                path="/edit-vacation/:id"
+                element={isAuthenticated && isAdmin ? <EditVacationForm /> : <Navigate to="/vacations" />}
+            />
       <Route
         path="/logout"
         element={isAuthenticated ? <Logout /> : <Navigate to="/login" />}

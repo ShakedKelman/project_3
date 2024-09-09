@@ -1,20 +1,35 @@
-import React from 'react';
-import { Container, Nav, Navbar } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Container, Nav, Navbar, Dropdown } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { logoutUser } from '../api/authThunks';
+import { getVacations } from '../api/vactions-api';
+import { VacationModel } from '../model/VacationModel';
 
 const NavbarWeb: React.FC = () => {
     const { status, user } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+    const [vacations, setVacations] = useState<VacationModel[]>([]);
+
+    useEffect(() => {
+        if (user?.isAdmin) {
+            getVacations()
+                .then(data => setVacations(data))
+                .catch(err => console.error('Failed to fetch vacations:', err));
+        }
+    }, [user?.isAdmin]);
 
     const handleLogout = () => {
         if (window.confirm('Are you sure you want to logout?')) {
             dispatch(logoutUser());
             navigate('/login');
         }
+    };
+
+    const handleEditVacation = (vacationId: number) => {
+        navigate(`/edit-vacation/${vacationId}`);
     };
 
     const isLoggedIn = status === 'succeeded';
@@ -29,7 +44,31 @@ const NavbarWeb: React.FC = () => {
                 <Nav className="me-auto">
                     {isLoggedIn && (
                         <>
-                            {isAdmin && <Nav.Link as={Link} to="/add-vacation">Add Vacation</Nav.Link>}
+                            {isAdmin && (
+                                <>
+                                    <Nav.Link as={Link} to="/add-vacation">Add Vacation</Nav.Link>
+                                    <Dropdown>
+                                        <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                            Edit Vacation
+                                        </Dropdown.Toggle>
+
+                                        <Dropdown.Menu>
+                                            {vacations.map(vacation => (
+                                                <Dropdown.Item
+                                                    key={vacation.id}
+                                                    onClick={() => {
+                                                        if (vacation.id !== undefined) {
+                                                            handleEditVacation(vacation.id);
+                                                        }
+                                                    }}
+                                                >
+                                                    {vacation.destination}
+                                                </Dropdown.Item>
+                                            ))}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </>
+                            )}
                             <Nav.Link as="button" onClick={handleLogout}>Logout</Nav.Link>
                         </>
                     )}
@@ -43,44 +82,3 @@ const NavbarWeb: React.FC = () => {
 };
 
 export default NavbarWeb;
-
-
-
-// const NavbarWeb: React.FC = () => {
-//     const authStatus = useSelector((state: RootState) => state.auth.status);
-//     const dispatch = useDispatch<AppDispatch>();
-//     const navigate = useNavigate();
-
-//     const handleLogout = () => {
-//         if (window.confirm('Are you sure you want to logout?')) {
-//             dispatch(logoutUser());
-//             navigate('/login');
-//         }
-//     };
-
-//     // Check if user is logged in based on the timestamp
-//     const isLoggedIn = authStatus === 'succeeded';
-    
-//     return (
-//         <Navbar className="navbar-lilac" variant="light">
-//             <Container>
-//                 <Navbar.Brand as={Link} to={isLoggedIn ? "/vacations" : "/login"}>
-//                     {isLoggedIn ? 'Vacations' : 'Login'}
-//                 </Navbar.Brand>
-//                 <Nav className="me-auto">
-//                     {isLoggedIn && (
-//                         <>
-//                             <Nav.Link as={Link} to="/add-vacation">Add Vacation</Nav.Link>
-//                             <Nav.Link as="button" onClick={handleLogout}>Logout</Nav.Link>
-//                         </>
-//                     )}
-//                     {!isLoggedIn && (
-//                         <Nav.Link as={Link} to="/register">A New User?</Nav.Link>
-//                     )}
-//                 </Nav>
-//             </Container>
-//         </Navbar>
-//     );
-// };
-
-// export default NavbarWeb;
