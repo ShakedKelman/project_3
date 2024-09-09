@@ -10,10 +10,12 @@ import Logout from './Logout';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 
+
 const SiteRoutes: React.FC = () => {
-  const { status, loginTimestamp } = useSelector((state: RootState) => state.auth);
+  const { status, loginTimestamp, user } = useSelector((state: RootState) => state.auth);
   const FIVE_MINUTES = 5 * 60 * 1000;
   const isAuthenticated = status === 'succeeded' && loginTimestamp && Date.now() - loginTimestamp <= FIVE_MINUTES;
+  const isAdmin = user?.isAdmin;
 
   return (
     <Routes>
@@ -34,7 +36,7 @@ const SiteRoutes: React.FC = () => {
       />
       <Route
         path="/add-vacation"
-        element={isAuthenticated ? <AddVacationForm /> : <Navigate to="/login" />}
+        element={isAuthenticated && isAdmin ? <AddVacationForm /> : <Navigate to="/vacations" />} // Only admins can access
       />
       <Route
         path="/logout"
@@ -45,3 +47,39 @@ const SiteRoutes: React.FC = () => {
 };
 
 export default SiteRoutes;
+
+// const SiteRoutes: React.FC = () => {
+//   const { status, loginTimestamp } = useSelector((state: RootState) => state.auth);
+//   const FIVE_MINUTES = 5 * 60 * 1000;
+//   const isAuthenticated = status === 'succeeded' && loginTimestamp && Date.now() - loginTimestamp <= FIVE_MINUTES;
+
+//   return (
+//     <Routes>
+//       {/* Public Routes */}
+//       <Route path="/login" element={isAuthenticated ? <Navigate to="/vacations" /> : <LoginComponent />} />
+//       <Route path="/register" element={<RegisterComponent />} />
+      
+//       {/* Home Redirect */}
+//       <Route 
+//         path="/" 
+//         element={isAuthenticated ? <Navigate to="/vacations" /> : <Navigate to="/login" />} 
+//       />
+      
+//       {/* Protected Routes */}
+//       <Route
+//         path="/vacations"
+//         element={isAuthenticated ? <VacationCard /> : <Navigate to="/login" />}
+//       />
+//       <Route
+//         path="/add-vacation"
+//         element={isAuthenticated ? <AddVacationForm /> : <Navigate to="/login" />}
+//       />
+//       <Route
+//         path="/logout"
+//         element={isAuthenticated ? <Logout /> : <Navigate to="/login" />}
+//       />
+//     </Routes>
+//   );
+// };
+
+// export default SiteRoutes;
