@@ -3,7 +3,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import { appConfig } from "../utils/appConfig";
 import { StatusCode } from "../models/statusEnum";
 import VacationModel from "../models/VacationsModel";
-import { addVacation, getVacations } from "../services/vacationsService";
+import { addVacation, editVacation, getVacations } from "../services/vacationsService";
 
 export const vacationRoutes = Router();
 
@@ -33,4 +33,19 @@ vacationRoutes.post(appConfig.routePrefix + "/vacations",
             next(error);
         }
     }
+);
+
+
+vacationRoutes.put(appConfig.routePrefix + "/vacation/:id", 
+async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id = parseInt(req.params.id);
+        const updates = Array.isArray(req.body) ? req.body : [req.body];
+        await editVacation(id, updates);
+        res.sendStatus(200);
+    } catch (error) {
+        console.error("Error in editVacationController:", error);
+        next(error);
+    }
+}
 );

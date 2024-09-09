@@ -36,7 +36,7 @@ export default class VacationModel {
         description: Joi.string().required().min(5).max(255),
         startDate: Joi.date().required(),
         endDate: Joi.date().required().greater(Joi.ref('startDate')),
-        price: Joi.number().required().positive(),
+        price: Joi.number().required().positive().max(10000),
         imageFileName: Joi.string().optional().allow('').max(255) // Allow empty string but not required
     });
 
@@ -46,4 +46,20 @@ export default class VacationModel {
             throw new ValidationError(res.error.details.map(d => d.message).join(", "));
         }
     }
+    validatePartial(fields: Partial<VacationInterface>): void {
+        const partialSchema = Joi.object(
+            Object.keys(fields).reduce((acc, key) => {
+                if (VacationModel.validateSchema.extract(key)) {
+                    acc[key] = VacationModel.validateSchema.extract(key);
+                }
+                return acc;
+            }, {})
+        );
+    
+        const res = partialSchema.validate(fields, { abortEarly: false });
+        if (res.error) {
+            throw new ValidationError(res.error.details.map(d => d.message).join(", "));
+        }
+    }
 }
+

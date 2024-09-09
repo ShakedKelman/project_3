@@ -61,7 +61,7 @@ export async function login(email: string, password: string) {
     const user = new UserModel(res[0]);
     if (!user.token) {
         user.token = createToken(user);
-        q = `UPDATE user SET token=? WHERE id=?;`;
+        q = `UPDATE users SET token=? WHERE id=?;`;
         await runQuery(q, [user.token, user.id]);
     }
     return user.token;
