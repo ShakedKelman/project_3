@@ -1,32 +1,29 @@
-import React from 'react';
-import { Card, Button } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { VacationModel } from '../model/VacationModel';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../store/store';
+import VacationCard from './VacationCard';
+import { fetchVacations } from '../api/vacationsThunk';
 
-type Props = {
-    vacations: VacationModel[];
-    onViewDetails: (id: number) => void;
-};
+const VacationList: React.FC = () => {
+    const dispatch = useDispatch<AppDispatch>();
+    const { vacations, status, error } = useSelector((state: RootState) => state.vacation);
 
-const VacationsList: React.FC<Props> = ({ vacations, onViewDetails }) => {
+    useEffect(() => {
+        if (status === 'idle') {
+            dispatch(fetchVacations());
+        }
+    }, [dispatch, status]);
+
+    if (status === 'loading') return <div>Loading...</div>;
+    if (status === 'failed') return <div>{error}</div>;
+
     return (
-        <div className="d-flex flex-wrap">
+        <div>
             {vacations.map(vacation => (
-                <Card key={vacation.id} className="m-2" style={{ width: '18rem' }}>
-                    <Card.Img variant="top" src={vacation.imageFileName} />
-                    <Card.Body>
-                        <Card.Title>{vacation.destination}</Card.Title>
-                        <Card.Text>{vacation.description}</Card.Text>
-                        <Card.Text>
-                            {`Start Date: ${vacation.startDate} | End Date: ${vacation.endDate}`}
-                        </Card.Text>
-                        <Card.Text>{`Price: $${vacation.price}`}</Card.Text>
-                        <Button variant="primary" onClick={() => onViewDetails(vacation.id ?? 0)}>View Details</Button>
-                    </Card.Body>
-                </Card>
+                <VacationCard key={vacation.id}/>
             ))}
         </div>
     );
 };
 
-export default VacationsList;
+export default VacationList;

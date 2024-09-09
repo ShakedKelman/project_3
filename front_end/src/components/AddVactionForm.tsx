@@ -4,12 +4,16 @@ import { addVacation } from '../api/vactions-api';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../store/store'; // Import AppDispatch
+import { fetchVacations } from '../api/vacationsThunk'; // Import fetchVacations
 
 const AddVacationForm: React.FC = () => {
     const [newVacation, setNewVacation] = useState<VacationModel>(new VacationModel({}));
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-    const navigate = useNavigate(); // Initialize useNavigate
+    const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>(); // Type the dispatch function
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -38,6 +42,9 @@ const AddVacationForm: React.FC = () => {
             await addVacation(newVacation);
             setSuccess("Vacation added successfully");
             console.log("Vacation added successfully:", newVacation);
+
+            // Dispatch fetchVacations to refresh the vacation list
+            dispatch(fetchVacations());
 
             // Optionally, navigate to another page after successful submission
             navigate('/vacations'); // Navigate to the homepage or another route

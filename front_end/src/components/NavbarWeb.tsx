@@ -1,25 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Container, Nav, Navbar, Dropdown } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 import { logoutUser } from '../api/authThunks';
-import { getVacations } from '../api/vactions-api';
-import { VacationModel } from '../model/VacationModel';
+import { fetchVacations } from '../api/vacationsThunk';
 
 const NavbarWeb: React.FC = () => {
     const { status, user } = useSelector((state: RootState) => state.auth);
+    const { vacations } = useSelector((state: RootState) => state.vacation);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const [vacations, setVacations] = useState<VacationModel[]>([]);
 
     useEffect(() => {
         if (user?.isAdmin) {
-            getVacations()
-                .then(data => setVacations(data))
-                .catch(err => console.error('Failed to fetch vacations:', err));
+            dispatch(fetchVacations());
         }
-    }, [user?.isAdmin]);
+    }, [user?.isAdmin, dispatch]);
 
     const handleLogout = () => {
         if (window.confirm('Are you sure you want to logout?')) {
@@ -54,16 +51,16 @@ const NavbarWeb: React.FC = () => {
 
                                         <Dropdown.Menu>
                                             {vacations.map(vacation => (
-                                                <Dropdown.Item
-                                                    key={vacation.id}
-                                                    onClick={() => {
-                                                        if (vacation.id !== undefined) {
-                                                            handleEditVacation(vacation.id);
-                                                        }
-                                                    }}
-                                                >
-                                                    {vacation.destination}
-                                                </Dropdown.Item>
+                                                  <Dropdown.Item
+                                                  key={vacation.id}
+                                                  onClick={() => {
+                                                      if (vacation.id !== undefined) {
+                                                          handleEditVacation(vacation.id);
+                                                      }
+                                                  }}
+                                              >
+                                                  {vacation.destination}
+                                              </Dropdown.Item>
                                             ))}
                                         </Dropdown.Menu>
                                     </Dropdown>

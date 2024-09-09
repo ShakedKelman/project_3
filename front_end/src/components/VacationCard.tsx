@@ -7,6 +7,8 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../store/store';
 
 const formatDate = (isoDate: string): string => {
     const date = new Date(isoDate);
@@ -18,6 +20,7 @@ const formatDate = (isoDate: string): string => {
 };
 
 const VacationCard: React.FC = () => {
+    const dispatch = useDispatch<AppDispatch>();
     const [vacations, setVacations] = useState<VacationModel[]>([]);
     const navigate = useNavigate(); // Initialize useNavigate
 
@@ -62,7 +65,7 @@ const VacationCard: React.FC = () => {
                     </Col>
                 ))}
             </Row>
-            <Button variant="success" onClick={handleAddVacation} className="mt-3">Add Vacation</Button>
+            {/* <Button variant="success" onClick={handleAddVacation} className="mt-3">Add Vacation</Button> */}
         </div>
     );
 };
