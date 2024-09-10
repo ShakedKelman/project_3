@@ -15,5 +15,6 @@ export class VacationModel {
         this.endDate = obj.endDate ?? '';
         this.price = obj.price ?? 0;
         this.imageFileName = obj.imageFileName;
+
     }
 }

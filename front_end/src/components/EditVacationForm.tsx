@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { VacationModel } from '../model/VacationModel';
-import { editVacation, getVacations, uploadVacationImage,  } from '../api/vactions-api';
+import { editVacation, getVacations, uploadVacationImage } from '../api/vactions-api';
 import { updateVacation } from '../store/slices/vacationslice';
+import { Form, Button, Alert, Spinner, Image } from 'react-bootstrap';
 
 const EditVacationForm: React.FC = () => {
     const dispatch = useDispatch();
@@ -54,7 +55,6 @@ const EditVacationForm: React.FC = () => {
             setError('User token is missing or vacation data is incomplete');
         }
     };
-    
 
     const formatDate = (date: string | undefined) => {
         if (!date) return '';
@@ -72,73 +72,76 @@ const EditVacationForm: React.FC = () => {
         }
     };
 
-    if (isLoading) return <div>Loading...</div>;
-    if (error) return <div>{error}</div>;
-
-    if (!vacation) return <div>Vacation not found</div>;
+    if (isLoading) return <Spinner animation="border" />;
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>Destination:</label>
-                <input
+        <Form onSubmit={handleSubmit}>
+            {error && <Alert variant="danger">{error}</Alert>}
+            {successMessage && <Alert variant="success">{successMessage}</Alert>}
+            
+            <Form.Group controlId="destination">
+                <Form.Label>Destination:</Form.Label>
+                <Form.Control
                     type="text"
-                    value={vacation.destination}
-                    onChange={(e) => setVacation({ ...vacation, destination: e.target.value })}
+                    value={vacation?.destination || ''}
+                    onChange={(e) => setVacation({ ...vacation!, destination: e.target.value })}
                 />
-            </div>
-            <div>
-                <label>Description:</label>
-                <textarea
-                    value={vacation.description}
-                    onChange={(e) => setVacation({ ...vacation, description: e.target.value })}
+            </Form.Group>
+            <Form.Group controlId="description">
+                <Form.Label>Description:</Form.Label>
+                <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={vacation?.description || ''}
+                    onChange={(e) => setVacation({ ...vacation!, description: e.target.value })}
                 />
-            </div>
-            <div>
-                <label>Start Date:</label>
-                <input
+            </Form.Group>
+            <Form.Group controlId="startDate">
+                <Form.Label>Start Date:</Form.Label>
+                <Form.Control
                     type="date"
-                    value={formatDate(vacation.startDate)}
-                    onChange={(e) => setVacation({ ...vacation, startDate: e.target.value })}
+                    value={formatDate(vacation?.startDate)}
+                    onChange={(e) => setVacation({ ...vacation!, startDate: e.target.value })}
                 />
-            </div>
-            <div>
-                <label>End Date:</label>
-                <input
+            </Form.Group>
+            <Form.Group controlId="endDate">
+                <Form.Label>End Date:</Form.Label>
+                <Form.Control
                     type="date"
-                    value={formatDate(vacation.endDate)}
-                    onChange={(e) => setVacation({ ...vacation, endDate: e.target.value })}
+                    value={formatDate(vacation?.endDate)}
+                    onChange={(e) => setVacation({ ...vacation!, endDate: e.target.value })}
                 />
-            </div>
-            <div>
-                <label>Price:</label>
-                <input
+            </Form.Group>
+            <Form.Group controlId="price">
+                <Form.Label>Price:</Form.Label>
+                <Form.Control
                     type="number"
-                    value={vacation.price}
-                    onChange={(e) => setVacation({ ...vacation, price: Number(e.target.value) })}
+                    value={vacation?.price || ''}
+                    onChange={(e) => setVacation({ ...vacation!, price: Number(e.target.value) })}
                 />
-            </div>
-            <div>
-                <label>Current Image:</label>
-                {vacation.imageFileName && (
-                    <img
+            </Form.Group>
+            <Form.Group>
+                <Form.Label>Current Image:</Form.Label>
+                {vacation?.imageFileName && (
+                    <Image
                         src={`path/to/images/${vacation.imageFileName}`} // Adjust the path as necessary
                         alt="Current vacation"
                         style={{ maxWidth: '200px', maxHeight: '200px' }}
                     />
                 )}
-            </div>
-            <div>
-                <label>New Image:</label>
-                <input
+            </Form.Group>
+            <Form.Group controlId="newImage">
+                <Form.Label>New Image:</Form.Label>
+                <Form.Control
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
                 />
-            </div>
-            <button type="submit">Update Vacation</button>
-            {successMessage && <div>{successMessage}</div>}
-        </form>
+            </Form.Group>
+            <Button variant="primary" type="submit">
+                Update Vacation
+            </Button>
+        </Form>
     );
 };
 

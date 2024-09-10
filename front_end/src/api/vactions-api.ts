@@ -14,15 +14,6 @@ export const getVacations = async (id?: number): Promise<VacationModel[]> => {
     }
 };
 
-// Add a new vacation
-// export const addVacation = async (vacation: VacationModel): Promise<void> => {
-//     try {
-//         await axios.post('http://localhost:4000/api/v1/vacations', vacation);
-//     } catch (error) {
-//         console.error("Error adding vacation:", error);
-//         throw error;
-//     }
-// };
 
 // api/vacations-api.ts
 export const addVacation = async (formData: FormData): Promise<void> => {
@@ -58,7 +49,7 @@ export const editVacation = async (id: number, vacation: VacationModel, token: s
 };
 
 
-export const getPaginatedProducts = async (page: number, limit: number = 10) => {
+export const getPaginatedVacations = async (page: number, limit: number = 10) => {
     const response = await fetch(`http://localhost:4000/api/v1/vacation-pg?page=${page}&limit=${limit}`);
     const data = await response.json();
     return data;
@@ -100,7 +91,5 @@ export const uploadVacationImage = async (vacationId: number, image: File, token
 
 
 
-  
-// export const getProductImages = async (pid: number): File[] => {
-//     return []
-// }
+
+
