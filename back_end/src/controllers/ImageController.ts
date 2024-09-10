@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import {
+    getAllImages,
   getVacationImages,
   saveVacationImage,
 } from "../services/vacationsImageService"; // Updated service imports for vacations
@@ -24,20 +25,30 @@ vacationImageRoutes.get(
     }
   }
 );
+vacationImageRoutes.get('/images', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const images = await getAllImages();
+        res.json(images);
+    } catch (error) {
+        console.error("Error fetching all images:", error);
+        next(error);
+    }
+});
 
 // Serve a specific vacation image by image ID
 vacationImageRoutes.get(
-  appConfig.routePrefix + "/vacations/image/:imageId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const imageFullPath = path.resolve(appConfig.vacationsImagesPrefix, req.params.imageId);
-      res.sendFile(imageFullPath);
-    } catch (error) {
-      console.error("Error serving vacation image:", error);
-      next(error);
+    appConfig.routePrefix + "/vacations/image/:imageId",
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const imageFullPath = path.resolve(appConfig.vacationsImagesPrefix, req.params.imageId);
+        res.sendFile(imageFullPath);
+      } catch (error) {
+        console.error("Error serving vacation image:", error);
+        next(error);
+      }
     }
-  }
-);
+  );
+  
 
 // Upload a new image for a specific vacation
 vacationImageRoutes.post(

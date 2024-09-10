@@ -24,8 +24,6 @@ vacationRoutes.get(appConfig.routePrefix + "/vacations/:id?",
 
 
 
-
-
 vacationRoutes.post(
     appConfig.routePrefix + "/vacations",
     async (req: Request, res: Response, next: NextFunction) => {
@@ -67,11 +65,6 @@ vacationRoutes.post(
     }
 );
 
-// ... (other routes)
-
-
-
-
 
 vacationRoutes.put(appConfig.routePrefix + "/vacation/:id", 
 async (req: Request, res: Response, next: NextFunction) => {
@@ -86,7 +79,6 @@ async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 );
-
 
 
 

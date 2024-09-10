@@ -15,6 +15,14 @@ export const getVacationImages = async (vacationId: number): Promise<string[]> =
     return res.map((x) => x.image_path);
 }
 
+// services/vacationsImageService.ts
+
+export const getAllImages = async (): Promise<{ id: number, image_path: string }[]> => {
+    const q = `SELECT * FROM vacation_image`; // Adjust query based on your schema
+    const res = await runQuery(q);
+    return res;
+};
+
 
 
 // Function to save vacation image and insert image details into the database
