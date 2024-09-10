@@ -41,20 +41,20 @@ vacationImageRoutes.get(
 
 // Upload a new image for a specific vacation
 vacationImageRoutes.post(
-  appConfig.routePrefix + "/vacations/image/:vacationId",
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { vacationId } = req.params;
-      const image = req.files?.image as UploadedFile;
-      if (!image) {
-        return res.status(StatusCode.BadRequest).send("Image file is required");
+    appConfig.routePrefix + "/image/vacations/:vacationId",
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { vacationId } = req.params;
+        const image = req.files?.image as UploadedFile;
+        if (!image) {
+          return res.status(StatusCode.BadRequest).send("Image file is required");
+        }
+        const imagePath = await saveVacationImage(Number(vacationId), image);
+        res.status(StatusCode.Created).json({ message: "Image added", imagePath });
+      } catch (error) {
+        console.error("Error adding vacation image:", error);
+        next(error);
       }
-      const imagePath = await saveVacationImage(Number(vacationId), image);
-
-      res.status(StatusCode.Created).json({ message: "Image added", imagePath });
-    } catch (error) {
-      console.error("Error adding vacation image:", error);
-      next(error);
     }
-  }
-);
+  );
+  
