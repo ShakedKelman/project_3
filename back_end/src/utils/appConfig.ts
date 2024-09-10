@@ -11,6 +11,7 @@ class BaseAppConfig {
     readonly errorLogFile = path.join(__dirname, '..', 'logs', 'error.log');
     readonly accessLogFile = path.join(__dirname, '..', 'logs', 'access.log');
     readonly jwtSecret = process.env.JWT_SECRET || 'default_secret_key'; // Changed from jwtSecrete to jwtSecret
+    readonly vacationsImagesPrefix = path.resolve(__dirname ,"..", "assets", "images");
 
     readonly dbConfig = {               
         user: process.env.DB_USER || 'root',   // Default user

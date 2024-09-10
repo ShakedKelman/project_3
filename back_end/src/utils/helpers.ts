@@ -2,6 +2,8 @@ import runQuery from "../db/dal";
 import { appConfig } from "./appConfig";
 import { promises as fs } from "fs";
 import path from 'path';
+import { UploadedFile } from "express-fileupload";
+import { v4 as uuid } from "uuid";
 
 
 export async function isDbServerUp() {
@@ -41,6 +43,13 @@ export async function writeErrorLog(errMsg: string) {
 export async function writeAccessLog(msg: string) {
     await writeToFile(appConfig.accessLogFile, msg);
 }
+export async function saveImage(image: UploadedFile) {
+    const extension = image.name.substring(image.name.lastIndexOf("."));
+    const filename = uuid() + extension;
+    const fullPath = path.join(appConfig.vacationsImagesPrefix, filename);
+    await image.mv(fullPath);
+    return filename;
+  }
   
 //   export async function saveImage(image: UploadedFile) {
 //     const extension = image.name.substring(image.name.lastIndexOf("."));

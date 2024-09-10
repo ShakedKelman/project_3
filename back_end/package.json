@@ -11,14 +11,18 @@
   "author": "Ori Brook",
   "license": "ISC",
   "dependencies": {
+    "@types/express-fileupload": "^1.5.1",
+    "@types/uuid": "^10.0.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "dotnet": "^1.1.4",
     "express": "^4.19.2",
+    "express-fileupload": "^1.5.1",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.11.0"
+    "mysql2": "^3.11.0",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

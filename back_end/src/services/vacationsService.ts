@@ -2,6 +2,9 @@
 import runQuery from "../db/dal";
 import VacationModel from "../models/VacationsModel";
 import { ValidationError } from "../models/exceptions";
+import { UploadedFile } from "express-fileupload";
+import { saveVacationImage } from "./vacationsImageService";
+import { ResultSetHeader } from "mysql2";
 
 export async function getVacations(id?: number): Promise<VacationModel[]> {
     let q = `SELECT * FROM vacations`;
@@ -16,36 +19,66 @@ export async function getVacations(id?: number): Promise<VacationModel[]> {
 
     return res.map((v: any) => new VacationModel(v));
 }
+// Define a type for the expected result from the INSERT query
 
-
-
-export async function addVacation(v: VacationModel) {
+export async function addVacation(v: VacationModel, image: UploadedFile | undefined): Promise<number> {
     // Validate the VacationModel instance
     v.validate();
 
-    // Format the dates to YYYY-MM-DD for DATE type columns
+    // Format the dates
     const formattedStartDate = new Date(v.startDate).toISOString().split('T')[0];
     const formattedEndDate = new Date(v.endDate).toISOString().split('T')[0];
 
-    // Prepare the SQL query with placeholders
-    const q = `
-        INSERT INTO vacations (destination, description, startDate, endDate, price, imageFileName)
-        VALUES (?, ?, ?, ?, ?, ?)
-    `;
-    
-    // Extract values from the VacationModel instance
-    const values = [
-        v.destination,
-        v.description,
-        formattedStartDate,
-        formattedEndDate,
-        v.price,
-        v.imageFileName || null  // Allow null if not provided
-    ];
+    // Start a transaction
+    await runQuery('START TRANSACTION');
 
-    // Execute the query with the provided values
-    await runQuery(q, values);
+    try {
+        // Prepare and execute the SQL query
+        const q = `
+            INSERT INTO vacations (destination, description, startDate, endDate, price, imageFileName)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+
+        const values = [
+            v.destination,
+            v.description,
+            formattedStartDate,
+            formattedEndDate,
+            v.price,
+            v.imageFileName || null
+        ];
+
+        // Execute the query and explicitly cast the result
+        const result = await runQuery(q, values) as ResultSetHeader;
+
+        console.log("Database result:", result);
+
+        if (result && 'insertId' in result) {
+            const vacationId = result.insertId;
+
+            if (image) {
+                const imagePath = await saveVacationImage(vacationId, image);
+                
+                // Update the vacations table with the image file name
+                await runQuery(
+                    'UPDATE vacations SET imageFileName = ? WHERE id = ?',
+                    [imagePath, vacationId]
+                );
+            }
+
+            await runQuery('COMMIT');
+            console.log("Vacation added with ID:", vacationId);
+            return vacationId;
+        } else {
+            throw new Error("Unexpected result structure from database insertion");
+        }
+    } catch (error) {
+        await runQuery('ROLLBACK');
+        console.error("Error in addVacation:", error);
+        throw error;
+    }
 }
+
 
 
 export async function editVacation(id: number, updates: Partial<VacationModel>[]): Promise<void> {
@@ -79,4 +112,13 @@ export async function editVacation(id: number, updates: Partial<VacationModel>[]
 
     // Execute the query with the provided values
     await runQuery(q, values);
+}
+
+
+export async function getVacationsPaginated(page: number, limit: number): Promise<VacationModel[]> {
+    const offset = (page - 1) * limit;
+    const q = `SELECT * FROM vacations LIMIT ${limit} OFFSET ${offset}`;
+    const res = await runQuery(q);
+    const vacations = res.map((v) => new VacationModel(v));
+    return vacations;
 }
