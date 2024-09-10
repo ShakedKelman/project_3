@@ -3,11 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { VacationModel } from '../model/VacationModel';
-import { editVacation, getVacations } from '../api/vactions-api';
+import { editVacation, getVacations, uploadVacationImage,  } from '../api/vactions-api';
 import { updateVacation } from '../store/slices/vacationslice';
 
 const EditVacationForm: React.FC = () => {
-
     const dispatch = useDispatch();
     const { id } = useParams<{ id: string }>();
     const [vacation, setVacation] = useState<VacationModel | null>(null);
@@ -16,6 +15,7 @@ const EditVacationForm: React.FC = () => {
     const { user } = useSelector((state: RootState) => state.auth);
     const navigate = useNavigate();
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
     useEffect(() => {
         if (id) {
@@ -39,6 +39,10 @@ const EditVacationForm: React.FC = () => {
         event.preventDefault();
         if (user?.token && vacation) {
             try {
+                if (selectedImage) {
+                    await uploadVacationImage(Number(id), selectedImage, user.token); // Upload the image file
+                    vacation.imageFileName = selectedImage.name; // Update the vacation with the new image file name
+                }
                 await editVacation(Number(id), vacation, user.token);
                 setSuccessMessage('Vacation updated successfully!');
                 dispatch(updateVacation(vacation)); // Update state with the updated vacation
@@ -50,6 +54,7 @@ const EditVacationForm: React.FC = () => {
             setError('User token is missing or vacation data is incomplete');
         }
     };
+    
 
     const formatDate = (date: string | undefined) => {
         if (!date) return '';
@@ -58,6 +63,13 @@ const EditVacationForm: React.FC = () => {
         const month = String(d.getMonth() + 1).padStart(2, '0');
         const day = String(d.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
+    };
+
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setSelectedImage(file);
+        }
     };
 
     if (isLoading) return <div>Loading...</div>;
@@ -107,11 +119,21 @@ const EditVacationForm: React.FC = () => {
                 />
             </div>
             <div>
-                <label>Image File Name:</label>
+                <label>Current Image:</label>
+                {vacation.imageFileName && (
+                    <img
+                        src={`path/to/images/${vacation.imageFileName}`} // Adjust the path as necessary
+                        alt="Current vacation"
+                        style={{ maxWidth: '200px', maxHeight: '200px' }}
+                    />
+                )}
+            </div>
+            <div>
+                <label>New Image:</label>
                 <input
-                    type="text"
-                    value={vacation.imageFileName || ''}
-                    onChange={(e) => setVacation({ ...vacation, imageFileName: e.target.value })}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
                 />
             </div>
             <button type="submit">Update Vacation</button>

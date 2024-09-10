@@ -80,19 +80,25 @@ export const getPaginatedVacationsWithImages = async (page: number, limit: numbe
 };
 
 
-export const uploadVacationImage = async (vacationId: number, image: File): Promise<void> => {
+// api/vactions-api.ts
+export const uploadVacationImage = async (vacationId: number, image: File, token: string): Promise<void> => {
     const formData = new FormData();
     formData.append('image', image);
-  
-    const response = await fetch(`http://localhost:4000/api/v1/image/${vacationId}`, {
-      method: 'POST',
-      body: formData,
+
+    const response = await fetch(`http://localhost:4000/api/v1/image/vacations/${vacationId}`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
     });
 
     if (!response.ok) {
-        console.error("Failed to upload image", await response.text());
+        throw new Error('Failed to upload image');
     }
 };
+
+
 
   
 // export const getProductImages = async (pid: number): File[] => {
