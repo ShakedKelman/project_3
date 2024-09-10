@@ -5,6 +5,7 @@ import { StatusCode } from "../models/statusEnum";
 import VacationModel from "../models/VacationsModel";
 import { addVacation, editVacation, getVacations, getVacationsPaginated } from "../services/vacationsService";
 import { UploadedFile } from "express-fileupload";
+import { getFollowersForVacation } from "../services/followersService";
 
 export const vacationRoutes = Router();
 
@@ -91,3 +92,19 @@ vacationRoutes.get(appConfig.routePrefix + "/vacation-pg",  async (req: Request,
         next(error)
     }
 });
+
+
+
+// Route to get followers for a specific vacation
+vacationRoutes.get(appConfig.routePrefix + "/vacations/:id/followers", 
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const vacationId = parseInt(req.params.id, 10);
+            const followers = await getFollowersForVacation(vacationId);
+            res.status(StatusCode.Ok).json(followers);
+        } catch (error) {
+            console.error("Error in getFollowersForVacation route:", error);
+            next(error);
+        }
+    }
+);
