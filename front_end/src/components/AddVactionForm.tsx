@@ -4,20 +4,23 @@ import { addVacation } from '../api/vactions-api';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../store/store'; // Import AppDispatch
-import { fetchVacations } from '../api/vacationsThunk'; // Import fetchVacations
 
 const AddVacationForm: React.FC = () => {
     const [newVacation, setNewVacation] = useState<VacationModel>(new VacationModel({}));
+    const [imageFile, setImageFile] = useState<File | null>(null); // State for image file
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const navigate = useNavigate();
-    const dispatch = useDispatch<AppDispatch>(); // Type the dispatch function
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setNewVacation(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setImageFile(e.target.files[0]); // Set the selected image file
+        }
     };
 
     const isDateInThePast = (date: string) => {
@@ -26,28 +29,44 @@ const AddVacationForm: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // Validate dates
         if (isDateInThePast(newVacation.startDate) || isDateInThePast(newVacation.endDate)) {
             setError("Start Date and End Date must be in the future.");
             return;
         }
-        
+
         if (new Date(newVacation.startDate) > new Date(newVacation.endDate)) {
             setError("End Date must be after Start Date.");
             return;
         }
 
         try {
-            await addVacation(newVacation);
+            // Create FormData object
+            const formData = new FormData();
+            formData.append('destination', newVacation.destination);
+            formData.append('description', newVacation.description);
+            formData.append('startDate', newVacation.startDate);
+            formData.append('endDate', newVacation.endDate);
+            formData.append('price', newVacation.price.toString());
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+            
+            // Log FormData for debugging
+            console.log("FormData contents:");
+
+            formData.forEach((value, key) => {
+                console.log(`${key}: ${value}`);
+            });
+            
+
+            await addVacation(formData);
             setSuccess("Vacation added successfully");
             console.log("Vacation added successfully:", newVacation);
 
-            // Dispatch fetchVacations to refresh the vacation list
-            dispatch(fetchVacations());
-
             // Optionally, navigate to another page after successful submission
-            navigate('/vacations'); // Navigate to the homepage or another route
+            navigate('/vacations');
         } catch (error) {
             setError("Failed to add vacation");
             console.error("Error adding vacation:", error);
@@ -118,14 +137,13 @@ const AddVacationForm: React.FC = () => {
                     />
                 </Form.Group>
 
-                <Form.Group controlId="formImageFileName">
-                    <Form.Label>Image File Name</Form.Label>
+                <Form.Group controlId="formImage">
+                    <Form.Label>Upload Image</Form.Label>
                     <Form.Control
-                        type="text"
-                        name="imageFileName"
-                        value={newVacation.imageFileName || ''}
-                        onChange={handleInputChange}
-                        placeholder="Enter image file name"
+                        type="file"
+                        onChange={handleImageChange}
+                        accept="image/*"
+                        required
                     />
                 </Form.Group>
 
