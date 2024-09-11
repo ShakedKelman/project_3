@@ -63,7 +63,9 @@ const VacationCard: React.FC = () => {
                   {`End Date: ${formatDate(vacation.endDate)}`}<br />
                   {`Price: $${vacation.price}`}<br />
                   {`Followers: ${followers[vacation.id]?.length || 0}`}
+                
                 </Card.Text>
+                
               </Card.Body>
             </Card>
           </Col>

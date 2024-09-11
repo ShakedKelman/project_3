@@ -10,12 +10,13 @@ import Logout from './Logout';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import EditVacationForm from './EditVacationForm';
+import VacationImagesPage from './ImagePage';
 
 
 const SiteRoutes: React.FC = () => {
   const { status, loginTimestamp, user } = useSelector((state: RootState) => state.auth);
-  const FIVE_MINUTES = 5 * 60 * 1000;
-  const isAuthenticated = status === 'succeeded' && loginTimestamp && Date.now() - loginTimestamp <= FIVE_MINUTES;
+  const TEN_MINUTES = 10 * 60 * 1000;
+  const isAuthenticated = status === 'succeeded' && loginTimestamp && Date.now() - loginTimestamp <= TEN_MINUTES;
   const isAdmin = user?.isAdmin;
 
   return (
@@ -43,6 +44,10 @@ const SiteRoutes: React.FC = () => {
                 path="/edit-vacation/:id"
                 element={isAuthenticated && isAdmin ? <EditVacationForm /> : <Navigate to="/vacations" />}
             />
+  <Route
+        path="/images"
+        element={isAuthenticated ? <VacationImagesPage/> : <Navigate to="/login" />} // Route for vacation images
+      />
       <Route
         path="/logout"
         element={isAuthenticated ? <Logout /> : <Navigate to="/login" />}

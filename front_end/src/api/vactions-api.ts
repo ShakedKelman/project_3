@@ -49,26 +49,26 @@ export const editVacation = async (id: number, vacation: VacationModel, token: s
 };
 
 
-export const getPaginatedVacations = async (page: number, limit: number = 10) => {
-    const response = await fetch(`http://localhost:4000/api/v1/vacation-pg?page=${page}&limit=${limit}`);
-    const data = await response.json();
-    return data;
-};
+// export const getPaginatedVacations = async (page: number, limit: number = 10) => {
+//     const response = await fetch(`http://localhost:4000/api/v1/vacation-pg?page=${page}&limit=${limit}`);
+//     const data = await response.json();
+//     return data;
+// };
   
 
-// Fetch paginated vacations with images
-export const getPaginatedVacationsWithImages = async (page: number, limit: number = 10) => {
-    const response = await fetch(`${siteConfig.BASE_URL}vacations-pg?page=${page}&limit=${limit}`);
-    let data = await response.json();
-    for (let v of data) {
-        const imageRes = await fetch(`${siteConfig.BASE_URL}images/${v.id}`);
-        let imagesData: string[] = await imageRes.json();
-        if (imagesData.length > 0) {
-            v.imageUrl = imagesData[0];
-        }
-    }
-    return data;
-};
+// // Fetch paginated vacations with images
+// export const getPaginatedVacationsWithImages = async (page: number, limit: number = 10) => {
+//     const response = await fetch(`${siteConfig.BASE_URL}vacations-pg?page=${page}&limit=${limit}`);
+//     let data = await response.json();
+//     for (let v of data) {
+//         const imageRes = await fetch(`${siteConfig.BASE_URL}images/${v.id}`);
+//         let imagesData: string[] = await imageRes.json();
+//         if (imagesData.length > 0) {
+//             v.imageUrl = imagesData[0];
+//         }
+//     }
+//     return data;
+// };
 
 
 // api/vactions-api.ts
@@ -91,5 +91,16 @@ export const uploadVacationImage = async (vacationId: number, image: File, token
 
 
 
+
+// In your api/vacationImagesApi.ts
+
+export const fetchAllImages = async () => {
+    try {
+      const response = await axios.get(`${siteConfig.BASE_URL}images`);
+      return response.data; // Make sure this returns an array of images
+    } catch (error) {
+      throw new Error('Failed to fetch images');
+    }
+  };
 
 
