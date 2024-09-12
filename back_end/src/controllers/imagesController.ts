@@ -15,11 +15,18 @@ imagesnRoutes.get(appConfig.routePrefix + "/vacations/:id/images",
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const vacationId = parseInt(req.params.id, 10);
+            console.log(`Fetching images for vacation ID: ${vacationId}`);
             const images = await getImagesByVacation(vacationId);
+            
+            if (!images || images.length === 0) {
+                console.log(`No images found for vacation ID: ${vacationId}`);
+                return res.status(StatusCode.Ok).json([]);
+            }
+            
             res.status(StatusCode.Ok).json(images);
         } catch (error) {
             console.error("Error in getImagesByVacation route:", error);
-            next(error);
+            res.status(StatusCode.ServerError).json({ error: "An error occurred while fetching images" });
         }
     }
 );

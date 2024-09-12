@@ -64,7 +64,6 @@ const NavbarWeb: React.FC = () => {
                                             ))}
                                         </Dropdown.Menu>
                                     </Dropdown>
-                                    <Nav.Link as={Link} to="/images">Vacation Images</Nav.Link>
                                 </>
                             )}
                             <Nav.Link as="button" onClick={handleLogout}>Logout</Nav.Link>

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getVacations } from '../../api/vactions/vactions-api';
+import { getFollowersForVacation } from '../../api/followers/follower-api';
+import { getImagesForVacation } from '../../api/images/images-api';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { getFollowersForVacation } from '../../api/followers/follower-api';
+import { VacationModel } from '../../model/VacationModel';
+import { siteConfig } from '../../utils/SiteConfig';
 
 const formatDate = (isoDate: string): string => {
   const date = new Date(isoDate);
@@ -16,64 +18,71 @@ const formatDate = (isoDate: string): string => {
   return `${day}/${month}/${year}`;
 };
 
-const VacationCard: React.FC = () => {
-  const [vacations, setVacations] = useState<any[]>([]);
-  const [followers, setFollowers] = useState<{ [key: number]: any[] }>({});
-  const navigate = useNavigate();
+interface VacationCardProps {
+  vacation: VacationModel;
+}
 
-  useEffect(() => {
-    const fetchVacations = async () => {
-      try {
-        const fetchedVacations = await getVacations();
-        setVacations(fetchedVacations);
+const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
+    const [followers, setFollowers] = useState<any[]>([]);
+    const [images, setImages] = useState<string[]>([]);
+    const navigate = useNavigate();
 
-        // Fetch followers for each vacation if the id is defined
-        const followersData: { [key: number]: any[] } = {};
-        for (const vacation of fetchedVacations) {
-          if (vacation.id !== undefined) {
-            const vacationFollowers = await getFollowersForVacation(vacation.id);
-            followersData[vacation.id] = vacationFollowers;
-          }
-        }
-        setFollowers(followersData);
-      } catch (error) {
-        console.error("Error fetching vacations:", error);
-      }
+    useEffect(() => {
+        const fetchAdditionalData = async () => {
+            try {
+                if (vacation.id) {
+                    const vacationFollowers = await getFollowersForVacation(vacation.id);
+                    setFollowers(vacationFollowers);
+
+                    const vacationImages = await getImagesForVacation(vacation.id);
+                    console.log("Fetched images:", vacationImages); // Debugging line
+                    setImages(vacationImages);
+                }
+            } catch (error) {
+                console.error("Error fetching additional data:", error);
+            }
+        };
+        fetchAdditionalData();
+    }, [vacation.id]);
+
+    const getImageUrl = (imagePath: string) => {
+        const url = `${siteConfig.BASE_URL}${imagePath}`;
+        console.log('Image URL:', url); // Debugging line
+        return url;
     };
-    fetchVacations();
-  }, []);
 
-  const handleAddVacation = () => {
-    navigate('/add-vacation');
-  };
+    const handleAddVacation = () => {
+        navigate('/add-vacation');
+    };
 
-  return (
-    <div>
-      <h1>Vacations</h1>
-      <Row>
-        {vacations.map(vacation => (
-          <Col key={vacation.id} md={4}>
-            <Card>
-              <Card.Img variant="top" src={vacation.imageUrl || 'placeholder.jpg'} />
-              <Card.Body>
-                <Card.Title>{vacation.destination}</Card.Title>
-                <Card.Text>
-                  {vacation.description}<br />
-                  {`Start Date: ${formatDate(vacation.startDate)}`}<br />
-                  {`End Date: ${formatDate(vacation.endDate)}`}<br />
-                  {`Price: $${vacation.price}`}<br />
-                  {`Followers: ${followers[vacation.id]?.length || 0}`}
-                
-                </Card.Text>
-                
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-      <Button onClick={handleAddVacation}>Add Vacation</Button>
-    </div>
-  );
+    return (
+        <div>
+            <h1>Vacations</h1>
+            <Row>
+                <Col key={vacation.id} md={4}>
+                    <Card>
+                        <Card.Img
+                            variant="top"
+                            src={images.length > 0 ? getImageUrl(images[0]) : 'placeholder.jpg'}
+                            alt={vacation.destination}
+                        />
+
+                        <Card.Body>
+                            <Card.Title>{vacation.destination}</Card.Title>
+                            <Card.Text>
+                                {vacation.description}<br />
+                                {`Start Date: ${formatDate(vacation.startDate)}`}<br />
+                                {`End Date: ${formatDate(vacation.endDate)}`}<br />
+                                {`Price: $${vacation.price}`}<br />
+                                {`Followers: ${followers.length}`}
+                            </Card.Text>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+            <Button onClick={handleAddVacation}>Add Vacation</Button>
+        </div>
+    );
 };
 
 export default VacationCard;

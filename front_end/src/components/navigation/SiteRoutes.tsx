@@ -10,6 +10,7 @@ import Logout from '../auth/Logout';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import EditVacationForm from '../forms/EditVacationForm';
+import VacationList from '../vacations/VacationsList';
 
 
 const SiteRoutes: React.FC = () => {
@@ -33,7 +34,7 @@ const SiteRoutes: React.FC = () => {
       {/* Protected Routes */}
       <Route
         path="/vacations"
-        element={isAuthenticated ? <VacationCard /> : <Navigate to="/login" />}
+        element={isAuthenticated ? <VacationList /> : <Navigate to="/login" />}
       />
       <Route
         path="/add-vacation"

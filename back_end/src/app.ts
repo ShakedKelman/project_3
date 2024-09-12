@@ -18,7 +18,7 @@ const server = express();
 // server.use(cors({origin:"http://localhost:3000"}));
 // server.use(fileUpload());
 // server.use(expressFileUpload())
-server.use('/images', express.static(path.join(__dirname, '..', 'assets', 'images')));
+server.use('/assets/images', express.static(path.join(__dirname, 'assets/images')));
 
 server.use(cors({ origin: "http://localhost:3000" }));
 server.use(express.json());

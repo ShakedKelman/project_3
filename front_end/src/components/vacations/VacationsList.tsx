@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store/store';
-import VacationCard from './VacationCard';
 import { fetchVacations } from '../../api/vactions/vacationsThunk';
+import VacationCard from './VacationCard';
+import { VacationModel } from '../../model/VacationModel';
 
 const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -19,8 +20,12 @@ const VacationList: React.FC = () => {
 
     return (
         <div>
-            {vacations.map(vacation => (
-                <VacationCard key={vacation.id}/>
+            {vacations.map((vacation: VacationModel) => (
+                vacation.id ? (
+                    <VacationCard key={vacation.id} vacation={vacation} />
+                ) : (
+                    <div key="placeholder">No ID for vacation</div>
+                )
             ))}
         </div>
     );
