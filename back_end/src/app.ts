@@ -18,7 +18,20 @@ const server = express();
 // server.use(cors({origin:"http://localhost:3000"}));
 // server.use(fileUpload());
 // server.use(expressFileUpload())
-server.use('/assets/images', express.static(path.join(__dirname, 'assets/images')));
+const imagesPath = path.resolve(__dirname, '..', 'src', 'assets', 'images');
+server.use('/api/v1/assets/images', express.static(imagesPath));
+
+server.get('/test-image', (req, res) => {
+    const imagePath = path.join(imagesPath, 'fcc54bb8-b12d-488e-82ff-eb1932843dce.webp');
+    console.log('Image Path:', imagePath);
+    res.sendFile(imagePath, (err) => {
+        if (err) {
+            console.error('File Send Error:', err);
+            res.status(500).send('Internal Server Error');
+        }
+    });
+});
+
 
 server.use(cors({ origin: "http://localhost:3000" }));
 server.use(express.json());
