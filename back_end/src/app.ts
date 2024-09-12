@@ -10,6 +10,7 @@ import expressFileUpload from "express-fileupload"
 import fileUpload from "express-fileupload";
 import path from "path";
 import { imagesnRoutes } from "./controllers/imagesController";
+import { followerRoutes } from "./controllers/followerController";
 
 
 // create server
@@ -54,6 +55,8 @@ server.use(express.json());
 server.use("/", userRoutes);
 server.use("/", vacationRoutes);
 server.use("/", imagesnRoutes);
+server.use("/", followerRoutes);
+
 
 
 

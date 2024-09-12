@@ -14,3 +14,7 @@ Table 'vacations.images' doesn't exist
 Table 'vacations.images' doesn't exist
 Table 'vacations.images' doesn't exist
 ENOENT: no such file or directory, stat '/Users/shakedkelman/Documents/FullStack4578:41/projects/project_three/back_end/src/src/assets/images/fcc54bb8-b12d-488e-82ff-eb1932843dce.webp'
+Unknown column 'NaN' in 'where clause'
+Unknown column 'NaN' in 'where clause'
+Duplicate entry '1-2' for key 'PRIMARY'
+Cannot add or update a child row: a foreign key constraint fails (`vacations`.`followers`, CONSTRAINT `followers_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`id`))

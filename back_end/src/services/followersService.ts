@@ -12,3 +12,24 @@ export async function getFollowersForVacation(vacationId: number): Promise<numbe
     // Extract user IDs from the result
     return res.map((row: any) => row.userId);
 }
+
+
+
+// Function to add a follower to a specific vacation
+export async function addFollower(vacationId: number, userId: number): Promise<void> {
+    // Check if the follower already exists
+    const checkQuery = `
+        SELECT COUNT(*) as count FROM followers WHERE vacationId = ? AND userId = ?
+    `;
+    const [result] = await runQuery(checkQuery, [vacationId, userId]);
+    if (result.count > 0) {
+        throw new Error("Follower already exists");
+    }
+
+    // Insert new follower
+    const q = `
+        INSERT INTO followers (vacationId, userId)
+        VALUES (?, ?)
+    `;
+    await runQuery(q, [vacationId, userId]);
+}
