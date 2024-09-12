@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { Modal } from "react-bootstrap";
-import { uploadVacationImage } from "../api/vactions-api";
-import { RootState } from "../store/store";
+import { uploadVacationImage } from "../../api/vactions/vactions-api";
+import { RootState } from "../../store/store";
 import { useSelector } from "react-redux";
 
 type propsType = {

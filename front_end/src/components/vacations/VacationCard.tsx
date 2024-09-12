@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getVacations } from '../api/vactions-api';
+import { getVacations } from '../../api/vactions/vactions-api';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { getFollowersForVacation } from '../api/follower-api';
+import { getFollowersForVacation } from '../../api/followers/follower-api';
 
 const formatDate = (isoDate: string): string => {
   const date = new Date(isoDate);

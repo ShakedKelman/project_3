@@ -2,15 +2,14 @@
 // In SiteRoutes.tsx
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import VacationCard from './VacationCard';
-import LoginComponent from './Login';
-import RegisterComponent from './Register';
-import AddVacationForm from './AddVactionForm';
-import Logout from './Logout';
+import VacationCard from '../vacations/VacationCard';
+import LoginComponent from '../auth/Login';
+import RegisterComponent from '../auth/Register';
+import AddVacationForm from '../forms/AddVactionForm';
+import Logout from '../auth/Logout';
 import { useSelector } from 'react-redux';
-import { RootState } from '../store/store';
-import EditVacationForm from './EditVacationForm';
-import VacationImagesPage from './ImagePage';
+import { RootState } from '../../store/store';
+import EditVacationForm from '../forms/EditVacationForm';
 
 
 const SiteRoutes: React.FC = () => {
@@ -44,10 +43,7 @@ const SiteRoutes: React.FC = () => {
                 path="/edit-vacation/:id"
                 element={isAuthenticated && isAdmin ? <EditVacationForm /> : <Navigate to="/vacations" />}
             />
-  <Route
-        path="/images"
-        element={isAuthenticated ? <VacationImagesPage/> : <Navigate to="/login" />} // Route for vacation images
-      />
+
       <Route
         path="/logout"
         element={isAuthenticated ? <Logout /> : <Navigate to="/login" />}

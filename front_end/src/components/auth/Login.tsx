@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { AppDispatch, RootState } from '../store/store';
-import { loginUser } from '../api/authThunks';
+import { AppDispatch, RootState } from '../../store/store';
+import { loginUser } from '../../api/auth/authThunks';
 import { Form, Button, Alert } from 'react-bootstrap';
 
 const LoginComponent: React.FC = () => {

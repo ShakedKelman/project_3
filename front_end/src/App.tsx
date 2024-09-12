@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import NavbarWeb from './components/NavbarWeb';
-import SiteRoutes from './components/SiteRoutes';
+import NavbarWeb from './components/navigation/NavbarWeb';
+import SiteRoutes from './components/navigation/SiteRoutes';
 import { useDispatch } from 'react-redux';
 import { loginSuccess, logout } from './store/slices/authSlice';
 import { AppDispatch } from './store/store';

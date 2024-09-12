@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { logoutUser } from '../api/authThunks'; // Adjust import path as needed
-import { AppDispatch } from '../store/store';
+import { logoutUser } from '../../api/auth/authThunks'; // Adjust import path as needed
+import { AppDispatch } from '../../store/store';
 
 const Logout: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

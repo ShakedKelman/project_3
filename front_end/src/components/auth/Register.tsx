@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { UserModel } from '../model/UserModel';
-import { register } from '../api/auth-api';
+import { UserModel } from '../../model/UserModel';
+import { register } from '../../api/auth/auth-api';
 import { Form, Button, Alert, Container } from 'react-bootstrap';
 import axios, { AxiosError } from 'axios';
-import { registerFailure, registerRequest, registerSuccess, loginSuccess } from '../store/slices/authSlice';
+import { registerFailure, registerRequest, registerSuccess, loginSuccess } from '../../store/slices/authSlice';
 
 interface ErrorResponse {
   message: string;

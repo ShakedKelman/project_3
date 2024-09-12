@@ -1,6 +1,6 @@
 // api/vacationsThunk.ts
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { VacationModel } from '../model/VacationModel';
+import { VacationModel } from '../../model/VacationModel';
 import { getVacations } from './vactions-api';
 
 export const fetchVacations = createAsyncThunk<VacationModel[]>(

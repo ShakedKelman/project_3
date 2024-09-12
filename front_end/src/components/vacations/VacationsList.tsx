@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../store/store';
+import { RootState, AppDispatch } from '../../store/store';
 import VacationCard from './VacationCard';
-import { fetchVacations } from '../api/vacationsThunk';
+import { fetchVacations } from '../../api/vactions/vacationsThunk';
 
 const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();

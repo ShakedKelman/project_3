@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { siteConfig } from '../SiteConfig';
+import { siteConfig } from '../../utils/SiteConfig';
 
 // Fetch followers for a specific vacation
 export const getFollowersForVacation = async (vacationId: number): Promise<any[]> => {

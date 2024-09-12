@@ -1,16 +1,11 @@
 import axios from 'axios';
-import { UserModel } from '../model/UserModel';
+import { UserModel } from '../../model/UserModel';
 import { jwtDecode } from 'jwt-decode';
+import { siteConfig } from '../../utils/SiteConfig';
 
-// export const login = async (email: string, password: string): Promise<UserModel> => {
-//   const response = await axios.post('http://localhost:4000/api/v1/login', { email, password });
-//   const user = response.data; // Ensure this matches `UserModel`
-//   console.log('Logged in user:', user); // Log the user information
-//   return response.data; // Ensure this matches `UserModel`
-// };
 
 export const login = async (email: string, password: string): Promise<UserModel> => {
-  const response = await axios.post('http://localhost:4000/api/v1/login', { email, password });
+  const response = await axios.post(`${siteConfig.BASE_URL}login`, { email, password });
   const token = response.data;
   
   // Decode the JWT token
@@ -38,7 +33,7 @@ export const login = async (email: string, password: string): Promise<UserModel>
 
 
 export const register = async (user: UserModel): Promise<UserModel> => {
-  const response = await axios.post('http://localhost:4000/api/v1/register', user);
+  const response = await axios.post(`${siteConfig.BASE_URL}register`, user);
   const registeredUser = response.data; // Ensure this matches `UserModel`
   console.log('Registered user:', registeredUser); // Log the user information
   return response.data; // Ensure this matches `UserModel`

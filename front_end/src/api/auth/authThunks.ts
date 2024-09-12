@@ -1,8 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { loginFailure, loginSuccess, logout } from '../store/slices/authSlice';
+import { loginFailure, loginSuccess, logout } from '../../store/slices/authSlice';
 import { login, register } from './auth-api';
-import { UserModel } from '../model/UserModel';
-import { AppDispatch } from '../store/store';
+import { UserModel } from '../../model/UserModel';
+import { AppDispatch } from '../../store/store';
 
 
 interface LoginUserArgs {

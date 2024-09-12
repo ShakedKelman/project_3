@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { Container, Nav, Navbar, Dropdown } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState, AppDispatch } from '../store/store';
-import { logoutUser } from '../api/authThunks';
-import { fetchVacations } from '../api/vacationsThunk';
+import { RootState, AppDispatch } from '../../store/store';
+import { logoutUser } from '../../api/auth/authThunks';
+import { fetchVacations } from '../../api/vactions/vacationsThunk';
 
 const NavbarWeb: React.FC = () => {
     const { status, user } = useSelector((state: RootState) => state.auth);

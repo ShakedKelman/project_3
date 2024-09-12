@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store/store';
-import { VacationModel } from '../model/VacationModel';
-import { editVacation, getVacations, uploadVacationImage } from '../api/vactions-api';
-import { updateVacation } from '../store/slices/vacationslice';
+import { RootState } from '../../store/store';
+import { VacationModel } from '../../model/VacationModel';
+import { editVacation, getVacations, uploadVacationImage } from '../../api/vactions/vactions-api';
+import { updateVacation } from '../../store/slices/vacationslice';
 import { Form, Button, Alert, Spinner, Image } from 'react-bootstrap';
 
 const EditVacationForm: React.FC = () => {

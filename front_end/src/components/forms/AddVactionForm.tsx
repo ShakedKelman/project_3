@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { VacationModel } from '../model/VacationModel';
-import { addVacation } from '../api/vactions-api';
+import { VacationModel } from '../../model/VacationModel';
+import { addVacation } from '../../api/vactions/vactions-api';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
