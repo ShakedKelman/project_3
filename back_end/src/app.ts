@@ -6,10 +6,10 @@ import { userRoutes } from "./controllers/userControllers";
 import catchAll from "./middlewares/catchAll";
 import { logMW } from "./middlewares/logMW";
 import { vacationRoutes } from "./controllers/vacationsController";
-import { vacationImageRoutes } from "./controllers/ImageController";
 import expressFileUpload from "express-fileupload"
 import fileUpload from "express-fileupload";
 import path from "path";
+import { imagesnRoutes } from "./controllers/imagesController";
 
 
 // create server
@@ -40,7 +40,8 @@ server.use(express.json());
 // register controllers
 server.use("/", userRoutes);
 server.use("/", vacationRoutes);
-server.use("/", vacationImageRoutes);
+server.use("/", imagesnRoutes);
+
 
 
 

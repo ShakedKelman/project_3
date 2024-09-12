@@ -3,7 +3,6 @@ import runQuery from "../db/dal";
 import VacationModel from "../models/VacationsModel";
 import { ValidationError } from "../models/exceptions";
 import { UploadedFile } from "express-fileupload";
-import { saveVacationImage } from "./vacationsImageService";
 import { ResultSetHeader } from "mysql2";
 
 export async function getVacations(id?: number): Promise<VacationModel[]> {
@@ -20,6 +19,8 @@ export async function getVacations(id?: number): Promise<VacationModel[]> {
     return res.map((v: any) => new VacationModel(v));
 }
 // Define a type for the expected result from the INSERT query
+
+import { saveVacationImage } from "../services/imagesService"; // Ensure correct import
 
 export async function addVacation(v: VacationModel, image: UploadedFile | undefined): Promise<number> {
     // Validate the VacationModel instance
@@ -51,8 +52,6 @@ export async function addVacation(v: VacationModel, image: UploadedFile | undefi
         // Execute the query and explicitly cast the result
         const result = await runQuery(q, values) as ResultSetHeader;
 
-        console.log("Database result:", result);
-
         if (result && 'insertId' in result) {
             const vacationId = result.insertId;
 
@@ -67,17 +66,73 @@ export async function addVacation(v: VacationModel, image: UploadedFile | undefi
             }
 
             await runQuery('COMMIT');
-            console.log("Vacation added with ID:", vacationId);
             return vacationId;
         } else {
             throw new Error("Unexpected result structure from database insertion");
         }
     } catch (error) {
         await runQuery('ROLLBACK');
-        console.error("Error in addVacation:", error);
         throw error;
     }
 }
+
+// export async function addVacation(v: VacationModel, image: UploadedFile | undefined): Promise<number> {
+//     // Validate the VacationModel instance
+//     v.validate();
+
+//     // Format the dates
+//     const formattedStartDate = new Date(v.startDate).toISOString().split('T')[0];
+//     const formattedEndDate = new Date(v.endDate).toISOString().split('T')[0];
+
+//     // Start a transaction
+//     await runQuery('START TRANSACTION');
+
+//     try {
+//         // Prepare and execute the SQL query
+//         const q = `
+//             INSERT INTO vacations (destination, description, startDate, endDate, price, imageFileName)
+//             VALUES (?, ?, ?, ?, ?, ?)
+//         `;
+
+//         const values = [
+//             v.destination,
+//             v.description,
+//             formattedStartDate,
+//             formattedEndDate,
+//             v.price,
+//             v.imageFileName || null
+//         ];
+
+//         // Execute the query and explicitly cast the result
+//         const result = await runQuery(q, values) as ResultSetHeader;
+
+//         console.log("Database result:", result);
+
+//         if (result && 'insertId' in result) {
+//             const vacationId = result.insertId;
+
+//             if (image) {
+//                 const imagePath = await saveVacationImage(vacationId, image);
+                
+//                 // Update the vacations table with the image file name
+//                 await runQuery(
+//                     'UPDATE vacations SET imageFileName = ? WHERE id = ?',
+//                     [imagePath, vacationId]
+//                 );
+//             }
+
+//             await runQuery('COMMIT');
+//             console.log("Vacation added with ID:", vacationId);
+//             return vacationId;
+//         } else {
+//             throw new Error("Unexpected result structure from database insertion");
+//         }
+//     } catch (error) {
+//         await runQuery('ROLLBACK');
+//         console.error("Error in addVacation:", error);
+//         throw error;
+//     }
+// }
 
 
 

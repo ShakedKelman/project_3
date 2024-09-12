@@ -4,5 +4,9 @@
         "esModuleInterop": true,
         "moduleResolution": "Node",
         "outDir": "./build"
-    }
+    },
+    "include": [
+        "src/**/*",
+        "types/**/*.d.ts" // Include custom type definitions
+    ]
 }
