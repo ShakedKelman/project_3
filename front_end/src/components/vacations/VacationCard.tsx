@@ -9,6 +9,7 @@ import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { VacationModel } from '../../model/VacationModel';
 import { siteConfig } from '../../utils/SiteConfig';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'; // Import the icon from Material UI
 
 const formatDate = (isoDate: string): string => {
   const date = new Date(isoDate);
@@ -59,14 +60,15 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
         <div>
             <h1>Vacations</h1>
             <Row>
-                <Col key={vacation.id} md={4}>
+                {/* Adjust to fit 2 cards in a row */}
+                <Col md={6} className="mb-4">
                     <Card>
                         <Card.Img
                             variant="top"
                             src={images.length > 0 ? getImageUrl(images[0]) : 'placeholder.jpg'}
                             alt={vacation.destination}
+                            style={{ height: '100px', objectFit: 'cover', width: '100px' }}
                         />
-
                         <Card.Body>
                             <Card.Title>{vacation.destination}</Card.Title>
                             <Card.Text>
@@ -74,8 +76,11 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                                 {`Start Date: ${formatDate(vacation.startDate)}`}<br />
                                 {`End Date: ${formatDate(vacation.endDate)}`}<br />
                                 {`Price: $${vacation.price}`}<br />
-                                {`Followers: ${followers.length}`}
-                            </Card.Text>
+                                <div className="d-flex align-items-center">
+                                    <FavoriteBorderIcon style={{ marginRight: '5px' }} />
+                                    {followers.length}
+
+                                </div>                            </Card.Text>
                         </Card.Body>
                     </Card>
                 </Col>

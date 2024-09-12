@@ -4,6 +4,7 @@ import { RootState, AppDispatch } from '../../store/store';
 import { fetchVacations } from '../../api/vactions/vacationsThunk';
 import VacationCard from './VacationCard';
 import { VacationModel } from '../../model/VacationModel';
+import { Row, Col } from 'react-bootstrap'; // Import Row and Col from React Bootstrap
 
 const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -19,14 +20,18 @@ const VacationList: React.FC = () => {
     if (status === 'failed') return <div>{error}</div>;
 
     return (
-        <div>
-            {vacations.map((vacation: VacationModel) => (
-                vacation.id ? (
-                    <VacationCard key={vacation.id} vacation={vacation} />
-                ) : (
-                    <div key="placeholder">No ID for vacation</div>
-                )
-            ))}
+        <div className="container">
+            <Row>
+                {vacations.map((vacation: VacationModel) => (
+                    <Col key={vacation.id || "placeholder"} md={6} className="mb-4">
+                        {vacation.id ? (
+                            <VacationCard vacation={vacation} />
+                        ) : (
+                            <div>No ID for vacation</div>
+                        )}
+                    </Col>
+                ))}
+            </Row>
         </div>
     );
 };
