@@ -55,7 +55,7 @@ export const uploadVacationImage = async (vacationId: number, image: File, token
     const formData = new FormData();
     formData.append('image', image);
 
-    const response = await fetch(`${siteConfig.BASE_URL}image/vacations/${vacationId}`, {
+    const response = await fetch(`${siteConfig.BASE_URL}image/${vacationId}`, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
