@@ -10,41 +10,64 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { VacationModel } from '../../model/VacationModel';
 import { siteConfig } from '../../utils/SiteConfig';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'; // Import the icon from Material UI
+import { selectUser } from '../../store/slices/authSlice'; // Import the selector
+import { useAppSelector } from '../../store/store';
 
 const formatDate = (isoDate: string): string => {
-  const date = new Date(isoDate);
-  const day = date.getUTCDate().toString().padStart(2, '0');
-  const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
-  const year = date.getUTCFullYear().toString().slice(-2);
-  return `${day}/${month}/${year}`;
+    const date = new Date(isoDate);
+    const day = date.getUTCDate().toString().padStart(2, '0');
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+    const year = date.getUTCFullYear().toString().slice(-2);
+    return `${day}/${month}/${year}`;
 };
 
 interface VacationCardProps {
-  vacation: VacationModel;
+    vacation: VacationModel;
 }
 
 const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
     const [followers, setFollowers] = useState<any[]>([]);
     const [images, setImages] = useState<string[]>([]);
+    const [isFollowing, setIsFollowing] = useState<boolean>(false);
     const navigate = useNavigate();
-
+    const user = useAppSelector(selectUser); // Get logged-in user from Redux
     useEffect(() => {
         const fetchAdditionalData = async () => {
             try {
                 if (vacation.id) {
+                    // Fetch followers
                     const vacationFollowers = await getFollowersForVacation(vacation.id);
+                    console.log('Fetched Followers:', vacationFollowers); // Debugging
+        
+                    // Set followers data
                     setFollowers(vacationFollowers);
-
+    
+                    // Ensure user is defined and has an id
+                    if (user && user.id !== undefined) {
+                        const followerIds = vacationFollowers.map(follower => follower.id);
+                        console.log('Logged-in User:', user); // Debugging
+                        const isUserFollowing = followerIds.includes(user.id);
+                        console.log('Is User Following:', isUserFollowing); // Debugging
+                        setIsFollowing(isUserFollowing);
+                    } else {
+                        console.warn('User or User ID is undefined');
+                        setIsFollowing(false); // Handle the case where user or user.id is not defined
+                    }
+        
+                    // Fetch images
                     const vacationImages = await getImagesForVacation(vacation.id);
-                    console.log("Fetched images:", vacationImages); // Debugging line
+                    console.log('Fetched images:', vacationImages); // Debugging
                     setImages(vacationImages);
                 }
             } catch (error) {
-                console.error("Error fetching additional data:", error);
+                console.error('Error fetching additional data:', error);
             }
         };
         fetchAdditionalData();
-    }, [vacation.id]);
+    }, [vacation.id, user]);
+    
+    
+        
 
     const getImageUrl = (imagePath: string) => {
         const url = `${siteConfig.BASE_URL}${imagePath}`;
@@ -60,7 +83,6 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
         <div>
             <h1>Vacations</h1>
             <Row>
-                {/* Adjust to fit 2 cards in a row */}
                 <Col md={6} className="mb-4">
                     <Card>
                         <Card.Img
@@ -79,8 +101,13 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                                 <div className="d-flex align-items-center">
                                     <FavoriteBorderIcon style={{ marginRight: '5px' }} />
                                     {followers.length}
-
-                                </div>                            </Card.Text>
+                                    {user && isFollowing && (
+                                        <span style={{ marginLeft: '10px', color: 'green' }}>
+                                            You follow this vacation
+                                        </span>
+                                    )}
+                                </div>
+                            </Card.Text>
                         </Card.Body>
                     </Card>
                 </Col>

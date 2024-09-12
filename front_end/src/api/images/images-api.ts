@@ -5,12 +5,12 @@ export const getImagesForVacation = async (vacationId: number): Promise<string[]
     try {
         const response = await axios.get(`${siteConfig.BASE_URL}vacations/${vacationId}/images`);
         
-        console.log("Raw response:", response);
-        console.log("Response data:", response.data);
+        // console.log("Raw response:", response);
+        // console.log("Response data:", response.data);
         
         if (Array.isArray(response.data)) {
             if (response.data.length === 0) {
-                console.log("No images found for this vacation.");
+                // console.log("No images found for this vacation.");
                 return [];
             }
             
@@ -19,7 +19,7 @@ export const getImagesForVacation = async (vacationId: number): Promise<string[]
                 typeof item === 'string' ? item : item.image_path
             );
             
-            console.log("Fetched images:", imagePaths);
+            // console.log("Fetched images:", imagePaths);
             return imagePaths;
         } else {
             console.error("Unexpected response format:", response.data);
