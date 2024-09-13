@@ -27,6 +27,9 @@ const vacationSlice = createSlice({
                 state.vacations[index] = action.payload;
             }
         },
+        deleteVacationReducer(state, action: PayloadAction<number>) {
+            state.vacations = state.vacations.filter(vacation => vacation.id !== action.payload);
+        },
     },
     extraReducers: builder => {
         builder
@@ -44,6 +47,6 @@ const vacationSlice = createSlice({
     },
 });
 
-export const { addVacation, updateVacation } = vacationSlice.actions;
+export const { addVacation, updateVacation,deleteVacationReducer } = vacationSlice.actions;
 
 export default vacationSlice.reducer;

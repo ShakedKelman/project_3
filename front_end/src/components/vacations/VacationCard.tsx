@@ -12,8 +12,9 @@ import { siteConfig } from '../../utils/SiteConfig';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { selectUser } from '../../store/slices/authSlice';
-import { useAppSelector } from '../../store/store';
+import { useAppDispatch, useAppSelector } from '../../store/store';
 import { deleteVacation } from '../../api/vactions/vactions-api';
+import { deleteVacationReducer } from '../../store/slices/vacationslice';
 
 const formatDate = (isoDate: string): string => {
     const date = new Date(isoDate);
@@ -34,6 +35,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
     const navigate = useNavigate();
     const user = useAppSelector(selectUser);
     const [error, setError] = useState<string | null>(null);
+    const dispatch = useAppDispatch(); // Hook for dispatching actions
 
     useEffect(() => {
         const fetchAdditionalData = async () => {
@@ -106,30 +108,34 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
         navigate(`/edit-vacation/${vacation.id}`);
     };
 
-    const handleDeleteVacation = async () => {
-        if (!vacation.id) {
-            setError('Vacation ID is missing.');
+// vacationCard.tsx
+const handleDeleteVacation = async () => {
+    if (!vacation.id) {
+        setError('Vacation ID is missing.');
+        return;
+    }
+
+    if (window.confirm('Are you sure you want to delete this vacation?')) {
+        if (!user?.token) {
+            setError('Authentication token is missing.');
             return;
         }
-    
-        if (window.confirm('Are you sure you want to delete this vacation?')) {
-            if (!user?.token) {
-                setError('Authentication token is missing.');
-                return;
-            }
-    
-            try {
-                // Call deleteVacation with the vacation ID and user token
-                await deleteVacation(vacation.id, user.token);
-                console.log('Deleting vacation with ID:', vacation.id);
-                // Optionally, you can navigate away or refresh the list after deletion
-                // navigate('/some-route'); // Navigate or refresh as needed
-            } catch (error) {
-                setError('Failed to delete vacation. Please try again later.');
-                console.error('Error deleting vacation:', error);
-            }
+
+        try {
+            // Call deleteVacation with the vacation ID and user token
+            await deleteVacation(vacation.id, user.token);
+            console.log('Deleting vacation with ID:', vacation.id);
+            dispatch(deleteVacationReducer(vacation.id));
+
+            // Optionally, you can navigate away or refresh the list after deletion
+            // navigate('/some-route'); // Navigate or refresh as needed
+        } catch (error) {
+            setError('Failed to delete vacation. Please try again later.');
+            console.error('Error deleting vacation:', error);
         }
-    };
+    }
+};
+
     
     
     return (

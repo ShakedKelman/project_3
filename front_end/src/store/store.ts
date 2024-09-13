@@ -2,9 +2,10 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/authSlice';
 import vacationReducer from './slices/vacationslice';
 import followersReducer from './slices/followersSlice'; // Import followersReducer
-import { TypedUseSelectorHook, useSelector } from 'react-redux';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+export const useAppDispatch = () => useDispatch<AppDispatch>();
 
 export const store = configureStore({
   reducer: {
