@@ -29,12 +29,14 @@ export const addFollower = async (userId: number, vacationId: number, token: str
 };
 
 // Remove a follower from a vacation
+// Remove a follower from a vacation
 export const removeFollower = async (userId: number, vacationId: number, token: string): Promise<void> => {
     try {
-        await axios.delete(`${siteConfig.BASE_URL}vacations/${vacationId}/followers/${userId}`, {
+        await axios.delete(`${siteConfig.BASE_URL}vacations/${vacationId}/followers`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
+            data: { userId } // Use `data` for sending the body with a DELETE request
         });
         console.log('Follower removed successfully');
     } catch (error) {

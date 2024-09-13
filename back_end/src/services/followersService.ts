@@ -33,3 +33,22 @@ export async function addFollower(vacationId: number, userId: number): Promise<v
     `;
     await runQuery(q, [vacationId, userId]);
 }
+
+
+// Function to remove a follower from a specific vacation
+export async function removeFollower(vacationId: number, userId: number): Promise<void> {
+    // Check if the follower exists
+    const checkQuery = `
+        SELECT COUNT(*) as count FROM followers WHERE vacationId = ? AND userId = ?
+    `;
+    const [result] = await runQuery(checkQuery, [vacationId, userId]);
+    if (result.count === 0) {
+        throw new Error("Follower does not exist");
+    }
+
+    // Delete the follower
+    const q = `
+        DELETE FROM followers WHERE vacationId = ? AND userId = ?
+    `;
+    await runQuery(q, [vacationId, userId]);
+}

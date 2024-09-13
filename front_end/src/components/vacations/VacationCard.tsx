@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getFollowersForVacation, addFollower } from '../../api/followers/follower-api'; // Ensure import
+import { getFollowersForVacation, addFollower, removeFollower } from '../../api/followers/follower-api'; // Ensure import
 import { getImagesForVacation } from '../../api/images/images-api';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
@@ -10,6 +10,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { VacationModel } from '../../model/VacationModel';
 import { siteConfig } from '../../utils/SiteConfig';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import { selectUser } from '../../store/slices/authSlice';
 import { useAppSelector } from '../../store/store';
 
@@ -39,15 +40,12 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                 if (vacation.id) {
                     // Fetch followers
                     const vacationFollowers = await getFollowersForVacation(vacation.id);
-
                     setFollowers(vacationFollowers);
 
                     if (user && user.id !== undefined) {
                         const followerIds = vacationFollowers.map(follower => follower.id);
-                        const isUserFollowing = followerIds.includes(user.id);
-                        setIsFollowing(isUserFollowing);
+                        setIsFollowing(followerIds.includes(user.id));
                     } else {
-                        console.warn('User or User ID is undefined');
                         setIsFollowing(false);
                     }
 
@@ -63,8 +61,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
     }, [vacation.id, user]);
 
     const getImageUrl = (imagePath: string) => {
-        const url = `${siteConfig.BASE_URL}${imagePath}`;
-        return url;
+        return `${siteConfig.BASE_URL}${imagePath}`;
     };
 
     const handleAddVacation = () => {
@@ -72,23 +69,38 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
     };
 
     const handleFollowClick = async () => {
-        if (user?.id !== undefined && vacation.id !== undefined) {
-            try {
+        if (!user || !user.id || !vacation.id) {
+            setError('User or Vacation ID is missing');
+            return;
+        }
+
+        try {
+            if (isFollowing) {
+                // Remove follower
+                if (user.token) {
+                    await removeFollower(user.id, vacation.id, user.token);
+                    setFollowers(prev => prev.filter(follower => follower.id !== user.id));
+                    setIsFollowing(false);
+                } else {
+                    setError('Authentication token is missing.');
+                }
+            } else {
+                // Add follower
                 if (user.token) {
                     await addFollower(user.id, vacation.id, user.token);
                     setFollowers(prev => [...prev, { id: user.id }]);
                     setIsFollowing(true);
                 } else {
-                    console.warn('User token is undefined');
+                    setError('Authentication token is missing.');
                 }
-            } catch (error) {
-                setError('Failed to follow the vacation.');
-                console.error('Error adding follower:', error);
             }
-        } else {
-            console.warn('User ID or Vacation ID is undefined');
+            setError(null);
+        } catch (error) {
+            setError('Failed to update follower status. Please try again later.');
+            console.error('Error updating follower:', error);
         }
     };
+
     return (
         <div>
             <h1>Vacations</h1>
@@ -109,14 +121,25 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                                 <p>{`End Date: ${formatDate(vacation.endDate)}`}</p>
                                 <p>{`Price: $${vacation.price}`}</p>
                                 <div className="d-flex align-items-center">
-                                    <FavoriteBorderIcon
-                                        style={{
-                                            marginRight: '5px',
-                                            cursor: 'pointer',
-                                            color: isFollowing ? 'red' : 'gray'
-                                        }}
-                                        onClick={handleFollowClick}
-                                    />
+                                    {isFollowing ? (
+                                        <FavoriteIcon
+                                            style={{
+                                                marginRight: '5px',
+                                                cursor: 'pointer',
+                                                color: 'red'
+                                            }}
+                                            onClick={handleFollowClick}
+                                        />
+                                    ) : (
+                                        <FavoriteBorderIcon
+                                            style={{
+                                                marginRight: '5px',
+                                                cursor: 'pointer',
+                                                color: 'gray'
+                                            }}
+                                            onClick={handleFollowClick}
+                                        />
+                                    )}
                                     <span>{followers.length}</span>
                                     {user && isFollowing && (
                                         <span style={{ marginLeft: '10px', color: 'green' }}>

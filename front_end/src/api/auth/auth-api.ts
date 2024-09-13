@@ -11,7 +11,8 @@ export const login = async (email: string, password: string): Promise<UserModel>
     
     // Decode the JWT token
     const decodedToken: any = jwtDecode(token);
-    
+    console.log('Decoded token:', decodedToken);
+
     // Extract user information from the decoded token
     const userInfo = decodedToken.userWithoutPassword || decodedToken;
     
@@ -35,9 +36,35 @@ export const login = async (email: string, password: string): Promise<UserModel>
 };
 
 
+// export const register = async (user: UserModel): Promise<UserModel> => {
+//   const response = await axios.post(`${siteConfig.BASE_URL}register`, user);
+//   const registeredUser = response.data; // Ensure this matches `UserModel`
+//   console.log('Registered user:', registeredUser); // Log the user information
+//   return response.data; // Ensure this matches `UserModel`
+// };
+
+
+// Function to register a new user
 export const register = async (user: UserModel): Promise<UserModel> => {
+  try {
   const response = await axios.post(`${siteConfig.BASE_URL}register`, user);
-  const registeredUser = response.data; // Ensure this matches `UserModel`
-  console.log('Registered user:', registeredUser); // Log the user information
-  return response.data; // Ensure this matches `UserModel`
+
+    const { token, user: registeredUser } = response.data;
+
+    if (!registeredUser.id) {
+      throw new Error('User ID is missing from both the response and the token');
+    }
+
+    // Optionally decode the token to verify its content
+    const decodedToken: any = jwtDecode(token);
+
+    if (!decodedToken.userWithoutPassword.id) {
+      throw new Error('User ID is missing from the token');
+    }
+
+    return registeredUser;
+  } catch (error) {
+    console.error('Registration error:', error);
+    throw error;
+  }
 };

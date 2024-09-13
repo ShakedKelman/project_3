@@ -1,7 +1,7 @@
 import { appConfig } from "../utils/appConfig";
 import { NextFunction, Request, Response, Router } from "express";
 import { StatusCode } from "../models/statusEnum";
-import { addFollower, getFollowersForVacation } from "../services/followersService";
+import { addFollower, getFollowersForVacation, removeFollower } from "../services/followersService";
 
 export const followerRoutes = Router();
 
@@ -51,6 +51,35 @@ followerRoutes.post(appConfig.routePrefix + "/vacations/:id/followers",
                 return res.status(StatusCode.ServerError).json({ message: "Follower already exists" });
             }
             console.error("Error in addFollower route:", error);
+            next(error);
+        }
+    }
+);
+
+
+
+// Route to remove a follower from a specific vacation
+followerRoutes.delete(appConfig.routePrefix + "/vacations/:id/followers", 
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const vacationId = parseInt(req.params.id, 10);
+            const userId = req.body.userId;
+
+            if (isNaN(vacationId)) {
+                return res.status(StatusCode.BadRequest).json({ message: "Invalid vacation ID" });
+            }
+
+            if (!userId) {
+                return res.status(StatusCode.BadRequest).json({ message: "User ID is required" });
+            }
+
+            await removeFollower(vacationId, userId);
+            res.status(StatusCode.Ok).json({ message: "Follower removed successfully" });
+        } catch (error) {
+            if (error.message === "Follower does not exist") {
+                return res.status(StatusCode.NotFound).json({ message: "Follower does not exist" });
+            }
+            console.error("Error in removeFollower route:", error);
             next(error);
         }
     }

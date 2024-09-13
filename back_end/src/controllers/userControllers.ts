@@ -11,7 +11,15 @@ userRoutes.post(appConfig.routePrefix + "/register",
         try {
             const user = new UserModel(req.body);
             const token = await register(user);
-            res.status(StatusCode.Created).json({ token });
+            res.status(StatusCode.Created).json({   token,
+                user: {
+                  id: user.id,
+                  firstName: user.firstName,
+                  lastName: user.lastName,
+                  email: user.email,
+                  isAdmin: user.isAdmin,
+                } });
+        
         } catch (error) {
             console.error("Error in register route:", error); // Debugging
             next(error);
