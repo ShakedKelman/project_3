@@ -19,10 +19,18 @@ const VacationList: React.FC = () => {
     if (status === 'loading') return <div>Loading...</div>;
     if (status === 'failed') return <div>{error}</div>;
 
+    // Ensure vacations have valid date fields and sort them
+    const sortedVacations = [...vacations].sort((a, b) => {
+        // Convert to Date objects if necessary
+        const dateA = new Date(a.startDate);
+        const dateB = new Date(b.startDate);
+        return dateA.getTime() - dateB.getTime();
+    });
+
     return (
         <div className="container">
             <Row>
-                {vacations.map((vacation: VacationModel) => (
+                {sortedVacations.map((vacation: VacationModel) => (
                     <Col key={vacation.id || "placeholder"} md={6} className="mb-4">
                         {vacation.id ? (
                             <VacationCard vacation={vacation} />
