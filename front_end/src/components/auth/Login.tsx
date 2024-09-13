@@ -11,27 +11,25 @@ const LoginComponent: React.FC = () => {
   const authStatus = useSelector((state: RootState) => state.auth.status);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loginSuccess, setLoginSuccess] = useState<boolean | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = () => {
-    dispatch(loginUser({ email, password }))
-      .unwrap()
-      .then(() => {
-        setLoginSuccess(true);
-        navigate('/vacations');
-      })
-      .catch(() => {
-        setLoginSuccess(false);
-      });
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    try {
+      await dispatch(loginUser({ email, password })).unwrap();
+      navigate('/vacations');
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please try again.');
+    }
   };
 
   return (
     <div className="container mt-5">
       <h2>Login</h2>
-      {loginSuccess === true && <Alert variant="success">Login successful! Welcome back!</Alert>}
-      {loginSuccess === false && <Alert variant="danger">Login failed. Please try again.</Alert>}
+      {error && <Alert variant="danger">{error}</Alert>}
       
-      <Form>
+      <Form onSubmit={handleLogin}>
         <Form.Group className="mb-3" controlId="formEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
@@ -39,7 +37,8 @@ const LoginComponent: React.FC = () => {
             placeholder="Enter email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email" // Add autocomplete for email
+            autoComplete="email"
+            required
           />
         </Form.Group>
 
@@ -50,17 +49,17 @@ const LoginComponent: React.FC = () => {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password" // Add autocomplete for password
+            autoComplete="current-password"
+            required
           />
         </Form.Group>
 
         <Button
           variant="primary"
-          type="button"
-          onClick={handleLogin}
+          type="submit"
           disabled={authStatus === 'loading'}
         >
-          Login
+          {authStatus === 'loading' ? 'Logging in...' : 'Login'}
         </Button>
       </Form>
     </div>

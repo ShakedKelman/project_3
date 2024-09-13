@@ -19,12 +19,13 @@ export const loginUser = createAsyncThunk<UserModel, LoginUserArgs>(
       dispatch(loginSuccess({ user, timestamp }));
       return user;
     } catch (error: any) {
-      dispatch(loginFailure(error.message));
-      throw error;
+      console.error('Login error in thunk:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Login failed';
+      dispatch(loginFailure(errorMessage));
+      throw new Error(errorMessage);
     }
   }
 );
-
 export const registerUser = createAsyncThunk<UserModel, UserModel>(
   'auth/registerUser',
   async (user: UserModel, { dispatch }) => {

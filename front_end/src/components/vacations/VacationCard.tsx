@@ -39,15 +39,12 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                 if (vacation.id) {
                     // Fetch followers
                     const vacationFollowers = await getFollowersForVacation(vacation.id);
-                    console.log('Fetched Followers:', vacationFollowers);
 
                     setFollowers(vacationFollowers);
 
                     if (user && user.id !== undefined) {
                         const followerIds = vacationFollowers.map(follower => follower.id);
-                        console.log('Logged-in User:', user);
                         const isUserFollowing = followerIds.includes(user.id);
-                        console.log('Is User Following:', isUserFollowing);
                         setIsFollowing(isUserFollowing);
                     } else {
                         console.warn('User or User ID is undefined');
@@ -56,7 +53,6 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
 
                     // Fetch images
                     const vacationImages = await getImagesForVacation(vacation.id);
-                    console.log('Fetched images:', vacationImages);
                     setImages(vacationImages);
                 }
             } catch (error) {
@@ -68,13 +64,13 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
 
     const getImageUrl = (imagePath: string) => {
         const url = `${siteConfig.BASE_URL}${imagePath}`;
-        console.log('Image URL:', url);
         return url;
     };
 
     const handleAddVacation = () => {
         navigate('/add-vacation');
     };
+
     const handleFollowClick = async () => {
         if (user?.id !== undefined && vacation.id !== undefined) {
             try {
@@ -93,7 +89,6 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
             console.warn('User ID or Vacation ID is undefined');
         }
     };
-    
 
     return (
         <div>
@@ -116,7 +111,11 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                                 {`Price: $${vacation.price}`}<br />
                                 <div className="d-flex align-items-center">
                                     <FavoriteBorderIcon
-                                        style={{ marginRight: '5px', cursor: 'pointer' }}
+                                        style={{
+                                            marginRight: '5px',
+                                            cursor: 'pointer',
+                                            color: isFollowing ? 'red' : 'gray'
+                                        }}
                                         onClick={handleFollowClick}
                                     />
                                     {followers.length}

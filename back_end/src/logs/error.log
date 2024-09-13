@@ -18,3 +18,12 @@ Unknown column 'NaN' in 'where clause'
 Unknown column 'NaN' in 'where clause'
 Duplicate entry '1-2' for key 'PRIMARY'
 Cannot add or update a child row: a foreign key constraint fails (`vacations`.`followers`, CONSTRAINT `followers_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`id`))
+Wrong credentials
+Wrong credentials
+Wrong credentials
+Wrong credentials
+Wrong credentials
+Wrong credentials
+Wrong credentials
+Wrong credentials
+Wrong credentials

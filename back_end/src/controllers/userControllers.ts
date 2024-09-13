@@ -20,20 +20,48 @@ userRoutes.post(appConfig.routePrefix + "/register",
 
 
 
+    // userRoutes.post(appConfig.routePrefix + "/login", 
+    // async (req: Request, res: Response, next: NextFunction)=>{
+    //     try {
+    //       const email = req.body.email;
+    //       const password = req.body.password;
+    //       const token = await login(email, password);
+    //       res.status(StatusCode.Ok).json(token)
+    //     } catch (error) {
+    //         console.error('Error in login function:', error); // Debugging output
+
+    //         next(error);
+    //     }        
+    // })
+  
+    
     userRoutes.post(appConfig.routePrefix + "/login", 
-    async (req: Request, res: Response, next: NextFunction)=>{
-        try {
-          const email = req.body.email;
-          const password = req.body.password;
-          const token = await login(email, password);
-          res.status(StatusCode.Ok).json(token)
-        } catch (error) {
-            console.error('Error in login function:', error); // Debugging output
-
-            next(error);
-        }        
-    })
-
+        async (req: Request, res: Response, next: NextFunction) => {
+            try {
+                const { email, password } = req.body;
+                
+                if (!email || !password) {
+                    return res.status(StatusCode.BadRequest).json({ message: "Email and password are required" });
+                }
+    
+                console.log(`Login attempt for email: ${email}`); // Log the login attempt
+    
+                const token = await login(email, password);
+    
+                if (!token) {
+                    return res.status(StatusCode.Unauthorized).json({ message: "Invalid credentials" });
+                }
+    
+                console.log(`Successful login for email: ${email}`); // Log successful login
+                res.status(StatusCode.Ok).json({ token });
+            } catch (error) {
+                console.error('Error in login route:', error);
+                if (error.message === 'Wrong credentials') {
+                    return res.status(StatusCode.Unauthorized).json({ message: "Invalid email or password" });
+                }
+                next(error);
+            }        
+        });
 
   userRoutes.get(appConfig.routePrefix + "/allUsers", 
   async (req: Request, res: Response, next: NextFunction)=>{
