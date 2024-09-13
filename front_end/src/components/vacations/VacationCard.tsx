@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getFollowersForVacation, addFollower, removeFollower } from '../../api/followers/follower-api'; // Ensure import
+import { getFollowersForVacation, addFollower, removeFollower } from '../../api/followers/follower-api';
 import { getImagesForVacation } from '../../api/images/images-api';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
@@ -13,6 +13,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { selectUser } from '../../store/slices/authSlice';
 import { useAppSelector } from '../../store/store';
+import { deleteVacation } from '../../api/vactions/vactions-api';
 
 const formatDate = (isoDate: string): string => {
     const date = new Date(isoDate);
@@ -101,6 +102,36 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
         }
     };
 
+    const handleEditVacation = () => {
+        navigate(`/edit-vacation/${vacation.id}`);
+    };
+
+    const handleDeleteVacation = async () => {
+        if (!vacation.id) {
+            setError('Vacation ID is missing.');
+            return;
+        }
+    
+        if (window.confirm('Are you sure you want to delete this vacation?')) {
+            if (!user?.token) {
+                setError('Authentication token is missing.');
+                return;
+            }
+    
+            try {
+                // Call deleteVacation with the vacation ID and user token
+                await deleteVacation(vacation.id, user.token);
+                console.log('Deleting vacation with ID:', vacation.id);
+                // Optionally, you can navigate away or refresh the list after deletion
+                // navigate('/some-route'); // Navigate or refresh as needed
+            } catch (error) {
+                setError('Failed to delete vacation. Please try again later.');
+                console.error('Error deleting vacation:', error);
+            }
+        }
+    };
+    
+    
     return (
         <div>
             <h1>Vacations</h1>
@@ -120,33 +151,44 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                                 <p>{`Start Date: ${formatDate(vacation.startDate)}`}</p>
                                 <p>{`End Date: ${formatDate(vacation.endDate)}`}</p>
                                 <p>{`Price: $${vacation.price}`}</p>
-                                <div className="d-flex align-items-center">
-                                    {isFollowing ? (
-                                        <FavoriteIcon
-                                            style={{
-                                                marginRight: '5px',
-                                                cursor: 'pointer',
-                                                color: 'red'
-                                            }}
-                                            onClick={handleFollowClick}
-                                        />
-                                    ) : (
-                                        <FavoriteBorderIcon
-                                            style={{
-                                                marginRight: '5px',
-                                                cursor: 'pointer',
-                                                color: 'gray'
-                                            }}
-                                            onClick={handleFollowClick}
-                                        />
-                                    )}
-                                    <span>{followers.length}</span>
-                                    {user && isFollowing && (
-                                        <span style={{ marginLeft: '10px', color: 'green' }}>
-                                            You follow this vacation
-                                        </span>
-                                    )}
-                                </div>
+                                {!user?.isAdmin ? (
+                                    <div className="d-flex align-items-center">
+                                        {isFollowing ? (
+                                            <FavoriteIcon
+                                                style={{
+                                                    marginRight: '5px',
+                                                    cursor: 'pointer',
+                                                    color: 'red'
+                                                }}
+                                                onClick={handleFollowClick}
+                                            />
+                                        ) : (
+                                            <FavoriteBorderIcon
+                                                style={{
+                                                    marginRight: '5px',
+                                                    cursor: 'pointer',
+                                                    color: 'gray'
+                                                }}
+                                                onClick={handleFollowClick}
+                                            />
+                                        )}
+                                        <span>{followers.length}</span>
+                                        {user && isFollowing && (
+                                            <span style={{ marginLeft: '10px', color: 'green' }}>
+                                                You follow this vacation
+                                            </span>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="d-flex">
+                                        <Button variant="danger" onClick={handleDeleteVacation} style={{ marginRight: '5px' }}>
+                                            Delete
+                                        </Button>
+                                        <Button variant="warning" onClick={handleEditVacation}>
+                                            Edit
+                                        </Button>
+                                    </div>
+                                )}
                                 {error && <div style={{ color: 'red' }}>{error}</div>}
                             </div>
                         </Card.Body>

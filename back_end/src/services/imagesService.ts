@@ -40,10 +40,10 @@ export async function getImagesByVacation(vacationId: number) {
     try {
         // Assuming you're using a database to fetch image information
         const images = await runQuery("SELECT * FROM vacation_image WHERE vacation_id = ?", [vacationId]);
-        console.log(`Images fetched from database:`, images);
+        // console.log(`Images fetched from database:`, images);
 
         if (!images || images.length === 0) {
-            console.log(`No images found for vacation ID: ${vacationId}`);
+            // console.log(`No images found for vacation ID: ${vacationId}`);
             return [];
         }
 

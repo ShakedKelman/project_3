@@ -3,7 +3,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import { appConfig } from "../utils/appConfig";
 import { StatusCode } from "../models/statusEnum";
 import VacationModel from "../models/VacationsModel";
-import { addVacation, editVacation, getVacations, getVacationsPaginated } from "../services/vacationsService";
+import { addVacation, deleteVacation, editVacation, getVacations, getVacationsPaginated } from "../services/vacationsService";
 import { UploadedFile } from "express-fileupload";
 import { getFollowersForVacation } from "../services/followersService";
 
@@ -104,6 +104,19 @@ vacationRoutes.get(appConfig.routePrefix + "/vacations/:id/followers",
             res.status(StatusCode.Ok).json(followers);
         } catch (error) {
             console.error("Error in getFollowersForVacation route:", error);
+            next(error);
+        }
+    }
+);
+// Route to delete a vacation
+vacationRoutes.delete(appConfig.routePrefix + "/vacations/:id", 
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const id = parseInt(req.params.id, 10);
+            await deleteVacation(id);
+            res.status(StatusCode.Ok).send(); // No content to return after successful deletion
+        } catch (error) {
+            console.error("Error in deleteVacation route:", error);
             next(error);
         }
     }

@@ -177,3 +177,30 @@ export async function getVacationsPaginated(page: number, limit: number): Promis
     const vacations = res.map((v) => new VacationModel(v));
     return vacations;
 }
+
+
+// services/vacationService.ts
+// services/vacationService.ts
+
+export async function deleteVacation(id: number): Promise<void> {
+    await runQuery('START TRANSACTION');
+    
+    try {
+        // First, delete related images
+        await runQuery('DELETE FROM vacation_image WHERE vacation_id = ?', [id]);
+        
+        // Then, delete related followers
+        await runQuery('DELETE FROM followers WHERE vacationId = ?', [id]);
+        
+        // Then, delete the vacation
+        await runQuery('DELETE FROM vacations WHERE id = ?', [id]);
+        
+        // Commit the transaction
+        await runQuery('COMMIT');
+    } catch (error) {
+        // Rollback the transaction on error
+        await runQuery('ROLLBACK');
+        throw error;
+    }
+}
+

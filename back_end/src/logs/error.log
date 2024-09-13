@@ -28,3 +28,7 @@ Wrong credentials
 Wrong credentials
 Wrong credentials
 Email already exists
+Cannot delete or update a parent row: a foreign key constraint fails (`vacations`.`followers`, CONSTRAINT `followers_ibfk_2` FOREIGN KEY (`vacationId`) REFERENCES `vacations` (`id`))
+Cannot delete or update a parent row: a foreign key constraint fails (`vacations`.`followers`, CONSTRAINT `followers_ibfk_2` FOREIGN KEY (`vacationId`) REFERENCES `vacations` (`id`))
+Cannot delete or update a parent row: a foreign key constraint fails (`vacations`.`vacation_image`, CONSTRAINT `vacation_image_ibfk_1` FOREIGN KEY (`vacation_id`) REFERENCES `vacations` (`id`))
+Cannot delete or update a parent row: a foreign key constraint fails (`vacations`.`vacation_image`, CONSTRAINT `vacation_image_ibfk_1` FOREIGN KEY (`vacation_id`) REFERENCES `vacations` (`id`))
