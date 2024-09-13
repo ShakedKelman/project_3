@@ -89,7 +89,6 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
             console.warn('User ID or Vacation ID is undefined');
         }
     };
-
     return (
         <div>
             <h1>Vacations</h1>
@@ -104,11 +103,11 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                         />
                         <Card.Body>
                             <Card.Title>{vacation.destination}</Card.Title>
-                            <Card.Text>
-                                {vacation.description}<br />
-                                {`Start Date: ${formatDate(vacation.startDate)}`}<br />
-                                {`End Date: ${formatDate(vacation.endDate)}`}<br />
-                                {`Price: $${vacation.price}`}<br />
+                            <div>
+                                <p>{vacation.description}</p>
+                                <p>{`Start Date: ${formatDate(vacation.startDate)}`}</p>
+                                <p>{`End Date: ${formatDate(vacation.endDate)}`}</p>
+                                <p>{`Price: $${vacation.price}`}</p>
                                 <div className="d-flex align-items-center">
                                     <FavoriteBorderIcon
                                         style={{
@@ -118,7 +117,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                                         }}
                                         onClick={handleFollowClick}
                                     />
-                                    {followers.length}
+                                    <span>{followers.length}</span>
                                     {user && isFollowing && (
                                         <span style={{ marginLeft: '10px', color: 'green' }}>
                                             You follow this vacation
@@ -126,7 +125,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                                     )}
                                 </div>
                                 {error && <div style={{ color: 'red' }}>{error}</div>}
-                            </Card.Text>
+                            </div>
                         </Card.Body>
                     </Card>
                 </Col>
