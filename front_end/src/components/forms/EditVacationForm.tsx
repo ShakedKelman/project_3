@@ -6,6 +6,8 @@ import { VacationModel } from '../../model/VacationModel';
 import { editVacation, getVacations, uploadVacationImage } from '../../api/vactions/vactions-api';
 import { updateVacation } from '../../store/slices/vacationslice';
 import { Form, Button, Alert, Spinner, Image } from 'react-bootstrap';
+import { siteConfig } from '../../utils/SiteConfig';
+import { getImagesForVacation } from '../../api/images/images-api'; // Import the function to get images
 
 const EditVacationForm: React.FC = () => {
     const dispatch = useDispatch();
@@ -17,24 +19,36 @@ const EditVacationForm: React.FC = () => {
     const navigate = useNavigate();
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [images, setImages] = useState<string[]>([]);
 
     useEffect(() => {
-        if (id) {
-            getVacations(Number(id))
-                .then(data => {
+        const fetchVacationDetails = async () => {
+            if (id) {
+                try {
+                    const data = await getVacations(Number(id));
                     if (data.length > 0) {
                         setVacation(data[0]); // Assuming the response is an array with one object
+                        const vacationImages = await getImagesForVacation(Number(id)); // Fetch images
+                        console.log(vacationImages);
+                        
+                        setImages(vacationImages);
                     } else {
                         setError('Vacation not found');
                     }
-                    setIsLoading(false);
-                })
-                .catch(err => {
+                } catch (err) {
                     setError('Failed to fetch vacation details');
+                } finally {
                     setIsLoading(false);
-                });
-        }
+                }
+            }
+        };
+
+        fetchVacationDetails();
     }, [id]);
+
+    const getImageUrl = (imagePath: string) => {
+        return `${siteConfig.BASE_URL}${imagePath}`;
+    };
 
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         // Strip out non-numeric characters except for period
@@ -130,8 +144,8 @@ const EditVacationForm: React.FC = () => {
                 <Form.Label>Current Image:</Form.Label>
                 {vacation?.imageFileName && (
                     <Image
-                        src={`path/to/images/${vacation.imageFileName}`} // Adjust the path as necessary
-                        alt="Current vacation"
+                    src={images.length > 0 ? getImageUrl(images[0]) : 'placeholder.jpg'}
+                    alt="Current vacation"
                         style={{ maxWidth: '200px', maxHeight: '200px' }}
                     />
                 )}

@@ -54,6 +54,8 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
 
                     // Fetch images
                     const vacationImages = await getImagesForVacation(vacation.id);
+                    console.log(vacationImages);
+                    
                     setImages(vacationImages);
                 }
             } catch (error) {

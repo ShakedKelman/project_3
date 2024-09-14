@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { VacationModel } from '../../model/VacationModel';
 import { addVacation } from '../../api/vactions/vactions-api';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Alert } from 'react-bootstrap';
+import { Form, Button, Alert, InputGroup } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddVacationForm: React.FC = () => {
@@ -18,9 +18,11 @@ const AddVacationForm: React.FC = () => {
     };
 
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Strip out non-numeric characters, except for periods
-        const formattedValue = e.target.value.replace(/[^0-9.]/g, '');
-        setNewVacation(prev => ({ ...prev, price: parseFloat(formattedValue) || 0 }));
+        const value = e.target.value;
+        setNewVacation(prev => ({
+            ...prev,
+            price: parseFloat(value) || 0
+        }));
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,6 +34,7 @@ const AddVacationForm: React.FC = () => {
     const isDateInThePast = (date: string) => {
         return new Date(date) < new Date();
     };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
     
@@ -53,7 +56,7 @@ const AddVacationForm: React.FC = () => {
             formData.append('description', newVacation.description);
             formData.append('startDate', newVacation.startDate);
             formData.append('endDate', newVacation.endDate);
-            formData.append('price', newVacation.price.toString());
+            formData.append('price', newVacation.price.toString()); // Send only the numeric value
             if (imageFile) {
                 formData.append('image', imageFile);
             }
@@ -73,7 +76,6 @@ const AddVacationForm: React.FC = () => {
             console.error("Error adding vacation:", error);
         }
     };
-    
     
     return (
         <div className="container">
@@ -129,14 +131,19 @@ const AddVacationForm: React.FC = () => {
 
                 <Form.Group controlId="formPrice">
                     <Form.Label>Price</Form.Label>
-                    <Form.Control
-                        type="text"
-                        name="price"
-                        value={`$${newVacation.price || ''}`} // Display $ in the input
-                        onChange={handlePriceChange}
-                        required
-                        placeholder="Enter price"
-                    />
+                    <InputGroup>
+                        <InputGroup.Text>$</InputGroup.Text>
+                        <Form.Control
+                            type="number"
+                            name="price"
+                            value={newVacation.price || 0}
+                            onChange={handlePriceChange}
+                            required
+                            placeholder="Enter price"
+                            min="0"
+                            step="0.01"
+                        />
+                    </InputGroup>
                 </Form.Group>
 
                 <Form.Group controlId="formImage">

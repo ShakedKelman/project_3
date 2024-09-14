@@ -15,7 +15,7 @@ import VacationList from '../vacations/VacationsList';
 
 const SiteRoutes: React.FC = () => {
   const { status, loginTimestamp, user } = useSelector((state: RootState) => state.auth);
-  const TEN_MINUTES = 10 * 60 * 1000;
+  const TEN_MINUTES = 100 * 60 * 1000;
   const isAuthenticated = status === 'succeeded' && loginTimestamp && Date.now() - loginTimestamp <= TEN_MINUTES;
   const isAdmin = user?.isAdmin;
 
