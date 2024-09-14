@@ -4,16 +4,12 @@ import { RootState, AppDispatch } from '../../store/store';
 import { fetchVacations } from '../../api/vactions/vacationsThunk';
 import VacationCard from './VacationCard';
 import { VacationModel } from '../../model/VacationModel';
-import { Row, Col, Form } from 'react-bootstrap'; // Import Form for checkboxes
+import { Row, Col, Form } from 'react-bootstrap'; // Import Form for radio buttons
 
 const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { vacations, status, error } = useSelector((state: RootState) => state.vacation);
-    const [filter, setFilter] = useState({
-        following: false,
-        notStarted: false,
-        happeningNow: false
-    });
+    const [filter, setFilter] = useState<string>('all'); // State to hold the selected filter
 
     useEffect(() => {
         if (status === 'idle') {
@@ -24,31 +20,27 @@ const VacationList: React.FC = () => {
     if (status === 'loading') return <div>Loading...</div>;
     if (status === 'failed') return <div>{error}</div>;
 
-    // Filter vacations based on filter state
+    // Filter vacations based on the selected filter
     const filteredVacations = vacations.filter((vacation: VacationModel) => {
         const now = new Date();
         const startDate = new Date(vacation.startDate);
         const endDate = new Date(vacation.endDate);
         const isFollowing = true; // Replace with actual following check logic
 
-        let shouldInclude = true;
-
-        if (filter.following) {
-            shouldInclude = shouldInclude && isFollowing; // Adjust with actual logic
+        switch (filter) {
+            case 'following':
+                return isFollowing; // Adjust with actual logic
+            case 'notStarted':
+                return startDate > now;
+            case 'happeningNow':
+                return startDate <= now && endDate >= now;
+            default:
+                return true; // Show all vacations when no filter is selected
         }
-        if (filter.notStarted) {
-            shouldInclude = shouldInclude && startDate > now;
-        }
-        if (filter.happeningNow) {
-            shouldInclude = shouldInclude && startDate <= now && endDate >= now;
-        }
-
-        return shouldInclude;
     });
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, checked } = e.target;
-        setFilter(prev => ({ ...prev, [name]: checked }));
+        setFilter(e.target.value);
     };
 
     // Ensure filtered vacations have valid date fields and sort them
@@ -62,24 +54,35 @@ const VacationList: React.FC = () => {
         <div className="container">
             <Form>
                 <Form.Check 
-                    type="checkbox" 
+                    type="radio" 
+                    label="All" 
+                    name="filter"
+                    value="all"
+                    checked={filter === 'all'}
+                    onChange={handleFilterChange}
+                />
+                <Form.Check 
+                    type="radio" 
                     label="Following" 
-                    name="following"
-                    checked={filter.following}
+                    name="filter"
+                    value="following"
+                    checked={filter === 'following'}
                     onChange={handleFilterChange}
                 />
                 <Form.Check 
-                    type="checkbox" 
+                    type="radio" 
                     label="Not Started" 
-                    name="notStarted"
-                    checked={filter.notStarted}
+                    name="filter"
+                    value="notStarted"
+                    checked={filter === 'notStarted'}
                     onChange={handleFilterChange}
                 />
                 <Form.Check 
-                    type="checkbox" 
+                    type="radio" 
                     label="Happening Now" 
-                    name="happeningNow"
-                    checked={filter.happeningNow}
+                    name="filter"
+                    value="happeningNow"
+                    checked={filter === 'happeningNow'}
                     onChange={handleFilterChange}
                 />
             </Form>

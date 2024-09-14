@@ -32,3 +32,14 @@ Cannot delete or update a parent row: a foreign key constraint fails (`vacations
 Cannot delete or update a parent row: a foreign key constraint fails (`vacations`.`followers`, CONSTRAINT `followers_ibfk_2` FOREIGN KEY (`vacationId`) REFERENCES `vacations` (`id`))
 Cannot delete or update a parent row: a foreign key constraint fails (`vacations`.`vacation_image`, CONSTRAINT `vacation_image_ibfk_1` FOREIGN KEY (`vacation_id`) REFERENCES `vacations` (`id`))
 Cannot delete or update a parent row: a foreign key constraint fails (`vacations`.`vacation_image`, CONSTRAINT `vacation_image_ibfk_1` FOREIGN KEY (`vacation_id`) REFERENCES `vacations` (`id`))
+Image with ID 0 not found.
+Image with ID 16 not found.
+Image with ID 16 not found.
+"firstName" length must be at least 2 characters long, "lastName" length must be at least 2 characters long
+"lastName" length must be at least 2 characters long
+Email already exists
+"description" is not allowed to be empty
+"price" must be a positive number
+"price" must be less than or equal to 10000
+"price" must be a positive number
+"endDate" must be greater than "ref:startDate", "price" must be a positive number

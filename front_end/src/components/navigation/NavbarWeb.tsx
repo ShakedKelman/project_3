@@ -51,29 +51,35 @@ const NavbarWeb: React.FC = () => {
 
                                         <Dropdown.Menu>
                                             {vacations.map(vacation => (
-                                                  <Dropdown.Item
-                                                  key={vacation.id}
-                                                  onClick={() => {
-                                                      if (vacation.id !== undefined) {
-                                                          handleEditVacation(vacation.id);
-                                                      }
-                                                  }}
-                                              >
-                                                  {vacation.destination}
-                                              </Dropdown.Item>
+                                                <Dropdown.Item
+                                                    key={vacation.id}
+                                                    onClick={() => {
+                                                        if (vacation.id !== undefined) {
+                                                            handleEditVacation(vacation.id);
+                                                        }
+                                                    }}
+                                                >
+                                                    {vacation.destination}
+                                                </Dropdown.Item>
                                             ))}
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 </>
                             )}
                             <Nav.Link as="button" onClick={handleLogout}>Logout</Nav.Link>
-                            
                         </>
                     )}
                     {!isLoggedIn && (
                         <Nav.Link as={Link} to="/register">A New User?</Nav.Link>
                     )}
                 </Nav>
+                {isLoggedIn && user && (
+                    <Nav className="ms-auto">
+                        <Nav.Item>
+                            <span className="navbar-text">Hello, {user.firstName}!</span>
+                        </Nav.Item>
+                    </Nav>
+                )}
             </Container>
         </Navbar>
     );

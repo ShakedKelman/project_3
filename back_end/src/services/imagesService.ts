@@ -5,7 +5,7 @@ import { UploadedFile } from "express-fileupload";
 import { v4 as uuid } from "uuid";
 import path from 'path';
 import { appConfig } from "../utils/appConfig";
-import { saveImage } from "../utils/helpers";
+import { deleteImage, saveImage } from "../utils/helpers";
 
 // export async function getImagesByVacation(vacationId: number): Promise<any[]> {
 //     const query = `
@@ -35,6 +35,32 @@ export const saveVacationImage = async (vacationId: number, image: UploadedFile)
 };
 
 
+// Function to edit (replace) an existing image for a vacation
+export const editVacationImage = async (vacationId: number, imageId: number, newImage: UploadedFile): Promise<string> => {
+    try {
+        // Retrieve the existing image path
+        const [existingImage] = await runQuery("SELECT image_path FROM vacation_image WHERE id = ?", [imageId]);
+
+        if (!existingImage) {
+            throw new Error(`Image with ID ${imageId} not found.`);
+        }
+
+        // Delete the existing image file
+        await deleteImage(existingImage.image_path);
+
+        // Save the new image
+        const newImagePath = await saveImage(newImage);
+
+        // Update the database entry with the new image path
+        const q = `UPDATE vacation_image SET image_path = ? WHERE id = ? AND vacation_id = ?`;
+        await runQuery(q, [newImagePath, imageId, vacationId]);
+
+        return newImagePath;
+    } catch (error) {
+        console.error(`Error updating image for vacation ${vacationId}:`, error);
+        throw error;
+    }
+};
 
 export async function getImagesByVacation(vacationId: number) {
     try {

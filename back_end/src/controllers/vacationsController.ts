@@ -3,9 +3,11 @@ import { NextFunction, Request, Response, Router } from "express";
 import { appConfig } from "../utils/appConfig";
 import { StatusCode } from "../models/statusEnum";
 import VacationModel from "../models/VacationsModel";
-import { addVacation, deleteVacation, editVacation, getVacations, getVacationsPaginated } from "../services/vacationsService";
+import { addVacation, deleteVacation, editVacation, getVacations } from "../services/vacationsService";
 import { UploadedFile } from "express-fileupload";
 import { getFollowersForVacation } from "../services/followersService";
+import { editVacationImage, saveVacationImage } from "../services/imagesService";
+import runQuery from "../db/dal";
 
 export const vacationRoutes = Router();
 
@@ -83,18 +85,6 @@ async (req: Request, res: Response, next: NextFunction) => {
 
 
 
-vacationRoutes.get(appConfig.routePrefix + "/vacation-pg",  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { page = 1, limit = 10 } = req.query;
-        const vacations = await getVacationsPaginated(Number(page), Number(limit));
-        res.status(StatusCode.Ok).json(vacations);
-    } catch (error) {
-        next(error)
-    }
-});
-
-
-
 // Route to get followers for a specific vacation
 vacationRoutes.get(appConfig.routePrefix + "/vacations/:id/followers", 
     async (req: Request, res: Response, next: NextFunction) => {
@@ -117,6 +107,28 @@ vacationRoutes.delete(appConfig.routePrefix + "/vacations/:id",
             res.status(StatusCode.Ok).send(); // No content to return after successful deletion
         } catch (error) {
             console.error("Error in deleteVacation route:", error);
+            next(error);
+        }
+    }
+);
+
+// Route to replace an existing image for a vacation
+vacationRoutes.post(
+    appConfig.routePrefix + "/vacation/:vacationId/image/:imageId",
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const vacationId = parseInt(req.params.vacationId, 10);
+            const imageId = parseInt(req.params.imageId, 10);
+            const newImage = req.files?.image as UploadedFile | undefined;
+
+            if (!newImage) {
+                return res.status(StatusCode.BadRequest).json({ message: "New image file is required" });
+            }
+
+            const newImagePath = await editVacationImage(vacationId, imageId, newImage);
+            res.status(StatusCode.Ok).json({ message: "Image replaced successfully", newImagePath });
+        } catch (error) {
+            console.error("Error in editVacationImage route:", error);
             next(error);
         }
     }

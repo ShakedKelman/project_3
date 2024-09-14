@@ -50,7 +50,21 @@ export async function saveImage(image: UploadedFile) {
     await image.mv(fullPath);
     return filename;
   }
-  
+  // utils/helpers.ts
+
+
+// utils/helpers.ts
+
+export const deleteImage = async (imagePath: string): Promise<void> => {
+    try {
+        const fullPath = path.join(appConfig.vacationsImagesPrefix, imagePath);
+        await fs.unlink(fullPath);
+    } catch (err) {
+        throw new Error(`Error deleting image: ${err.message}`);
+    }
+};
+
+
 //   export async function saveImage(image: UploadedFile) {
 //     const extension = image.name.substring(image.name.lastIndexOf("."));
 //     const filename = uuid() + extension;
