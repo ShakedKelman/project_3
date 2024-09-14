@@ -1,45 +1,6 @@
-Table 'vacations.images' doesn't exist
-Table 'vacations.images' doesn't exist
-Table 'vacations.images' doesn't exist
-Table 'vacations.images' doesn't exist
-Table 'vacations.images' doesn't exist
-Table 'vacations.images' doesn't exist
-Table 'vacations.images' doesn't exist
-Table 'vacations.images' doesn't exist
-Table 'vacations.images' doesn't exist
-Table 'vacations.images' doesn't exist
-Table 'vacations.images' doesn't exist
-Table 'vacations.images' doesn't exist
-Table 'vacations.images' doesn't exist
-Table 'vacations.images' doesn't exist
-Table 'vacations.images' doesn't exist
-ENOENT: no such file or directory, stat '/Users/shakedkelman/Documents/FullStack4578:41/projects/project_three/back_end/src/src/assets/images/fcc54bb8-b12d-488e-82ff-eb1932843dce.webp'
-Unknown column 'NaN' in 'where clause'
-Unknown column 'NaN' in 'where clause'
-Duplicate entry '1-2' for key 'PRIMARY'
-Cannot add or update a child row: a foreign key constraint fails (`vacations`.`followers`, CONSTRAINT `followers_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`id`))
-Wrong credentials
-Wrong credentials
-Wrong credentials
-Wrong credentials
-Wrong credentials
-Wrong credentials
-Wrong credentials
-Wrong credentials
-Wrong credentials
-Email already exists
-Cannot delete or update a parent row: a foreign key constraint fails (`vacations`.`followers`, CONSTRAINT `followers_ibfk_2` FOREIGN KEY (`vacationId`) REFERENCES `vacations` (`id`))
-Cannot delete or update a parent row: a foreign key constraint fails (`vacations`.`followers`, CONSTRAINT `followers_ibfk_2` FOREIGN KEY (`vacationId`) REFERENCES `vacations` (`id`))
-Cannot delete or update a parent row: a foreign key constraint fails (`vacations`.`vacation_image`, CONSTRAINT `vacation_image_ibfk_1` FOREIGN KEY (`vacation_id`) REFERENCES `vacations` (`id`))
-Cannot delete or update a parent row: a foreign key constraint fails (`vacations`.`vacation_image`, CONSTRAINT `vacation_image_ibfk_1` FOREIGN KEY (`vacation_id`) REFERENCES `vacations` (`id`))
-Image with ID 0 not found.
-Image with ID 16 not found.
-Image with ID 16 not found.
-"firstName" length must be at least 2 characters long, "lastName" length must be at least 2 characters long
-"lastName" length must be at least 2 characters long
-Email already exists
-"description" is not allowed to be empty
-"price" must be a positive number
-"price" must be less than or equal to 10000
-"price" must be a positive number
-"endDate" must be greater than "ref:startDate", "price" must be a positive number
+Error deleting image: ENOENT: no such file or directory, unlink '/Users/shakedkelman/Documents/FullStack4578:41/projects/project_three/back_end/src/assets/images/japan.jpeg'
+The "path" argument must be of type string. Received undefined
+The "path" argument must be of type string. Received undefined
+EPERM: operation not permitted, unlink '/Users/shakedkelman/Documents/FullStack4578:41/projects/project_three/back_end/src/assets/images'
+EPERM: operation not permitted, unlink '/Users/shakedkelman/Documents/FullStack4578:41/projects/project_three/back_end/src/assets/images'
+EPERM: operation not permitted, unlink '/Users/shakedkelman/Documents/FullStack4578:41/projects/project_three/back_end/src/assets/images'

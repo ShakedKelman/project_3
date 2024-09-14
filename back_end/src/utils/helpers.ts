@@ -52,15 +52,30 @@ export async function saveImage(image: UploadedFile) {
   }
   // utils/helpers.ts
 
-
 // utils/helpers.ts
 
-export const deleteImage = async (imagePath: string): Promise<void> => {
+
+export const deleteImage = async (imageFileName: string): Promise<void> => {
+    if (!imageFileName) {
+        throw new Error("Image file name is required");
+    }
+
+    const imagePath = appConfig.vacationsImagesPrefix;
+
     try {
-        const fullPath = path.join(appConfig.vacationsImagesPrefix, imagePath);
-        await fs.unlink(fullPath);
-    } catch (err) {
-        throw new Error(`Error deleting image: ${err.message}`);
+        // Check if the file exists
+        await fs.access(imagePath);
+        // File exists, so delete it
+        await fs.unlink(imagePath);
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            // File does not exist
+            console.warn(`Image file not found: ${imagePath}`);
+        } else {
+            // Other errors
+            console.error(`Failed to delete image at ${imagePath}:`, error);
+            throw error;
+        }
     }
 };
 

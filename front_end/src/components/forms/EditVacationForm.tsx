@@ -3,11 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { VacationModel } from '../../model/VacationModel';
-import { editVacation, getVacations, uploadVacationImage } from '../../api/vactions/vactions-api';
+import { editVacation, getVacations, uploadVacationImage,  } from '../../api/vactions/vactions-api';
 import { updateVacation } from '../../store/slices/vacationslice';
 import { Form, Button, Alert, Spinner, Image } from 'react-bootstrap';
 import { siteConfig } from '../../utils/SiteConfig';
-import { getImagesForVacation } from '../../api/images/images-api'; // Import the function to get images
+import { deleteImage, getImagesForVacation } from '../../api/images/images-api'; // Import the function to get images
 
 const EditVacationForm: React.FC = () => {
     const dispatch = useDispatch();
@@ -29,8 +29,6 @@ const EditVacationForm: React.FC = () => {
                     if (data.length > 0) {
                         setVacation(data[0]); // Assuming the response is an array with one object
                         const vacationImages = await getImagesForVacation(Number(id)); // Fetch images
-                        console.log(vacationImages);
-                        
                         setImages(vacationImages);
                     } else {
                         setError('Vacation not found');
@@ -51,7 +49,6 @@ const EditVacationForm: React.FC = () => {
     };
 
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Strip out non-numeric characters except for period
         const formattedValue = e.target.value.replace(/[^0-9.]/g, '');
         setVacation(prev => prev ? { ...prev, price: parseFloat(formattedValue) || 0 } : prev);
     };
@@ -60,22 +57,34 @@ const EditVacationForm: React.FC = () => {
         event.preventDefault();
         if (user?.token && vacation) {
             try {
-                if (selectedImage) {
-                    await uploadVacationImage(Number(id), selectedImage, user.token); // Upload the image file
-                    vacation.imageFileName = selectedImage.name; // Update the vacation with the new image file name
+                // Check if there's an old image to delete
+                if (vacation.imageFileName && selectedImage) {
+                    // Wait for the image deletion to complete before uploading a new one
+                    await deleteImage(Number(id), vacation.imageFileName, user.token);
                 }
-                await editVacation(Number(id), vacation, user.token);
+    
+                // Upload the new image if selected
+                if (selectedImage) {
+                    await uploadVacationImage(Number(id), selectedImage, user.token);
+                    // Update the vacation with the new image file name
+                    vacation.imageFileName = selectedImage.name;
+                }
+    
+                // Edit the vacation details
+                await editVacation(Number(id), vacation, user.token, vacation.imageFileName);
                 setSuccessMessage('Vacation updated successfully!');
                 dispatch(updateVacation(vacation)); // Update state with the updated vacation
                 navigate('/vacations');
             } catch (err) {
+                console.error(err); // Log the error for debugging
                 setError('Failed to update vacation');
             }
         } else {
             setError('User token is missing or vacation data is incomplete');
         }
     };
-
+    
+    
     const formatDate = (date: string | undefined) => {
         if (!date) return '';
         const d = new Date(date);
@@ -144,8 +153,8 @@ const EditVacationForm: React.FC = () => {
                 <Form.Label>Current Image:</Form.Label>
                 {vacation?.imageFileName && (
                     <Image
-                    src={images.length > 0 ? getImageUrl(images[0]) : 'placeholder.jpg'}
-                    alt="Current vacation"
+                        src={images.length > 0 ? getImageUrl(images[0]) : 'placeholder.jpg'}
+                        alt="Current vacation"
                         style={{ maxWidth: '200px', maxHeight: '200px' }}
                     />
                 )}

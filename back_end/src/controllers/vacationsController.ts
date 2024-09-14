@@ -6,9 +6,10 @@ import VacationModel from "../models/VacationsModel";
 import { addVacation, deleteVacation, editVacation, getVacations } from "../services/vacationsService";
 import { UploadedFile } from "express-fileupload";
 import { getFollowersForVacation } from "../services/followersService";
-import { editVacationImage, saveVacationImage } from "../services/imagesService";
 import runQuery from "../db/dal";
 import { ValidationError } from "../models/exceptions";
+import { deleteImage } from "../utils/helpers";
+import { getImagesByVacation } from "../services/imagesService";
 
 export const vacationRoutes = Router();
 
@@ -78,19 +79,44 @@ vacationRoutes.post(
 );
 
 
+
 vacationRoutes.put(appConfig.routePrefix + "/vacation/:id", 
 async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const id = parseInt(req.params.id);
-        const updates = Array.isArray(req.body) ? req.body : [req.body];
-        await editVacation(id, updates);
+        const id = parseInt(req.params.id, 10);
+        
+        // Handle file upload if present
+        const image = req.files?.image as UploadedFile;
+
+        // Assuming req.body contains the update fields
+        const updates: Partial<VacationModel> = req.body;
+
+        // Call the editVacation function with the updates and image if present
+        await editVacation(id, updates, image);
+
         res.sendStatus(200);
     } catch (error) {
         console.error("Error in editVacationController:", error);
         next(error);
     }
-}
-);
+});
+
+export default vacationRoutes;
+
+
+// vacationRoutes.put(appConfig.routePrefix + "/vacation/:id", 
+// async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//         const id = parseInt(req.params.id);
+//         const updates = Array.isArray(req.body) ? req.body : [req.body];
+//         await editVacation(id, updates);
+//         res.sendStatus(200);
+//     } catch (error) {
+//         console.error("Error in editVacationController:", error);
+//         next(error);
+//     }
+// }
+// );
 
 
 
@@ -107,37 +133,30 @@ vacationRoutes.get(appConfig.routePrefix + "/vacations/:id/followers",
         }
     }
 );
-// Route to delete a vacation
+
+
 vacationRoutes.delete(appConfig.routePrefix + "/vacations/:id", 
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const id = parseInt(req.params.id, 10);
+            const vacationImages = await getImagesByVacation(id);
+            
+            if (!vacationImages || vacationImages.length === 0) {
+                console.warn(`No images found for vacation ID ${id}`);
+            }
+
+            for (const image of vacationImages) {
+                if (image.imageFileName) {
+                    await deleteImage(image.imageFileName);
+                } else {
+                    console.warn(`No file name provided for image: ${JSON.stringify(image)}`);
+                }
+            }
+            
             await deleteVacation(id);
             res.status(StatusCode.Ok).send(); // No content to return after successful deletion
         } catch (error) {
             console.error("Error in deleteVacation route:", error);
-            next(error);
-        }
-    }
-);
-
-// Route to replace an existing image for a vacation
-vacationRoutes.post(
-    appConfig.routePrefix + "/vacation/:vacationId/image/:imageId",
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const vacationId = parseInt(req.params.vacationId, 10);
-            const imageId = parseInt(req.params.imageId, 10);
-            const newImage = req.files?.image as UploadedFile | undefined;
-
-            if (!newImage) {
-                return res.status(StatusCode.BadRequest).json({ message: "New image file is required" });
-            }
-
-            const newImagePath = await editVacationImage(vacationId, imageId, newImage);
-            res.status(StatusCode.Ok).json({ message: "Image replaced successfully", newImagePath });
-        } catch (error) {
-            console.error("Error in editVacationImage route:", error);
             next(error);
         }
     }

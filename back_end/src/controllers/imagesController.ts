@@ -1,10 +1,11 @@
 // routes/vacationRoutes.ts
 import { NextFunction, Request, Response, Router } from "express";
-import { getAllImages, getImagesByVacation, saveVacationImage } from "../services/imagesService";
+import { deleteImageFromVacation, getAllImages, getImagesByVacation, saveVacationImage } from "../services/imagesService";
 import { appConfig } from "../utils/appConfig";
 import { StatusCode } from "../models/statusEnum";
 import multer from "multer";
 import { UploadedFile } from "express-fileupload";
+import { deleteImage } from "../utils/helpers"; // Adjust the import path if necessary
 
 export const imagesnRoutes = Router();
 
@@ -65,4 +66,20 @@ imagesnRoutes.post(
     }
   );
   
-  
+
+
+
+
+// Route to delete a specific image from a vacation
+imagesnRoutes.delete(appConfig.routePrefix + "/image/:vacationId/:imagePath",
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { vacationId, imagePath } = req.params;
+            await deleteImage(imagePath); // Use the path in the delete function
+            res.status(StatusCode.Ok).json({ message: "Image deleted successfully" });
+        } catch (error) {
+            console.error("Error deleting image:", error);
+            next(error);
+        }
+    }
+);

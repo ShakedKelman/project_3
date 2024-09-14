@@ -30,3 +30,19 @@ export const getImagesForVacation = async (vacationId: number): Promise<string[]
         return [];
     }
 };
+
+
+// api/vacations-api.ts
+export const deleteImage = async (vacationId: number, imageName: string, token: string): Promise<void> => {
+    try {
+        await axios.delete(`${siteConfig.BASE_URL}image/${vacationId}/${imageName}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        console.log('Image deleted successfully');
+    } catch (error) {
+        console.error("Error deleting image:", error);
+        throw error;
+    }
+};
