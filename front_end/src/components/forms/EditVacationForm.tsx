@@ -36,6 +36,12 @@ const EditVacationForm: React.FC = () => {
         }
     }, [id]);
 
+    const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        // Strip out non-numeric characters except for period
+        const formattedValue = e.target.value.replace(/[^0-9.]/g, '');
+        setVacation(prev => prev ? { ...prev, price: parseFloat(formattedValue) || 0 } : prev);
+    };
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         if (user?.token && vacation) {
@@ -115,9 +121,9 @@ const EditVacationForm: React.FC = () => {
             <Form.Group controlId="price">
                 <Form.Label>Price:</Form.Label>
                 <Form.Control
-                    type="number"
-                    value={vacation?.price || ''}
-                    onChange={(e) => setVacation({ ...vacation!, price: Number(e.target.value) })}
+                    type="text"
+                    value={`$${vacation?.price || ''}`} // Display the price with $
+                    onChange={handlePriceChange}
                 />
             </Form.Group>
             <Form.Group>
