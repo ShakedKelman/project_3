@@ -8,6 +8,7 @@ import { UploadedFile } from "express-fileupload";
 import { getFollowersForVacation } from "../services/followersService";
 import { editVacationImage, saveVacationImage } from "../services/imagesService";
 import runQuery from "../db/dal";
+import { ValidationError } from "../models/exceptions";
 
 export const vacationRoutes = Router();
 
@@ -53,14 +54,22 @@ vacationRoutes.post(
             res.status(StatusCode.Created).json({ message: "Vacation added successfully", vacationId });
         } catch (error) {
             console.error("Detailed error in addVacation route:", error);
+
+            if (error instanceof ValidationError) {
+                // Send the validation error details to the client
+                return res.status(StatusCode.BadRequest).json({
+                    message: error.message,
+                });
+            }
+
             if (error instanceof Error) {
-                res.status(StatusCode.ServerError).json({ 
-                    message: "Error adding vacation", 
+                return res.status(StatusCode.ServerError).json({
+                    message: "Error adding vacation",
                     error: error.message,
                     stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
                 });
             } else {
-                res.status(StatusCode.ServerError).json({ 
+                return res.status(StatusCode.ServerError).json({
                     message: "Unknown error occurred while adding vacation"
                 });
             }

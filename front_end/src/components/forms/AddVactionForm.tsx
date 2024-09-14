@@ -32,21 +32,20 @@ const AddVacationForm: React.FC = () => {
     const isDateInThePast = (date: string) => {
         return new Date(date) < new Date();
     };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+    
         // Validate dates
         if (isDateInThePast(newVacation.startDate) || isDateInThePast(newVacation.endDate)) {
             setError("Start Date and End Date must be in the future.");
             return;
         }
-
+    
         if (new Date(newVacation.startDate) > new Date(newVacation.endDate)) {
             setError("End Date must be after Start Date.");
             return;
         }
-
+    
         try {
             // Create FormData object
             const formData = new FormData();
@@ -54,30 +53,28 @@ const AddVacationForm: React.FC = () => {
             formData.append('description', newVacation.description);
             formData.append('startDate', newVacation.startDate);
             formData.append('endDate', newVacation.endDate);
-            formData.append('price', newVacation.price.toString()); // Ensure price is numeric and sent without $
+            formData.append('price', newVacation.price.toString());
             if (imageFile) {
                 formData.append('image', imageFile);
             }
-
-            // Log FormData for debugging
-            console.log("FormData contents:");
-
-            formData.forEach((value, key) => {
-                console.log(`${key}: ${value}`);
-            });
-
+    
+            // Call the addVacation API
             await addVacation(formData);
             setSuccess("Vacation added successfully");
-            console.log("Vacation added successfully:", newVacation);
-
-            // Optionally, navigate to another page after successful submission
             navigate('/vacations');
-        } catch (error) {
-            setError("Failed to add vacation");
+        } catch (error: any) {
+            // Check if the error has a response from the backend
+            if (error.response && error.response.data) {
+                const backendMessage = error.response.data.message;
+                setError(backendMessage || "Unknown error occurred");
+            } else {
+                setError("Unknown error occurred while adding vacation");
+            }
             console.error("Error adding vacation:", error);
         }
     };
-
+    
+    
     return (
         <div className="container">
             <h2 className="my-4">Add New Vacation</h2>
