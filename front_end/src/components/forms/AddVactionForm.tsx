@@ -17,6 +17,12 @@ const AddVacationForm: React.FC = () => {
         setNewVacation(prev => ({ ...prev, [name]: value }));
     };
 
+    const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        // Strip out non-numeric characters, except for periods
+        const formattedValue = e.target.value.replace(/[^0-9.]/g, '');
+        setNewVacation(prev => ({ ...prev, price: parseFloat(formattedValue) || 0 }));
+    };
+
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             setImageFile(e.target.files[0]); // Set the selected image file
@@ -48,18 +54,17 @@ const AddVacationForm: React.FC = () => {
             formData.append('description', newVacation.description);
             formData.append('startDate', newVacation.startDate);
             formData.append('endDate', newVacation.endDate);
-            formData.append('price', newVacation.price.toString());
+            formData.append('price', newVacation.price.toString()); // Ensure price is numeric and sent without $
             if (imageFile) {
                 formData.append('image', imageFile);
             }
-            
+
             // Log FormData for debugging
             console.log("FormData contents:");
 
             formData.forEach((value, key) => {
                 console.log(`${key}: ${value}`);
             });
-            
 
             await addVacation(formData);
             setSuccess("Vacation added successfully");
@@ -128,10 +133,10 @@ const AddVacationForm: React.FC = () => {
                 <Form.Group controlId="formPrice">
                     <Form.Label>Price</Form.Label>
                     <Form.Control
-                        type="number"
+                        type="text"
                         name="price"
-                        value={newVacation.price}
-                        onChange={handleInputChange}
+                        value={`$${newVacation.price || ''}`} // Display $ in the input
+                        onChange={handlePriceChange}
                         required
                         placeholder="Enter price"
                     />
