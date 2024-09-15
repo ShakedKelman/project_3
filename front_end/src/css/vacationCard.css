@@ -1,0 +1,49 @@
+.vacation-card {
+    background-color: #f8f9fa; /* Light gray background */
+    border: 1px solid #dee2e6; /* Light gray border */
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.vacation-card-img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.vacation-card-body {
+    padding: 1rem;
+}
+
+.vacation-card-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.vacation-card-text {
+    color: #495057; /* Darker gray for text */
+}
+
+.vacation-card-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.vacation-card-favorites {
+    display: flex;
+    align-items: center;
+}
+
+.vacation-card-favorites span {
+    margin-left: 0.5rem;
+}
+
+.vacation-card-favorites span.following {
+    color: green;
+}
+
+.vacation-card-buttons button {
+    margin-right: 0.5rem;
+}

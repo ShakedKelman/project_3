@@ -15,6 +15,7 @@ import { selectUser } from '../../store/slices/authSlice';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import { deleteVacation } from '../../api/vactions/vactions-api';
 import { deleteVacationReducer } from '../../store/slices/vacationslice';
+import '../../css/vacationCard.css';
 
 const formatDate = (isoDate: string): string => {
     const date = new Date(isoDate);
@@ -110,85 +111,84 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
         navigate(`/edit-vacation/${vacation.id}`);
     };
 
-// vacationCard.tsx
-const handleDeleteVacation = async () => {
-    if (!vacation.id) {
-        setError('Vacation ID is missing.');
-        return;
-    }
-
-    if (window.confirm('Are you sure you want to delete this vacation?')) {
-        if (!user?.token) {
-            setError('Authentication token is missing.');
+    const handleDeleteVacation = async () => {
+        if (!vacation.id) {
+            setError('Vacation ID is missing.');
             return;
         }
 
-        try {
-            // Call deleteVacation with the vacation ID and user token
-            await deleteVacation(vacation.id, user.token);
-            console.log('Deleting vacation with ID:', vacation.id);
-            dispatch(deleteVacationReducer(vacation.id));
+        if (window.confirm('Are you sure you want to delete this vacation?')) {
+            if (!user?.token) {
+                setError('Authentication token is missing.');
+                return;
+            }
 
-            // Optionally, you can navigate away or refresh the list after deletion
-            // navigate('/some-route'); // Navigate or refresh as needed
-        } catch (error) {
-            setError('Failed to delete vacation. Please try again later.');
-            console.error('Error deleting vacation:', error);
+            try {
+                // Call deleteVacation with the vacation ID and user token
+                await deleteVacation(vacation.id, user.token);
+                console.log('Deleting vacation with ID:', vacation.id);
+                dispatch(deleteVacationReducer(vacation.id));
+
+                // Optionally, you can navigate away or refresh the list after deletion
+                // navigate('/some-route'); // Navigate or refresh as needed
+            } catch (error) {
+                setError('Failed to delete vacation. Please try again later.');
+                console.error('Error deleting vacation:', error);
+            }
         }
-    }
-};
+    };
 
-    
-    
     return (
         <div>
             <Row>
                 <Col md={6} className="mb-4">
-                    <Card>
+                    <Card className="vacation-card">
                         <Card.Img
+                            className="vacation-card-img"
                             variant="top"
                             src={images.length > 0 ? getImageUrl(images[0]) : 'placeholder.jpg'}
                             alt={vacation.destination}
-                            style={{ height: '100px', objectFit: 'cover', width: '100px' }}
                         />
-                        <Card.Body>
-                            <Card.Title>{vacation.destination}</Card.Title>
-                            <div>
+                        <Card.Body className="vacation-card-body">
+                            <Card.Title className="vacation-card-title">{vacation.destination}</Card.Title>
+                            <div className="vacation-card-text">
                                 <p>{vacation.description}</p>
                                 <p>{`Start Date: ${formatDate(vacation.startDate)}`}</p>
                                 <p>{`End Date: ${formatDate(vacation.endDate)}`}</p>
                                 <p>{`Price: $${vacation.price}`}</p>
                                 {!user?.isAdmin ? (
-                                    <div className="d-flex align-items-center">
-                                        {isFollowing ? (
-                                            <FavoriteIcon
-                                                style={{
-                                                    marginRight: '5px',
-                                                    cursor: 'pointer',
-                                                    color: 'red'
-                                                }}
-                                                onClick={handleFollowClick}
-                                            />
-                                        ) : (
-                                            <FavoriteBorderIcon
-                                                style={{
-                                                    marginRight: '5px',
-                                                    cursor: 'pointer',
-                                                    color: 'gray'
-                                                }}
-                                                onClick={handleFollowClick}
-                                            />
-                                        )}
-                                        <span>{followers.length}</span>
-                                        {user && isFollowing && (
-                                            <span style={{ marginLeft: '10px', color: 'green' }}>
-                                                You follow this vacation
-                                            </span>
-                                        )}
+                                    <div className="vacation-card-actions">
+                                        <div className="vacation-card-favorites">
+                                            {isFollowing ? (
+                                                <FavoriteIcon
+                                                    style={{
+                                                        marginRight: '5px',
+                                                        cursor: 'pointer',
+                                                        color: 'red'
+                                                    }}
+                                                    onClick={handleFollowClick}
+                                                />
+                                            ) : (
+                                                <FavoriteBorderIcon
+                                                    style={{
+                                                        marginRight: '5px',
+                                                        cursor: 'pointer',
+                                                        color: 'gray'
+                                                    }}
+                                                    onClick={handleFollowClick}
+                                                />
+                                            )}
+                                            <span>{followers.length}</span>
+                                            {user && isFollowing && (
+                                                <span className="following" style={{ marginLeft: '10px' }}>
+                                                    You follow this vacation
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                 ) : (
-                                    <div className="d-flex">
-                                        <Button variant="danger" onClick={handleDeleteVacation} style={{ marginRight: '5px' }}>
+                                    <div className="vacation-card-buttons">
+                                        <Button variant="danger" onClick={handleDeleteVacation}>
                                             Delete
                                         </Button>
                                         <Button variant="warning" onClick={handleEditVacation}>
@@ -202,7 +202,6 @@ const handleDeleteVacation = async () => {
                     </Card>
                 </Col>
             </Row>
-            <Button onClick={handleAddVacation}>Add Vacation</Button>
         </div>
     );
 };
