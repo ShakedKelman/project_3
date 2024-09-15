@@ -3,7 +3,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import { appConfig } from "../utils/appConfig";
 import { StatusCode } from "../models/statusEnum";
 import VacationModel from "../models/VacationsModel";
-import { addVacation, deleteVacation, editVacation, getVacations } from "../services/vacationsService";
+import { addVacation, deleteVacation, editVacation, getVacations, getVacationsPaginated } from "../services/vacationsService";
 import { UploadedFile } from "express-fileupload";
 import { getFollowersForVacation } from "../services/followersService";
 import runQuery from "../db/dal";
@@ -161,3 +161,16 @@ vacationRoutes.delete(appConfig.routePrefix + "/vacations/:id",
         }
     }
 );
+
+// routes/vacationRoutes.ts
+
+vacationRoutes.get(appConfig.routePrefix + "/vacations-pg",  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { page = 1, limit = 10 } = req.query;
+        const vacations = await getVacationsPaginated(Number(page), Number(limit));
+        res.status(StatusCode.Ok).json(vacations);
+    } catch (error) {
+        next(error)
+    }
+});
+
