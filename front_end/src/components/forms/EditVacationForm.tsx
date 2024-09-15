@@ -52,37 +52,41 @@ const EditVacationForm: React.FC = () => {
         const formattedValue = e.target.value.replace(/[^0-9.]/g, '');
         setVacation(prev => prev ? { ...prev, price: parseFloat(formattedValue) || 0 } : prev);
     };
-
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         if (user?.token && vacation) {
             try {
-                // Check if there's an old image to delete
-                if (vacation.imageFileName && selectedImage) {
-                    // Wait for the image deletion to complete before uploading a new one
-                    await deleteImage(Number(id), vacation.imageFileName, user.token);
-                }
+                const oldImageFileName = vacation.imageFileName;
     
                 // Upload the new image if selected
                 if (selectedImage) {
                     await uploadVacationImage(Number(id), selectedImage, user.token);
-                    // Update the vacation with the new image file name
                     vacation.imageFileName = selectedImage.name;
                 }
     
-                // Edit the vacation details
+                // Delete the old image if necessary
+                if (oldImageFileName && selectedImage) {
+                    try {
+                        await deleteImage(Number(id), oldImageFileName, user.token);
+                    } catch (deleteError) {
+                        console.error("Error deleting old image:", deleteError);
+                        // Continue with the update even if image deletion fails
+                    }
+                }
+    
+                // Edit vacation details
                 await editVacation(Number(id), vacation, user.token, vacation.imageFileName);
                 setSuccessMessage('Vacation updated successfully!');
-                dispatch(updateVacation(vacation)); // Update state with the updated vacation
+                dispatch(updateVacation(vacation));
                 navigate('/vacations');
             } catch (err) {
-                console.error(err); // Log the error for debugging
+                console.error(err);
                 setError('Failed to update vacation');
             }
-        } else {
-            setError('User token is missing or vacation data is incomplete');
         }
     };
+    
+    
     
     
     const formatDate = (date: string | undefined) => {

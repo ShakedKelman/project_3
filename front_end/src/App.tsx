@@ -11,20 +11,12 @@ const App: React.FC = () => {
   useEffect(() => {
     const checkAuthStatus = () => {
       const user = localStorage.getItem('user');
-      const loginTimestamp = localStorage.getItem('loginTimestamp');
-      const FIVE_MINUTES = 5 * 60 * 1000; // 5 minutes in milliseconds
 
-      if (user && loginTimestamp) {
+      if (user) {
         const parsedUser = JSON.parse(user);
-        const parsedTimestamp = parseInt(loginTimestamp, 10);
-
-        if (Date.now() - parsedTimestamp <= FIVE_MINUTES) {
-          dispatch(loginSuccess({ user: parsedUser, timestamp: parsedTimestamp }));
-        } else {
-          dispatch(logout());
-          localStorage.removeItem('user');
-          localStorage.removeItem('loginTimestamp');
-        }
+        dispatch(loginSuccess(parsedUser));
+      } else {
+        dispatch(logout());
       }
     };
 

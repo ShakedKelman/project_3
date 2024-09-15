@@ -6,6 +6,7 @@ import { StatusCode } from "../models/statusEnum";
 import multer from "multer";
 import { UploadedFile } from "express-fileupload";
 import { deleteImage } from "../utils/helpers"; // Adjust the import path if necessary
+import path from 'path';
 
 export const imagesnRoutes = Router();
 
@@ -67,19 +68,46 @@ imagesnRoutes.post(
   );
   
 
-
-
-
-// Route to delete a specific image from a vacation
-imagesnRoutes.delete(appConfig.routePrefix + "/image/:vacationId/:imagePath",
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const { vacationId, imagePath } = req.params;
-            await deleteImage(imagePath); // Use the path in the delete function
-            res.status(StatusCode.Ok).json({ message: "Image deleted successfully" });
-        } catch (error) {
-            console.error("Error deleting image:", error);
-            next(error);
-        }
-    }
-);
+//   imagesnRoutes.delete(appConfig.routePrefix + "/image/:vacationId/:imagePath",
+//   async (req: Request, res: Response, next: NextFunction) => {
+//       try {
+//           const { vacationId, imagePath } = req.params;
+//           console.log("Received vacationId:", vacationId);
+//           console.log("Received imagePath:", imagePath); // Ensure this is just the filename
+          
+//           // Construct full path from the imagePath
+//           const imageFullPath = path.join(appConfig.vacationsImagesPrefix, imagePath);
+          
+//           // Call the function to delete the image file
+//           await deleteImage(imageFullPath);
+          
+//           res.status(StatusCode.Ok).json({ message: "Image deleted successfully" });
+//       } catch (error) {
+//           console.error("Error deleting image:", error);
+//           next(error);
+//       }
+//   });
+imagesnRoutes.delete(appConfig.routePrefix + "/image/:vacationId/:imageName",
+  async (req: Request, res: Response, next: NextFunction) => {
+      try {
+          const { vacationId, imageName } = req.params;
+          console.log("Received vacationId:", vacationId);
+          console.log("Received imageName:", imageName);
+          
+          // Construct the full path using the imageName
+          const imageFullPath = path.join(appConfig.vacationsImagesPrefix, imageName);
+          console.log("Full image path:", imageFullPath);
+          
+          // Call deleteImage with the full path
+          await deleteImage(imageFullPath);
+          
+          res.status(StatusCode.Ok).json({ message: "Image deleted successfully" });
+      } catch (error) {
+          console.error("Error in delete image route:", error);
+          if (error.code === 'ENOENT') {
+              res.status(StatusCode.NotFound).json({ message: "Image not found" });
+          } else {
+              next(error);
+          }
+      }
+  });

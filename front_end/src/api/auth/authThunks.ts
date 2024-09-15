@@ -4,7 +4,6 @@ import { login, register } from './auth-api';
 import { UserModel } from '../../model/UserModel';
 import { AppDispatch } from '../../store/store';
 
-
 interface LoginUserArgs {
   email: string;
   password: string;
@@ -15,8 +14,7 @@ export const loginUser = createAsyncThunk<UserModel, LoginUserArgs>(
   async ({ email, password }: LoginUserArgs, { dispatch }) => {
     try {
       const user: UserModel = await login(email, password);
-      const timestamp = Date.now();
-      dispatch(loginSuccess({ user, timestamp }));
+      dispatch(loginSuccess(user));
       return user;
     } catch (error: any) {
       console.error('Login error in thunk:', error);
@@ -32,13 +30,12 @@ export const registerUser = createAsyncThunk<UserModel, UserModel>(
   async (user: UserModel, { dispatch }) => {
     try {
       const registeredUser: UserModel = await register(user);
-      
+
       if (!registeredUser.id) {
         throw new Error('Registered user is missing ID');
       }
-      
-      const timestamp = Date.now();
-      dispatch(registerSuccess({ user: registeredUser, timestamp }));
+
+      dispatch(registerSuccess(registeredUser));
       return registeredUser;
     } catch (error: any) {
       console.error('Registration error in thunk:', error);
@@ -47,6 +44,7 @@ export const registerUser = createAsyncThunk<UserModel, UserModel>(
     }
   }
 );
+
 export const logoutUser = () => (dispatch: AppDispatch) => {
-    dispatch(logout());
-  };
+  dispatch(logout());
+};

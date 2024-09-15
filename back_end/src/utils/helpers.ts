@@ -4,6 +4,9 @@ import { promises as fs } from "fs";
 import path from 'path';
 import { UploadedFile } from "express-fileupload";
 import { v4 as uuid } from "uuid";
+import { unlink } from 'fs/promises';
+import { promisify } from 'util';
+import { existsSync } from 'fs';
 
 
 export async function isDbServerUp() {
@@ -55,30 +58,37 @@ export async function saveImage(image: UploadedFile) {
 // utils/helpers.ts
 
 
-export const deleteImage = async (imageFileName: string): Promise<void> => {
-    if (!imageFileName) {
-        throw new Error("Image file name is required");
+// export async function deleteImage(imagePath: string) {
+//     const fullPath = path.join(appConfig.vacationsImagesPrefix, imagePath);
+//     console.log(`Attempting to delete image at: ${fullPath}`);
+//     try {
+//         await unlink(fullPath); // Asynchronously delete the image file
+//         console.log(`Deleted image: ${fullPath}`);
+//     } catch (error) {
+//         console.error(`Error deleting image: ${fullPath}`, error);
+//         throw error;
+//     }
+// }
+
+
+
+
+export const deleteImage = async (imagePath: string): Promise<void> => {
+    console.log(`Attempting to delete image at: ${imagePath}`);
+    
+    if (!existsSync(imagePath)) {
+        console.log(`File does not exist at ${imagePath}. It may have been already deleted.`);
+        return; // Exit the function without throwing an error
     }
-
-    const imagePath = appConfig.vacationsImagesPrefix;
-
+    
     try {
-        // Check if the file exists
-        await fs.access(imagePath);
-        // File exists, so delete it
-        await fs.unlink(imagePath);
-    } catch (error) {
-        if (error.code === 'ENOENT') {
-            // File does not exist
-            console.warn(`Image file not found: ${imagePath}`);
-        } else {
-            // Other errors
-            console.error(`Failed to delete image at ${imagePath}:`, error);
-            throw error;
-        }
+        await unlink(imagePath);
+        console.log(`Successfully deleted image at ${imagePath}`);
+    } catch (err) {
+        console.error(`Failed to delete image at ${imagePath}:`, err);
+        throw new Error(`Failed to delete image at ${imagePath}: ${err.message}`);
     }
 };
-
 
 //   export async function saveImage(image: UploadedFile) {
 //     const extension = image.name.substring(image.name.lastIndexOf("."));

@@ -12,55 +12,54 @@ interface ErrorResponse {
 }
 
 const RegisterComponent: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const handleRegister = async () => {
-    if (!email || !password || !firstName || !lastName) {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+  
+    const handleRegister = async () => {
+      if (!email || !password || !firstName || !lastName) {
         setError('All fields are required.');
         return;
-    }
-
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
+      }
+  
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) {
         setError('Please enter a valid email address.');
         return;
-    }
-
-    if (password.length < 4) {
+      }
+  
+      if (password.length < 4) {
         setError('Password must be at least 4 characters long.');
         return;
-    }
-
-    dispatch(registerRequest());
-
-    try {
+      }
+  
+      dispatch(registerRequest());
+  
+      try {
         const user: UserModel = { email, password, firstName, lastName, isAdmin };
         const registeredUser = await register(user);
-
-        const timestamp = Date.now();
-        // Assuming register returns an object with a token property
-        dispatch(registerSuccess({ user: registeredUser, timestamp }));
-        dispatch(loginSuccess({ user: registeredUser, timestamp }));
-
+  
+        dispatch(registerSuccess(registeredUser));
+        dispatch(loginSuccess(registeredUser));
+  
         navigate('/vacations');
-    } catch (error) {
+      } catch (error) {
         if (axios.isAxiosError(error)) {
-            const axiosError = error as AxiosError<ErrorResponse>;
-            const errorMessage = axiosError.response?.data?.message || 'Registration failed. Please try again.';
-            dispatch(registerFailure(errorMessage));
-            setError(errorMessage);
+          const axiosError = error as AxiosError<ErrorResponse>;
+          const errorMessage = axiosError.response?.data?.message || 'Registration failed. Please try again.';
+          dispatch(registerFailure(errorMessage));
+          setError(errorMessage);
         } else {
-            dispatch(registerFailure('Registration failed. Please try again.'));
-            setError('Registration failed. Please try again.');
+          dispatch(registerFailure('Registration failed. Please try again.'));
+          setError('Registration failed. Please try again.');
         }
-    }
-};
+      }
+    };
 
 
   return (
