@@ -35,6 +35,7 @@ const vacationSlice = createSlice({
         builder
             .addCase(fetchVacations.pending, state => {
                 state.status = 'loading';
+                state.error = null;
             })
             .addCase(fetchVacations.fulfilled, (state, action: PayloadAction<VacationModel[]>) => {
                 state.status = 'succeeded';
@@ -47,6 +48,6 @@ const vacationSlice = createSlice({
     },
 });
 
-export const { addVacation, updateVacation,deleteVacationReducer } = vacationSlice.actions;
+export const { addVacation, updateVacation, deleteVacationReducer } = vacationSlice.actions;
 
 export default vacationSlice.reducer;

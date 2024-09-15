@@ -14,10 +14,9 @@ export const getVacations = async (id?: number): Promise<VacationModel[]> => {
     }
 };
 
-
 // api/vacations-api.ts
-export const addVacation = async (formData: FormData): Promise<void> => {
-    
+
+export const apiAddVacation = async (formData: FormData): Promise<VacationModel> => {
     try {
         const response = await axios.post(`${siteConfig.BASE_URL}vacations`, formData, {
             headers: {
@@ -26,6 +25,7 @@ export const addVacation = async (formData: FormData): Promise<void> => {
         });
         console.log('FormData being sent:', formData);
         console.log('Vacation added successfully', response.data);
+        return response.data;
     } catch (error) {
         console.error("Error adding vacation:", error);
         throw error;

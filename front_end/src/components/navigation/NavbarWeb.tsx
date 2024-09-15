@@ -17,6 +17,7 @@ const NavbarWeb: React.FC = () => {
             dispatch(fetchVacations());
         }
     }, [user?.isAdmin, dispatch]);
+    
 
     const handleLogout = () => {
         if (window.confirm('Are you sure you want to logout?')) {
@@ -52,7 +53,7 @@ const NavbarWeb: React.FC = () => {
                                         <Dropdown.Menu>
                                             {vacations.map(vacation => (
                                                 <Dropdown.Item
-                                                    key={vacation.id}
+                                                    key={vacation.id || `vacation-${Math.random()}`} // fallback if id is undefined
                                                     onClick={() => {
                                                         if (vacation.id !== undefined) {
                                                             handleEditVacation(vacation.id);
@@ -63,6 +64,7 @@ const NavbarWeb: React.FC = () => {
                                                 </Dropdown.Item>
                                             ))}
                                         </Dropdown.Menu>
+
                                     </Dropdown>
                                 </>
                             )}

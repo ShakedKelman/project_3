@@ -5,11 +5,16 @@ import { fetchVacations } from '../../api/vactions/vacationsThunk';
 import VacationCard from './VacationCard';
 import { VacationModel } from '../../model/VacationModel';
 import { Row, Col, Form } from 'react-bootstrap'; // Import Form for radio buttons
+import { addVacation } from '../../store/slices/vacationslice';
+import { editVacation } from '../../api/vactions/vactions-api';
 
 const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { vacations, status, error } = useSelector((state: RootState) => state.vacation);
-    const [filter, setFilter] = useState<string>('all'); // State to hold the selected filter
+    const [filter, setFilter] = useState<string>('all');
+    const [newVacation, setNewVacation] = useState<VacationModel | null>(null); // Example state
+    const [updatedVacation, setUpdatedVacation] = useState<VacationModel | null>(null); // Example state
+    const [token, setToken] = useState<string>(''); // Assuming you need a token
 
     useEffect(() => {
         if (status === 'idle') {
@@ -17,10 +22,18 @@ const VacationList: React.FC = () => {
         }
     }, [dispatch, status]);
 
+    const handleAddVacation = async () => {
+        if (newVacation) {
+            await dispatch(addVacation(newVacation));
+            dispatch(fetchVacations());
+        }
+    };
+
+
+
     if (status === 'loading') return <div>Loading...</div>;
     if (status === 'failed') return <div>{error}</div>;
 
-    // Filter vacations based on the selected filter
     const filteredVacations = vacations.filter((vacation: VacationModel) => {
         const now = new Date();
         const startDate = new Date(vacation.startDate);
@@ -35,7 +48,7 @@ const VacationList: React.FC = () => {
             case 'happeningNow':
                 return startDate <= now && endDate >= now;
             default:
-                return true; // Show all vacations when no filter is selected
+                return true;
         }
     });
 
@@ -43,7 +56,6 @@ const VacationList: React.FC = () => {
         setFilter(e.target.value);
     };
 
-    // Ensure filtered vacations have valid date fields and sort them
     const sortedVacations = [...filteredVacations].sort((a, b) => {
         const dateA = new Date(a.startDate);
         const dateB = new Date(b.startDate);

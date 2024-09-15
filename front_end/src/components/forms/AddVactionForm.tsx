@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { VacationModel } from '../../model/VacationModel';
-import { addVacation } from '../../api/vactions/vactions-api';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Alert, InputGroup } from 'react-bootstrap';
+import { useAppDispatch } from '../../store/store';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { apiAddVacation } from '../../api/vactions/vactions-api';
+import { fetchVacations } from '../../api/vactions/vacationsThunk';
+import { addVacation } from '../../store/slices/vacationslice';
 
 const AddVacationForm: React.FC = () => {
     const [newVacation, setNewVacation] = useState<VacationModel>(new VacationModel({}));
-    const [imageFile, setImageFile] = useState<File | null>(null); // State for image file
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -27,7 +31,7 @@ const AddVacationForm: React.FC = () => {
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            setImageFile(e.target.files[0]); // Set the selected image file
+            setImageFile(e.target.files[0]);
         }
     };
 
@@ -38,7 +42,6 @@ const AddVacationForm: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
     
-        // Validate dates
         if (isDateInThePast(newVacation.startDate) || isDateInThePast(newVacation.endDate)) {
             setError("Start Date and End Date must be in the future.");
             return;
@@ -50,23 +53,23 @@ const AddVacationForm: React.FC = () => {
         }
     
         try {
-            // Create FormData object
             const formData = new FormData();
             formData.append('destination', newVacation.destination);
             formData.append('description', newVacation.description);
             formData.append('startDate', newVacation.startDate);
             formData.append('endDate', newVacation.endDate);
-            formData.append('price', newVacation.price.toString()); // Send only the numeric value
+            formData.append('price', newVacation.price.toString());
             if (imageFile) {
                 formData.append('image', imageFile);
             }
     
             // Call the addVacation API
-            await addVacation(formData);
+            const addedVacation = await apiAddVacation(formData);
+            dispatch(addVacation(addedVacation)); // Dispatch action to add vacation to Redux store
+            dispatch(fetchVacations()); // Re-fetch vacations to ensure state is updated
             setSuccess("Vacation added successfully");
             navigate('/vacations');
         } catch (error: any) {
-            // Check if the error has a response from the backend
             if (error.response && error.response.data) {
                 const backendMessage = error.response.data.message;
                 setError(backendMessage || "Unknown error occurred");
@@ -156,7 +159,9 @@ const AddVacationForm: React.FC = () => {
                     />
                 </Form.Group>
 
-                <Button variant="success" type="submit" className="mt-3">Add Vacation</Button>
+                <Button variant="success" type="submit">
+                    Add Vacation
+                </Button>
             </Form>
         </div>
     );
