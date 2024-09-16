@@ -100,7 +100,7 @@ const VacationList: React.FC = () => {
             )}
             <Row>
                 {sortedVacations.map((vacation: VacationModel) => (
-                    <Col key={vacation.id || "placeholder"} md={6} className="mb-4">
+                    <Col key={vacation.id || "placeholder"} md={4} className="mb-4">
                         {vacation.id ? (
                             <VacationCard vacation={vacation} />
                         ) : (

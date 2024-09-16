@@ -140,69 +140,73 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
 
     return (
         <div>
-            <Row>
-                <Col md={6} className="mb-4">
-                    <Card className="vacation-card">
+        <Row>
+            <Col md={8} className="mb-4">
+                <Card className="vacation-card">
+                    <div className="vacation-card-img-container">
                         <Card.Img
                             className="vacation-card-img"
                             variant="top"
-                            src={images.length > 0 ? getImageUrl(images[0]) : 'placeholder.jpg'}
+                            src={images.length > 0 ? getImageUrl(images[0]) : 'placeholder.jpg'} // Placeholder if no image
                             alt={vacation.destination}
                         />
-                        <Card.Body className="vacation-card-body">
-                            <Card.Title className="vacation-card-title">{vacation.destination}</Card.Title>
-                            <div className="vacation-card-text">
-                                <p>{vacation.description}</p>
-                                <p>{`Start Date: ${formatDate(vacation.startDate)}`}</p>
-                                <p>{`End Date: ${formatDate(vacation.endDate)}`}</p>
-                                <p>{`Price: $${vacation.price}`}</p>
-                                {!user?.isAdmin ? (
-                                    <div className="vacation-card-actions">
-                                        <div className="vacation-card-favorites">
-                                            {isFollowing ? (
-                                                <FavoriteIcon
-                                                    style={{
-                                                        marginRight: '5px',
-                                                        cursor: 'pointer',
-                                                        color: 'red'
-                                                    }}
-                                                    onClick={handleFollowClick}
-                                                />
-                                            ) : (
-                                                <FavoriteBorderIcon
-                                                    style={{
-                                                        marginRight: '5px',
-                                                        cursor: 'pointer',
-                                                        color: 'gray'
-                                                    }}
-                                                    onClick={handleFollowClick}
-                                                />
-                                            )}
-                                            <span>{followers.length}</span>
-                                            {user && isFollowing && (
-                                                <span className="following" style={{ marginLeft: '10px' }}>
-                                                    You follow this vacation
-                                                </span>
-                                            )}
-                                        </div>
+                        <Card.Title className="vacation-card-title">{vacation.destination}</Card.Title>
+                    </div>
+                    <Card.Body className="vacation-card-body">
+                        <div className="vacation-card-text">
+                            <p>{vacation.description}</p>
+                            <p>{`Start Date: ${formatDate(vacation.startDate)}`}</p>
+                            <p>{`End Date: ${formatDate(vacation.endDate)}`}</p>
+                            <p>{`Price: $${vacation.price}`}</p>
+                            {!user?.isAdmin ? (
+                                <div className="vacation-card-actions">
+                                    <div className="vacation-card-favorites">
+                                        {isFollowing ? (
+                                            <FavoriteIcon
+                                                style={{
+                                                    marginRight: '5px',
+                                                    cursor: 'pointer',
+                                                    color: 'red'
+                                                }}
+                                                onClick={handleFollowClick}
+                                            />
+                                        ) : (
+                                            <FavoriteBorderIcon
+                                                style={{
+                                                    marginRight: '5px',
+                                                    cursor: 'pointer',
+                                                    color: 'gray'
+                                                }}
+                                                onClick={handleFollowClick}
+                                            />
+                                        )}
+                                        <span>{followers.length}</span>
+                                        {user && isFollowing && (
+                                            <span className="following" style={{ marginLeft: '10px' }}>
+                                                You follow this vacation
+                                            </span>
+                                        )}
                                     </div>
-                                ) : (
-                                    <div className="vacation-card-buttons">
-                                        <Button variant="danger" onClick={handleDeleteVacation}>
-                                            Delete
-                                        </Button>
-                                        <Button variant="warning" onClick={handleEditVacation}>
-                                            Edit
-                                        </Button>
-                                    </div>
-                                )}
-                                {error && <div style={{ color: 'red' }}>{error}</div>}
-                            </div>
-                        </Card.Body>
-                    </Card>
-                </Col>
-            </Row>
-        </div>
+                                </div>
+                            ) : (
+                                <div className="vacation-card-buttons">
+                                    <Button variant="danger" onClick={handleDeleteVacation}>
+                                        Delete
+                                    </Button>
+                                    <Button variant="warning" onClick={handleEditVacation}>
+                                        Edit
+                                    </Button>
+                                </div>
+                            )}
+                            {error && <div style={{ color: 'red' }}>{error}</div>}
+                        </div>
+                    </Card.Body>
+                </Card>
+            </Col>
+        </Row>
+    </div>
+    
+    
     );
 };
 
