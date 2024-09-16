@@ -17,17 +17,17 @@ import { getPaginatedVacations } from './paginated-vacations-api';
 //   }
 // );
 
-// export const fetchVacations = createAsyncThunk(
-//     'vacation/fetchVacations',
-//     async (_, thunkAPI) => {
-//         try {
-//             const vacations = await getVacations();
-//             return vacations;
-//         } catch (error) {
-//             return thunkAPI.rejectWithValue('Failed to fetch vacations');
-//         }
-//     }
-// );
+export const fetchVacations = createAsyncThunk(
+    'vacation/fetchVacations',
+    async (_, thunkAPI) => {
+        try {
+            const vacations = await getVacations();
+            return vacations;
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to fetch vacations');
+        }
+    }
+);
 
 export const fetchPaginatedVacations = createAsyncThunk(
     'vacation/fetchVacations',

@@ -5,10 +5,10 @@ import VacationCard from './VacationCard';
 import { VacationModel } from '../../model/VacationModel';
 import { Row, Col, Form } from 'react-bootstrap';
 import { addVacation } from '../../store/slices/vacationslice';
-import InfiniteScroll from 'react-infinite-scroller';
-import { fetchPaginatedVacations } from '../../api/vactions/vacationsThunk';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
+import { fetchPaginatedVacations } from '../../api/vactions/vacationsThunk';
+import { getVacations } from '../../api/vactions/vactions-api';
 
 const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -16,35 +16,33 @@ const VacationList: React.FC = () => {
     const { user } = useSelector((state: RootState) => state.auth);
     const [filter, setFilter] = useState<string>('all');
     const [page, setPage] = useState<number>(1);
-    const [hasMore, setHasMore] = useState<boolean>(true);
-    const [newVacation, setNewVacation] = useState<VacationModel | null>(null);
+    const [totalPages, setTotalPages] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
+    const [newVacation, setNewVacation] = useState<VacationModel | null>(null);
 
     const isAdmin = user?.isAdmin;
 
     useEffect(() => {
-        dispatch(fetchPaginatedVacations({ page, limit: 10 }));
-    }, [dispatch, page]);
-
-    const loadMoreVacations = async () => {
-        if (hasMore && !loading) {
+        const fetchData = async () => {
             setLoading(true);
             try {
-                const actionResult = await dispatch(fetchPaginatedVacations({ page: page + 1, limit: 10 }));
-                const newVacations = actionResult.payload as VacationModel[];
+                // Fetch total vacations to calculate total pages
+                const allVacations = await getVacations();
+                const totalVacations = allVacations.length;
+                const calculatedTotalPages = Math.ceil(totalVacations / 10);
+                setTotalPages(calculatedTotalPages);
 
-                if (newVacations.length === 0) {
-                    setHasMore(false);
-                } else {
-                    setPage(prevPage => prevPage + 1);
-                }
+                // Fetch paginated vacations
+                await dispatch(fetchPaginatedVacations({ page, limit: 10 }));
             } catch (error) {
-                console.error('Failed to load more vacations:', error);
+                console.error('Error fetching vacations:', error);
             } finally {
                 setLoading(false);
             }
-        }
-    };
+        };
+
+        fetchData();
+    }, [dispatch, page]);
 
     const handleAddVacation = async () => {
         if (newVacation) {
@@ -58,7 +56,7 @@ const VacationList: React.FC = () => {
         dispatch(fetchPaginatedVacations({ page: value, limit: 10 }));
     };
 
-    if (status === 'loading') return <div>Loading...</div>;
+    if (status === 'loading' || loading) return <div>Loading...</div>;
     if (status === 'failed') return <div>{error}</div>;
 
     const filteredVacations = vacations.filter((vacation: VacationModel) => {
@@ -127,23 +125,16 @@ const VacationList: React.FC = () => {
                     />
                 </Form>
             )}
-            <InfiniteScroll
-                pageStart={0}
-                loadMore={loadMoreVacations}
-                hasMore={hasMore}
-                loader={<div key={0}>Loading...</div>}
-            >
-                <Row>
-                    {sortedVacations.map((vacation: VacationModel) => (
-                        <Col key={vacation.id || "placeholder"} md={4} className="mb-4">
-                            <VacationCard vacation={vacation} />
-                        </Col>
-                    ))}
-                </Row>
-            </InfiniteScroll>
+            <Row>
+                {sortedVacations.map((vacation: VacationModel) => (
+                    <Col key={vacation.id || "placeholder"} md={4} className="mb-4">
+                        <VacationCard vacation={vacation} />
+                    </Col>
+                ))}
+            </Row>
             <Stack spacing={2} className="mt-4">
                 <Pagination
-                    count={10} // Update this with the actual total page count from your API
+                    count={totalPages}
                     page={page}
                     onChange={handlePageChange}
                     color="primary"
