@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { VacationModel } from '../../model/VacationModel';
-import { fetchVacations } from '../../api/vactions/vacationsThunk';
+import { fetchPaginatedVacations } from '../../api/vactions/vacationsThunk';
 
 interface VacationState {
     vacations: VacationModel[];
@@ -33,15 +33,15 @@ const vacationSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-            .addCase(fetchVacations.pending, state => {
+            .addCase(fetchPaginatedVacations.pending, state => {
                 state.status = 'loading';
                 state.error = null;
             })
-            .addCase(fetchVacations.fulfilled, (state, action: PayloadAction<VacationModel[]>) => {
+            .addCase(fetchPaginatedVacations.fulfilled, (state, action: PayloadAction<VacationModel[]>) => {
                 state.status = 'succeeded';
                 state.vacations = action.payload;
             })
-            .addCase(fetchVacations.rejected, (state, action) => {
+            .addCase(fetchPaginatedVacations.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload as string;
             });

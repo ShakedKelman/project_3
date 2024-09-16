@@ -5,8 +5,8 @@ import { Form, Button, Alert, InputGroup } from 'react-bootstrap';
 import { useAppDispatch } from '../../store/store';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { apiAddVacation } from '../../api/vactions/vactions-api';
-import { fetchVacations } from '../../api/vactions/vacationsThunk';
 import { addVacation } from '../../store/slices/vacationslice';
+import { fetchPaginatedVacations } from '../../api/vactions/vacationsThunk';
 
 const AddVacationForm: React.FC = () => {
     const [newVacation, setNewVacation] = useState<VacationModel>(new VacationModel({}));
@@ -66,7 +66,7 @@ const AddVacationForm: React.FC = () => {
             // Call the addVacation API
             const addedVacation = await apiAddVacation(formData);
             dispatch(addVacation(addedVacation)); // Dispatch action to add vacation to Redux store
-            dispatch(fetchVacations()); // Re-fetch vacations to ensure state is updated
+            dispatch(fetchPaginatedVacations()); // Re-fetch vacations to ensure state is updated
             setSuccess("Vacation added successfully");
             navigate('/vacations');
         } catch (error: any) {

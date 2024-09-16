@@ -15,11 +15,11 @@ export const getVacations = async (id?: number): Promise<VacationModel[]> => {
 };
 
 
-export const getPaginatedVacations = async (page: number, limit: number = 10) => {
-    const response = await fetch(`http://localhost:4000/api/v1/vacations-pg?page=${page}&limit=${limit}`);
-    const data = await response.json();
-    return data;
-};
+// export const getPaginatedVacations = async (page: number, limit: number = 10) => {
+//     const response = await fetch(`http://localhost:4000/api/v1/vacations-pg?page=${page}&limit=${limit}`);
+//     const data = await response.json();
+//     return data;
+// };
   
 // api/vacations-api.ts
 
@@ -119,5 +119,6 @@ export const deleteVacation = async (id: number, token: string): Promise<void> =
         throw error;
     }
 };
+
 
 

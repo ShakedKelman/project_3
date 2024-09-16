@@ -8,6 +8,7 @@ import { updateVacation } from '../../store/slices/vacationslice';
 import { Form, Button, Alert, Spinner, Image } from 'react-bootstrap';
 import { siteConfig } from '../../utils/SiteConfig';
 import { deleteImage, getImagesForVacation } from '../../api/images/images-api'; // Import the function to get images
+import { getPaginatedVacations } from '../../api/vactions/paginated-vacations-api';
 
 const EditVacationForm: React.FC = () => {
     const dispatch = useDispatch();
@@ -25,7 +26,7 @@ const EditVacationForm: React.FC = () => {
         const fetchVacationDetails = async () => {
             if (id) {
                 try {
-                    const data = await getVacations(Number(id));
+                    const data = await getPaginatedVacations(Number(id));
                     if (data.length > 0) {
                         setVacation(data[0]); // Assuming the response is an array with one object
                         const vacationImages = await getImagesForVacation(Number(id)); // Fetch images

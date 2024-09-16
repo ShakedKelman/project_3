@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store/store';
 import { logoutUser } from '../../api/auth/authThunks';
-import { fetchVacations } from '../../api/vactions/vacationsThunk';
+import { fetchPaginatedVacations } from '../../api/vactions/vacationsThunk';
 
 const NavbarWeb: React.FC = () => {
     const { status, user } = useSelector((state: RootState) => state.auth);
@@ -14,7 +14,7 @@ const NavbarWeb: React.FC = () => {
 
     useEffect(() => {
         if (user?.isAdmin) {
-            dispatch(fetchVacations());
+            dispatch(fetchPaginatedVacations());
         }
     }, [user?.isAdmin, dispatch]);
     

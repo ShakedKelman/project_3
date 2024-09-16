@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store/store';
-import { fetchVacations } from '../../api/vactions/vacationsThunk';
 import VacationCard from './VacationCard';
 import { VacationModel } from '../../model/VacationModel';
 import { Row, Col, Form } from 'react-bootstrap'; // Import Form for radio buttons
 import { addVacation } from '../../store/slices/vacationslice';
+import { fetchPaginatedVacations } from '../../api/vactions/vacationsThunk';
 
 const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -18,14 +18,14 @@ const VacationList: React.FC = () => {
 
     useEffect(() => {
         if (status === 'idle') {
-            dispatch(fetchVacations());
+            dispatch(fetchPaginatedVacations());
         }
     }, [dispatch, status]);
 
     const handleAddVacation = async () => {
         if (newVacation) {
             await dispatch(addVacation(newVacation));
-            dispatch(fetchVacations());
+            dispatch(fetchPaginatedVacations());
         }
     };
 
