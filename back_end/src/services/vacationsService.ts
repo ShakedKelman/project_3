@@ -196,34 +196,13 @@ export async function deleteVacation(id: number): Promise<void> {
         throw error;
     }
 }
-export async function getVacationsPaginated(page: number, limit: number, id?: number): Promise<VacationModel[]> {
+export async function getVacationsPaginated(page: number, limit: number): Promise<VacationModel[]> {
     const offset = (page - 1) * limit;
-    let q = `SELECT * FROM vacations`;
-    const params: any[] = [];
+    const q = `SELECT * FROM vacations LIMIT ? OFFSET ?`;
+    const res = await runQuery(q, [limit, offset]);
 
-    if (id !== undefined) {
-        q += ` WHERE id = ?`;
-        params.push(id); // Add id as the first parameter
-    }
-    
-    q += ` LIMIT ? OFFSET ?`;
-    params.push(limit, offset); // Add limit and offset
-
-    // console.log('SQL Query:', q);
-    // console.log('Parameters:', params);
-
-    try {
-        const res = await runQuery(q, params);
-        // console.log('Query Result:', res);
-
-        if (res.length === 0 && id !== undefined) {
-            throw new Error("Vacation ID not found");
-        }
-
-        const vacations = res.map((v: any) => new VacationModel(v));
-        return vacations;
-    } catch (error) {
-        // console.error('Database query failed:', error.message);
-        throw new Error(`Database query failed: ${error.message}`);
-    }
+    const vacations = res.map((v: any) => new VacationModel(v));
+    return vacations;
 }
+
+
