@@ -1,5 +1,5 @@
-// import { encryptPassword } from "../utils/authUtils";
-// import runQuery from "./dal";
+import { encryptPassword } from "../utils/authUtils";
+import runQuery from "./dal";
 
 // // const createTables = async () => {
 //    ////// Create the users table
@@ -63,7 +63,7 @@
 
 
 
-// const insertData = async () => {
+const insertData = async () => {
 
 
 //     // const hashedPassword1 = await encryptPassword('1234');
@@ -81,23 +81,23 @@
 
 
 //     // ///Insert sample data into vacations
-//     // let Q = `
-//     //     INSERT INTO vacations (destination, description, startDate, endDate, price, imageFileName)
-//     //     VALUES 
-//     //         ('Paris', 'A wonderful trip to Paris', '2024-10-01', '2024-10-10', 1500.00, ''),
-//     //         ('New York', 'Explore the Big Apple', '2024-11-05', '2024-11-12', 2000.00, ''),
-//     //         ('Tokyo', 'Experience the vibrant city of Tokyo', '2024-12-01', '2024-12-10', 1800.00, ''),
-//     //         ('Sydney', 'Enjoy the sights of Sydney', '2024-10-15', '2024-10-25', 1700.00, ''),
-//     //         ('Rome', 'Discover ancient Rome', '2024-11-15', '2024-11-22', 1600.00, ''),
-//     //         ('London', 'A classic visit to London', '2024-12-05', '2024-12-12', 1900.00, ''),
-//     //         ('Barcelona', 'Explore the beauty of Barcelona', '2024-10-20', '2024-10-30', 1400.00, ''),
-//     //         ('Dubai', 'Experience the luxury of Dubai', '2024-11-10', '2024-11-20', 2100.00, ''),
-//     //         ('Amsterdam', 'A charming trip to Amsterdam', '2024-12-10', '2024-12-15', 1300.00, ''),
-//     //         ('Istanbul', 'Explore the historic city of Istanbul', '2024-10-05', '2024-10-12', 1600.00, ''),
-//     //         ('Lisbon', 'Enjoy the warmth of Lisbon', '2024-11-20', '2024-11-30', 1500.00, ''),
-//     //         ('Prague', 'Discover the beauty of Prague', '2024-12-15', '2024-12-22', 1400.00, '');
-//     // `;
-//     // await runQuery(Q);
+    let Q = `
+        INSERT INTO vacations (destination, description, startDate, endDate, price, imageFileName)
+        VALUES 
+            ('Paris', 'A wonderful trip to Paris', '2024-10-01', '2024-10-10', 1500.00, ''),
+            ('New York', 'Explore the Big Apple', '2024-11-05', '2024-11-12', 2000.00, ''),
+            ('Tokyo', 'Experience the vibrant city of Tokyo', '2024-12-01', '2024-12-10', 1800.00, ''),
+            ('Sydney', 'Enjoy the sights of Sydney', '2024-10-15', '2024-10-25', 1700.00, ''),
+            ('Rome', 'Discover ancient Rome', '2024-11-15', '2024-11-22', 1600.00, ''),
+            ('London', 'A classic visit to London', '2024-12-05', '2024-12-12', 1900.00, ''),
+            ('Barcelona', 'Explore the beauty of Barcelona', '2024-10-20', '2024-10-30', 1400.00, ''),
+            ('Dubai', 'Experience the luxury of Dubai', '2024-11-10', '2024-11-20', 2100.00, ''),
+            ('Amsterdam', 'A charming trip to Amsterdam', '2024-12-10', '2024-12-15', 1300.00, ''),
+            ('Istanbul', 'Explore the historic city of Istanbul', '2024-10-05', '2024-10-12', 1600.00, ''),
+            ('Lisbon', 'Enjoy the warmth of Lisbon', '2024-11-20', '2024-11-30', 1500.00, ''),
+            ('Prague', 'Discover the beauty of Prague', '2024-12-15', '2024-12-22', 1400.00, '');
+    `;
+    await runQuery(Q);
                           
     
     
@@ -114,9 +114,9 @@
 
 // await runQuery(Q);
 
-// }
+}
 
-// insertData().then(() => {
-//     console.log("Done insertData");
-// });
+insertData().then(() => {
+    console.log("Done insertData");
+});
 

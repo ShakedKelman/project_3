@@ -26,10 +26,10 @@ const EditVacationForm: React.FC = () => {
         const fetchVacationDetails = async () => {
             if (id) {
                 try {
-                    const data = await getPaginatedVacations(Number(id));
-                    if (data.length > 0) {
-                        setVacation(data[0]); // Assuming the response is an array with one object
-                        const vacationImages = await getImagesForVacation(Number(id)); // Fetch images
+                    const vacationData = await getVacations(Number(id));
+                    if (vacationData.length > 0) {
+                        setVacation(vacationData[0]);
+                        const vacationImages = await getImagesForVacation(Number(id));
                         setImages(vacationImages);
                     } else {
                         setError('Vacation not found');
@@ -41,9 +41,11 @@ const EditVacationForm: React.FC = () => {
                 }
             }
         };
-
+    
         fetchVacationDetails();
     }, [id]);
+    
+
 
     const getImageUrl = (imagePath: string) => {
         return `${siteConfig.BASE_URL}${imagePath}`;

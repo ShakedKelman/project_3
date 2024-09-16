@@ -18,7 +18,7 @@ const VacationList: React.FC = () => {
     const [page, setPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
-    const [newVacation, setNewVacation] = useState<VacationModel | null>(null);
+    const [allVacations, setAllVacations] = useState<VacationModel[]>([]);
 
     const isAdmin = user?.isAdmin;
 
@@ -26,14 +26,17 @@ const VacationList: React.FC = () => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                // Fetch total vacations to calculate total pages
-                const allVacations = await getVacations();
-                const totalVacations = allVacations.length;
+                // Fetch all vacations
+                const vacations = await getVacations();
+                setAllVacations(vacations);
+
+                // Update pagination count
+                const totalVacations = vacations.length;
                 const calculatedTotalPages = Math.ceil(totalVacations / 10);
                 setTotalPages(calculatedTotalPages);
 
                 // Fetch paginated vacations
-                await dispatch(fetchPaginatedVacations({ page, limit: 10 }));
+                dispatch(fetchPaginatedVacations({ page, limit: 10 }));
             } catch (error) {
                 console.error('Error fetching vacations:', error);
             } finally {
@@ -44,12 +47,12 @@ const VacationList: React.FC = () => {
         fetchData();
     }, [dispatch, page]);
 
-    const handleAddVacation = async () => {
-        if (newVacation) {
-            await dispatch(addVacation(newVacation));
-            dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
-        }
-    };
+    // const handleAddVacation = async () => {
+    //     if (newVacation) {
+    //         await dispatch(addVacation(newVacation));
+    //         dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
+    //     }
+    // };
 
     const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
@@ -59,7 +62,8 @@ const VacationList: React.FC = () => {
     if (status === 'loading' || loading) return <div>Loading...</div>;
     if (status === 'failed') return <div>{error}</div>;
 
-    const filteredVacations = vacations.filter((vacation: VacationModel) => {
+    // Filter and sort vacations
+    const filteredVacations = allVacations.filter((vacation: VacationModel) => {
         const now = new Date();
         const startDate = new Date(vacation.startDate);
         const endDate = new Date(vacation.endDate);
@@ -77,15 +81,19 @@ const VacationList: React.FC = () => {
         }
     });
 
-    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFilter(e.target.value);
-    };
-
     const sortedVacations = [...filteredVacations].sort((a, b) => {
         const dateA = new Date(a.startDate);
         const dateB = new Date(b.startDate);
         return dateA.getTime() - dateB.getTime();
     });
+
+    // Apply pagination to sorted vacations
+    const startIndex = (page - 1) * 10;
+    const paginatedVacations = sortedVacations.slice(startIndex, startIndex + 10);
+
+    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFilter(e.target.value);
+    };
 
     return (
         <div className="container">
@@ -126,7 +134,7 @@ const VacationList: React.FC = () => {
                 </Form>
             )}
             <Row>
-                {sortedVacations.map((vacation: VacationModel) => (
+                {paginatedVacations.map((vacation: VacationModel) => (
                     <Col key={vacation.id || "placeholder"} md={4} className="mb-4">
                         <VacationCard vacation={vacation} />
                     </Col>
