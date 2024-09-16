@@ -12,3 +12,12 @@ ENOENT: no such file or directory, unlink '/Users/shakedkelman/Documents/FullSta
 ENOENT: no such file or directory, unlink '/Users/shakedkelman/Documents/FullStack4578:41/projects/project_three/back_end/src/assets/images/mexico.jpg'
 ENOENT: no such file or directory, unlink '/Users/shakedkelman/Documents/FullStack4578:41/projects/project_three/back_end/src/assets/images/japan.jpeg'
 Failed to delete image at /Users/shakedkelman/Documents/FullStack4578:41/projects/project_three/back_end/src/assets/images/0a576516-996d-4061-a939-54f8b2f951c1.jpg: ENOENT: no such file or directory, unlink '/Users/shakedkelman/Documents/FullStack4578:41/projects/project_three/back_end/src/assets/images/0a576516-996d-4061-a939-54f8b2f951c1.jpg'
+Vacation ID not found
+Vacation ID not found
+Database query failed: Vacation ID not found
+Database query failed: Vacation ID not found
+Database query failed: Vacation ID not found
+Database query failed: Vacation ID not found
+Database query failed: Unknown column 'NaN' in 'where clause'
+Database query failed: Unknown column 'NaN' in 'where clause'
+Database query failed: Unknown column 'NaN' in 'where clause'

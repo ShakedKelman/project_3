@@ -164,13 +164,24 @@ vacationRoutes.delete(appConfig.routePrefix + "/vacations/:id",
 
 // routes/vacationRoutes.ts
 
-vacationRoutes.get(appConfig.routePrefix + "/vacations-pg",  async (req: Request, res: Response, next: NextFunction) => {
+vacationRoutes.get(appConfig.routePrefix + "/vacations-pg/:id?", async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
-        const vacations = await getVacationsPaginated(Number(page), Number(limit));
+        // Parse ID from URL path parameter
+        const id = req.params.id ? parseInt(req.params.id, 10) : undefined;
+
+        // Parse page and limit from query parameters
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+
+        // console.log('ID:', id);
+        // console.log('Page:', page);
+        // console.log('Limit:', limit);
+
+        const vacations = await getVacationsPaginated(page, limit, id);
         res.status(StatusCode.Ok).json(vacations);
     } catch (error) {
-        next(error)
+        next(error);
     }
 });
+
 
