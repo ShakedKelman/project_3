@@ -133,21 +133,22 @@ const AddVacationForm: React.FC = () => {
                 </Form.Group>
 
                 <Form.Group controlId="formPrice">
-                    <Form.Label>Price</Form.Label>
-                    <InputGroup>
-                        <InputGroup.Text>$</InputGroup.Text>
-                        <Form.Control
-                            type="number"
-                            name="price"
-                            value={newVacation.price || 0}
-                            onChange={handlePriceChange}
-                            required
-                            placeholder="Enter price"
-                            min="0"
-                            step="0.01"
-                        />
-                    </InputGroup>
-                </Form.Group>
+    <Form.Label>Price</Form.Label>
+    <InputGroup>
+        <InputGroup.Text>$</InputGroup.Text>
+        <Form.Control
+            type="number"
+            name="price"
+            value={newVacation.price || 0}
+            onChange={handlePriceChange}
+            required
+            placeholder="Enter price"
+            min="0"
+            step="1" // Change step to 1 to increment/decrement by 1
+        />
+    </InputGroup>
+</Form.Group>
+
 
                 <Form.Group controlId="formImage">
                     <Form.Label>Upload Image</Form.Label>

@@ -146,13 +146,16 @@ const EditVacationForm: React.FC = () => {
                 />
             </Form.Group>
             <Form.Group controlId="price">
-                <Form.Label>Price:</Form.Label>
-                <Form.Control
-                    type="text"
-                    value={`$${vacation?.price || ''}`} // Display the price with $
-                    onChange={handlePriceChange}
-                />
-            </Form.Group>
+    <Form.Label>Price:</Form.Label>
+    <Form.Control
+        type="number"
+        value={vacation?.price || 0} // Ensure value is numeric
+        onChange={handlePriceChange}
+        min="0"
+        step="1" // Set step to 1 to increment/decrement by 1
+    />
+</Form.Group>
+
             <Form.Group>
                 <Form.Label>Current Image:</Form.Label>
                 {vacation?.imageFileName && (
