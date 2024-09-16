@@ -4,10 +4,9 @@ import { RootState, AppDispatch } from '../../store/store';
 import VacationCard from './VacationCard';
 import { VacationModel } from '../../model/VacationModel';
 import { Row, Col, Form } from 'react-bootstrap';
-import { addVacation } from '../../store/slices/vacationslice';
+import { fetchPaginatedVacations } from '../../api/vactions/vacationsThunk';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
-import { fetchPaginatedVacations } from '../../api/vactions/vacationsThunk';
 import { getVacations } from '../../api/vactions/vactions-api';
 
 const VacationList: React.FC = () => {
@@ -35,8 +34,8 @@ const VacationList: React.FC = () => {
                 const calculatedTotalPages = Math.ceil(totalVacations / 10);
                 setTotalPages(calculatedTotalPages);
 
-                // Fetch paginated vacations
-                dispatch(fetchPaginatedVacations({ page, limit: 10 }));
+                // Fetch paginated vacations for the first page
+                dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
             } catch (error) {
                 console.error('Error fetching vacations:', error);
             } finally {
@@ -45,42 +44,67 @@ const VacationList: React.FC = () => {
         };
 
         fetchData();
-    }, [dispatch, page]);
+    }, [dispatch]);
 
-    // const handleAddVacation = async () => {
-    //     if (newVacation) {
-    //         await dispatch(addVacation(newVacation));
-    //         dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
-    //     }
-    // };
+    useEffect(() => {
+        // When filter changes, reset to the first page
+        setPage(1);
+    }, [filter]);
+
+    useEffect(() => {
+        const fetchFilteredData = async () => {
+            setLoading(true);
+            try {
+                const filteredVacations = applyFilter(allVacations, filter);
+                const totalVacations = filteredVacations.length;
+                const calculatedTotalPages = Math.ceil(totalVacations / 10);
+                setTotalPages(calculatedTotalPages);
+
+                // Fetch paginated filtered vacations
+                dispatch(fetchPaginatedVacations({ page, limit: 10 }));
+            } catch (error) {
+                console.error('Error fetching filtered vacations:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchFilteredData();
+    }, [filter, page]);
+
+    const applyFilter = (vacations: VacationModel[], filter: string) => {
+        const now = new Date();
+        return vacations.filter((vacation: VacationModel) => {
+            const startDate = new Date(vacation.startDate);
+            const endDate = new Date(vacation.endDate);
+            const isFollowing = true; // Replace with actual following check logic
+
+            switch (filter) {
+                case 'following':
+                    return isFollowing;
+                case 'notStarted':
+                    return startDate > now;
+                case 'happeningNow':
+                    return startDate <= now && endDate >= now;
+                default:
+                    return true;
+            }
+        });
+    };
 
     const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
-        dispatch(fetchPaginatedVacations({ page: value, limit: 10 }));
+    };
+
+    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFilter(e.target.value);
     };
 
     if (status === 'loading' || loading) return <div>Loading...</div>;
     if (status === 'failed') return <div>{error}</div>;
 
     // Filter and sort vacations
-    const filteredVacations = allVacations.filter((vacation: VacationModel) => {
-        const now = new Date();
-        const startDate = new Date(vacation.startDate);
-        const endDate = new Date(vacation.endDate);
-        const isFollowing = true; // Replace with actual following check logic
-
-        switch (filter) {
-            case 'following':
-                return isFollowing;
-            case 'notStarted':
-                return startDate > now;
-            case 'happeningNow':
-                return startDate <= now && endDate >= now;
-            default:
-                return true;
-        }
-    });
-
+    const filteredVacations = applyFilter(allVacations, filter);
     const sortedVacations = [...filteredVacations].sort((a, b) => {
         const dateA = new Date(a.startDate);
         const dateB = new Date(b.startDate);
@@ -90,10 +114,6 @@ const VacationList: React.FC = () => {
     // Apply pagination to sorted vacations
     const startIndex = (page - 1) * 10;
     const paginatedVacations = sortedVacations.slice(startIndex, startIndex + 10);
-
-    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFilter(e.target.value);
-    };
 
     return (
         <div className="container">
