@@ -41,17 +41,17 @@ const AddVacationForm: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-    
+
         if (isDateInThePast(newVacation.startDate) || isDateInThePast(newVacation.endDate)) {
             setError("Start Date and End Date must be in the future.");
             return;
         }
-    
+
         if (new Date(newVacation.startDate) > new Date(newVacation.endDate)) {
             setError("End Date must be after Start Date.");
             return;
         }
-    
+
         try {
             const formData = new FormData();
             formData.append('destination', newVacation.destination);
@@ -62,11 +62,10 @@ const AddVacationForm: React.FC = () => {
             if (imageFile) {
                 formData.append('image', imageFile);
             }
-    
-            // Call the addVacation API
+
             const addedVacation = await apiAddVacation(formData);
             dispatch(addVacation(addedVacation)); // Dispatch action to add vacation to Redux store
-            dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
+            dispatch(fetchPaginatedVacations({ page: 1, limit: 10 })); // Fetch paginated vacations
             setSuccess("Vacation added successfully");
             navigate('/vacations');
         } catch (error: any) {
