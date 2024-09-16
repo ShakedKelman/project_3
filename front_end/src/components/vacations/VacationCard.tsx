@@ -5,12 +5,13 @@ import { getImagesForVacation } from '../../api/images/images-api';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { VacationModel } from '../../model/VacationModel';
 import { siteConfig } from '../../utils/SiteConfig';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { selectUser } from '../../store/slices/authSlice';
 import { useAppDispatch, useAppSelector } from '../../store/store';
 import { deleteVacation } from '../../api/vactions/vactions-api';
@@ -36,13 +37,12 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
     const navigate = useNavigate();
     const user = useAppSelector(selectUser);
     const [error, setError] = useState<string | null>(null);
-    const dispatch = useAppDispatch(); // Hook for dispatching actions
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         const fetchAdditionalData = async () => {
             try {
                 if (vacation.id) {
-                    // Fetch followers
                     const vacationFollowers = await getFollowersForVacation(vacation.id);
                     setFollowers(vacationFollowers);
 
@@ -53,10 +53,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                         setIsFollowing(false);
                     }
 
-                    // Fetch images
                     const vacationImages = await getImagesForVacation(vacation.id);
-                    console.log(vacationImages);
-                    
                     setImages(vacationImages);
                 }
             } catch (error) {
@@ -70,10 +67,6 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
         return `${siteConfig.BASE_URL}${imagePath}`;
     };
 
-    const handleAddVacation = () => {
-        navigate('/add-vacation');
-    };
-
     const handleFollowClick = async () => {
         if (!user || !user.id || !vacation.id) {
             setError('User or Vacation ID is missing');
@@ -82,7 +75,6 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
 
         try {
             if (isFollowing) {
-                // Remove follower
                 if (user.token) {
                     await removeFollower(user.id, vacation.id, user.token);
                     setFollowers(prev => prev.filter(follower => follower.id !== user.id));
@@ -91,7 +83,6 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                     setError('Authentication token is missing.');
                 }
             } else {
-                // Add follower
                 if (user.token) {
                     await addFollower(user.id, vacation.id, user.token);
                     setFollowers(prev => [...prev, { id: user.id }]);
@@ -124,13 +115,8 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
             }
 
             try {
-                // Call deleteVacation with the vacation ID and user token
                 await deleteVacation(vacation.id, user.token);
-                console.log('Deleting vacation with ID:', vacation.id);
                 dispatch(deleteVacationReducer(vacation.id));
-
-                // Optionally, you can navigate away or refresh the list after deletion
-                // navigate('/some-route'); // Navigate or refresh as needed
             } catch (error) {
                 setError('Failed to delete vacation. Please try again later.');
                 console.error('Error deleting vacation:', error);
@@ -140,73 +126,65 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
 
     return (
         <div>
-        <Row>
-            <Col md={8} className="mb-4">
-                <Card className="vacation-card">
-                    <div className="vacation-card-img-container">
-                        <Card.Img
-                            className="vacation-card-img"
-                            variant="top"
-                            src={images.length > 0 ? getImageUrl(images[0]) : 'placeholder.jpg'} // Placeholder if no image
-                            alt={vacation.destination}
-                        />
-                        <Card.Title className="vacation-card-title">{vacation.destination}</Card.Title>
-                    </div>
-                    <Card.Body className="vacation-card-body">
-                        <div className="vacation-card-text">
-                            <p>{vacation.description}</p>
-                            <p>{`Start Date: ${formatDate(vacation.startDate)}`}</p>
-                            <p>{`End Date: ${formatDate(vacation.endDate)}`}</p>
-                            <p>{`Price: $${vacation.price}`}</p>
-                            {!user?.isAdmin ? (
-                                <div className="vacation-card-actions">
-                                    <div className="vacation-card-favorites">
-                                        {isFollowing ? (
-                                            <FavoriteIcon
-                                                style={{
-                                                    marginRight: '5px',
-                                                    cursor: 'pointer',
-                                                    color: 'red'
-                                                }}
-                                                onClick={handleFollowClick}
-                                            />
-                                        ) : (
-                                            <FavoriteBorderIcon
-                                                style={{
-                                                    marginRight: '5px',
-                                                    cursor: 'pointer',
-                                                    color: 'gray'
-                                                }}
-                                                onClick={handleFollowClick}
-                                            />
-                                        )}
-                                        <span>{followers.length}</span>
-                                        {user && isFollowing && (
-                                            <span className="following" style={{ marginLeft: '10px' }}>
-                                                You follow this vacation
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="vacation-card-buttons">
-                                    <Button variant="danger" onClick={handleDeleteVacation}>
-                                        Delete
-                                    </Button>
-                                    <Button variant="warning" onClick={handleEditVacation}>
-                                        Edit
-                                    </Button>
-                                </div>
-                            )}
-                            {error && <div style={{ color: 'red' }}>{error}</div>}
+            <Row>
+                <Col md={8} className="mb-4">
+                    <Card className="vacation-card">
+                        <div className="vacation-card-img-container">
+                            <Card.Img
+                                className="vacation-card-img"
+                                variant="top"
+                                src={images.length > 0 ? getImageUrl(images[0]) : 'placeholder.jpg'}
+                                alt={vacation.destination}
+                            />
+                            <Card.Title className="vacation-card-title">{vacation.destination}</Card.Title>
                         </div>
-                    </Card.Body>
-                </Card>
-            </Col>
-        </Row>
-    </div>
-    
-    
+                        <Card.Body className="vacation-card-body">
+                            <div className="vacation-card-text">
+                                <p>{vacation.description}</p>
+                                <p>{`Start Date: ${formatDate(vacation.startDate)}`}</p>
+                                <p>{`End Date: ${formatDate(vacation.endDate)}`}</p>
+                                <p>{`Price: $${vacation.price}`}</p>
+                                {!user?.isAdmin ? (
+                                    <div className="vacation-card-actions">
+                                        <div className="vacation-card-favorites">
+                                            {isFollowing ? (
+                                                <FavoriteIcon
+                                                    style={{ marginRight: '5px', cursor: 'pointer', color: 'red' }}
+                                                    onClick={handleFollowClick}
+                                                />
+                                            ) : (
+                                                <FavoriteBorderIcon
+                                                    style={{ marginRight: '5px', cursor: 'pointer', color: 'gray' }}
+                                                    onClick={handleFollowClick}
+                                                />
+                                            )}
+                                            <span>{followers.length}</span>
+                                            {user && isFollowing && (
+                                                <span className="following" style={{ marginLeft: '10px' }}>
+                                                    You follow this vacation
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="vacation-card-buttons">
+                                        <DeleteIcon
+                                            style={{ marginRight: '10px', cursor: 'pointer', color: 'red' }}
+                                            onClick={handleDeleteVacation}
+                                        />
+                                        <EditIcon
+                                            style={{ cursor: 'pointer', color: 'orange' }}
+                                            onClick={handleEditVacation}
+                                        />
+                                    </div>
+                                )}
+                                {error && <div style={{ color: 'red' }}>{error}</div>}
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+        </div>
     );
 };
 
