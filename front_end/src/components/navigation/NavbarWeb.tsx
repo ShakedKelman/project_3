@@ -4,7 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store/store';
 import { logoutUser } from '../../api/auth/authThunks';
-import { fetchPaginatedVacations } from '../../api/vactions/vacationsThunk';
+import { fetchPaginatedVacations, fetchVacations } from '../../api/vactions/vacationsThunk';
+import "../../css/navbar.css";
 
 const NavbarWeb: React.FC = () => {
     const { status, user } = useSelector((state: RootState) => state.auth);
@@ -15,9 +16,9 @@ const NavbarWeb: React.FC = () => {
     useEffect(() => {
         if (user?.isAdmin) {
             dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
+            dispatch(fetchVacations()); // Fetch all vacations for dropdown
         }
     }, [user?.isAdmin, dispatch]);
-    
 
     const handleLogout = () => {
         if (window.confirm('Are you sure you want to logout?')) {
@@ -50,7 +51,7 @@ const NavbarWeb: React.FC = () => {
                                             Edit Vacation
                                         </Dropdown.Toggle>
 
-                                        <Dropdown.Menu>
+                                        <Dropdown.Menu className="custom-dropdown-menu">
                                             {vacations.map(vacation => (
                                                 <Dropdown.Item
                                                     key={vacation.id || `vacation-${Math.random()}`} // fallback if id is undefined
@@ -64,7 +65,6 @@ const NavbarWeb: React.FC = () => {
                                                 </Dropdown.Item>
                                             ))}
                                         </Dropdown.Menu>
-
                                     </Dropdown>
                                 </>
                             )}

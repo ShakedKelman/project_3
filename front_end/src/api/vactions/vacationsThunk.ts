@@ -30,7 +30,7 @@ export const fetchVacations = createAsyncThunk(
 );
 
 export const fetchPaginatedVacations = createAsyncThunk(
-    'vacation/fetchVacations',
+    'vacation/fetchPaginatedVacations',
     async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
         try {
             const vacations = await getPaginatedVacations(page, limit);
