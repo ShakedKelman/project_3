@@ -1,6 +1,5 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import VacationList from '../vacations/VacationsList';
 import LoginComponent from '../auth/Login';
 import RegisterComponent from '../auth/Register';
 import Logout from '../auth/Logout';
@@ -8,6 +7,7 @@ import EditVacationForm from '../forms/EditVacationForm';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import AddVacationForm from '../forms/AddVactionForm';
+import VacationList from '../vacations/VacationsList';
 
 const SiteRoutes: React.FC = () => {
   const { status, user } = useSelector((state: RootState) => state.auth);

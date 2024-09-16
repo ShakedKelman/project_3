@@ -31,16 +31,29 @@ import { getPaginatedVacations } from './paginated-vacations-api';
 
 export const fetchPaginatedVacations = createAsyncThunk(
     'vacation/fetchVacations',
-    async (_, thunkAPI) => {
+    async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
         try {
-            // Provide default values for page and limit
-            const vacations = await getPaginatedVacations(1, 10); // Example default values
+            const vacations = await getPaginatedVacations(page, limit);
             return vacations;
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to fetch vacations');
         }
     }
 );
+
+// export const fetchPaginatedVacations = createAsyncThunk(
+//     'vacation/fetchVacations',
+//     async (_, thunkAPI) => {
+//         try {
+//             // Provide default values for page and limit
+//             const vacations = await getPaginatedVacations(1, 10); // Example default values
+//             return vacations;
+//         } catch (error) {
+//             return thunkAPI.rejectWithValue('Failed to fetch vacations');
+//         }
+//     }
+// );
+
 
 
 export const deleteVacation = createAsyncThunk(

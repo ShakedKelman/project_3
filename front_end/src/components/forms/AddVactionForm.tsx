@@ -66,7 +66,7 @@ const AddVacationForm: React.FC = () => {
             // Call the addVacation API
             const addedVacation = await apiAddVacation(formData);
             dispatch(addVacation(addedVacation)); // Dispatch action to add vacation to Redux store
-            dispatch(fetchPaginatedVacations()); // Re-fetch vacations to ensure state is updated
+            dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
             setSuccess("Vacation added successfully");
             navigate('/vacations');
         } catch (error: any) {
