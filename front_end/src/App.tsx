@@ -2,29 +2,25 @@ import React, { useEffect } from 'react';
 import NavbarWeb from './components/navigation/NavbarWeb';
 import SiteRoutes from './components/navigation/SiteRoutes';
 import { useDispatch } from 'react-redux';
-import { loginSuccess, logout } from './store/slices/authSlice';
+import { logout } from './store/slices/authSlice';
 import { AppDispatch } from './store/store';
+import { checkAuthStatus } from './utils/checkStatus';
 
 const App: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    const checkAuthStatus = () => {
-      const user = localStorage.getItem('user');
-
-      if (user) {
-        const parsedUser = JSON.parse(user);
-        dispatch(loginSuccess(parsedUser));
-      } else {
-        dispatch(logout());
-      }
+    const performAuthCheck = () => {
+      checkAuthStatus(dispatch);
     };
 
-    checkAuthStatus();
+    // Initial check
+    performAuthCheck();
 
     // Set up an interval to check auth status regularly
-    const intervalId = setInterval(checkAuthStatus, 60000); // Check every minute
+    const intervalId = setInterval(performAuthCheck, 60000); // Check every minute
 
+    // Cleanup function to clear the interval when the component unmounts
     return () => clearInterval(intervalId);
   }, [dispatch]);
 

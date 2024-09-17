@@ -13,8 +13,8 @@ export const loginUser = createAsyncThunk<UserModel, LoginUserArgs>(
   'auth/loginUser',
   async ({ email, password }: LoginUserArgs, { dispatch }) => {
     try {
-      const user: UserModel = await login(email, password);
-      dispatch(loginSuccess(user));
+      const { user, token } = await login(email, password);
+      dispatch(loginSuccess({ user, token }));
       return user;
     } catch (error: any) {
       console.error('Login error in thunk:', error);
@@ -29,13 +29,13 @@ export const registerUser = createAsyncThunk<UserModel, UserModel>(
   'auth/registerUser',
   async (user: UserModel, { dispatch }) => {
     try {
-      const registeredUser: UserModel = await register(user);
+      const { user: registeredUser, token } = await register(user);
 
       if (!registeredUser.id) {
         throw new Error('Registered user is missing ID');
       }
 
-      dispatch(registerSuccess(registeredUser));
+      dispatch(registerSuccess({ user: registeredUser, token }));
       return registeredUser;
     } catch (error: any) {
       console.error('Registration error in thunk:', error);

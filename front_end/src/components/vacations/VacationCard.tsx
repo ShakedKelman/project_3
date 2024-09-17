@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getFollowersForVacation, addFollower, removeFollower } from '../../api/followers/follower-api';
-import { getImagesForVacation } from '../../api/images/images-api';
+import { useDispatch, useSelector } from 'react-redux';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
@@ -13,10 +12,14 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { selectUser } from '../../store/slices/authSlice';
-import { useAppDispatch, useAppSelector } from '../../store/store';
 import { deleteVacation } from '../../api/vactions/vactions-api';
 import { deleteVacationReducer } from '../../store/slices/vacationslice';
 import '../../css/vacationCard.css';
+import { addVacationFollower, fetchFollowers, removeVacationFollower } from '../../api/followers/followersThunk';
+import { getFollowersForVacation } from '../../api/followers/follower-api';
+import { getImagesForVacation } from '../../api/images/images-api';
+import { selectFollowers } from '../../store/slices/followersSlice';
+import { AppDispatch } from '../../store/store';
 
 const formatDate = (isoDate: string): string => {
     const date = new Date(isoDate);
@@ -26,70 +29,73 @@ const formatDate = (isoDate: string): string => {
     return `${day}/${month}/${year}`;
 };
 
+    const getToken = (): string | null => {
+        return localStorage.getItem('token');
+    };
+
+
 interface VacationCardProps {
     vacation: VacationModel;
 }
 
 const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
-    const [followers, setFollowers] = useState<any[]>([]);
     const [images, setImages] = useState<string[]>([]);
     const [isFollowing, setIsFollowing] = useState<boolean>(false);
     const navigate = useNavigate();
-    const user = useAppSelector(selectUser);
+    const user = useSelector(selectUser);
+    const followers = useSelector(selectFollowers);
     const [error, setError] = useState<string | null>(null);
-    const dispatch = useAppDispatch();
-
+    const dispatch = useDispatch<AppDispatch>();
+    
     useEffect(() => {
+        console.log('User:', user); // Add this to debug user state
         const fetchAdditionalData = async () => {
             try {
                 if (vacation.id) {
                     const vacationFollowers = await getFollowersForVacation(vacation.id);
-                    setFollowers(vacationFollowers);
-
+                    const vacationImages = await getImagesForVacation(vacation.id);
+                    setImages(vacationImages);
+            
+                    dispatch(fetchFollowers(vacation.id));
+            
                     if (user && user.id !== undefined) {
                         const followerIds = vacationFollowers.map(follower => follower.id);
                         setIsFollowing(followerIds.includes(user.id));
                     } else {
                         setIsFollowing(false);
                     }
-
-                    const vacationImages = await getImagesForVacation(vacation.id);
-                    setImages(vacationImages);
                 }
             } catch (error) {
                 console.error('Error fetching additional data:', error);
             }
         };
+        
         fetchAdditionalData();
-    }, [vacation.id, user]);
-
+    }, [vacation.id, user, dispatch]);
+    
     const getImageUrl = (imagePath: string) => {
         return `${siteConfig.BASE_URL}${imagePath}`;
     };
-
+    
     const handleFollowClick = async () => {
-        if (!user || !user.id || !vacation.id) {
-            setError('User or Vacation ID is missing');
+        const token = getToken(); // Retrieve the token
+        
+        console.log('User:', user); // Debug user state
+        console.log('Vacation ID:', vacation.id); // Debug vacation ID
+        console.log('User Token:', token); // Safely access token
+
+        if (!user?.id || !vacation.id || !token) {
+            setError('User or Vacation ID or token is missing');
             return;
         }
-
+    
         try {
             if (isFollowing) {
-                if (user.token) {
-                    await removeFollower(user.id, vacation.id, user.token);
-                    setFollowers(prev => prev.filter(follower => follower.id !== user.id));
-                    setIsFollowing(false);
-                } else {
-                    setError('Authentication token is missing.');
-                }
+                await dispatch(removeVacationFollower({ userId: user.id, vacationId: vacation.id, token }) as any);
+                setIsFollowing(false);
             } else {
-                if (user.token) {
-                    await addFollower(user.id, vacation.id, user.token);
-                    setFollowers(prev => [...prev, { id: user.id }]);
-                    setIsFollowing(true);
-                } else {
-                    setError('Authentication token is missing.');
-                }
+                await dispatch(addVacationFollower({ userId: user.id, vacationId: vacation.id, token }) as any);
+                setIsFollowing(true);
             }
             setError(null);
         } catch (error) {
@@ -97,7 +103,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
             console.error('Error updating follower:', error);
         }
     };
-
+    
     const handleEditVacation = () => {
         navigate(`/edit-vacation/${vacation.id}`);
     };
@@ -109,13 +115,15 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
         }
 
         if (window.confirm('Are you sure you want to delete this vacation?')) {
-            if (!user?.token) {
+            const token = getToken(); // Retrieve the token
+            
+            if (!token) {
                 setError('Authentication token is missing.');
                 return;
             }
 
             try {
-                await deleteVacation(vacation.id, user.token);
+                await deleteVacation(vacation.id, token);
                 dispatch(deleteVacationReducer(vacation.id));
             } catch (error) {
                 setError('Failed to delete vacation. Please try again later.');

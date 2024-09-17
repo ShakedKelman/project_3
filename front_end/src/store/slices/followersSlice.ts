@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { addFollower, fetchFollowers, removeFollower } from '../../api/followers/followersThunk';
+import { addVacationFollower, fetchFollowers, removeVacationFollower } from '../../api/followers/followersThunk';
+import { RootState } from '../store';
 
 interface Follower {
     id: number;
-    name: string;
 }
 
 interface FollowersState {
@@ -21,35 +21,47 @@ const initialState: FollowersState = {
 const followersSlice = createSlice({
     name: 'followers',
     initialState,
-    reducers: {
-        // Define any additional reducers if needed
-    },
-    extraReducers: builder => {
-        builder
-            .addCase(fetchFollowers.pending, state => {
-                state.status = 'loading';
-            })
-            .addCase(fetchFollowers.fulfilled, (state, action: PayloadAction<Follower[]>) => {
-                state.status = 'succeeded';
-                state.followers = action.payload;
-            })
-            .addCase(fetchFollowers.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload as string;
-            })
-            .addCase(addFollower.fulfilled, (state, action) => {
-                // Handle state update after adding a follower, if needed
-            })
-            .addCase(removeFollower.fulfilled, (state, action) => {
-                // Handle state update after removing a follower, if needed
-            })
-            .addCase(addFollower.rejected, (state, action) => {
-                state.error = action.payload as string;
-            })
-            .addCase(removeFollower.rejected, (state, action) => {
-                state.error = action.payload as string;
-            });
-    },
+    reducers: {},
+    extraReducers: (builder) => {
+        builder.addCase(fetchFollowers.pending, (state) => {
+            state.status = 'loading';
+            state.error = null;
+        });
+        builder.addCase(fetchFollowers.fulfilled, (state, action: PayloadAction<Follower[]>) => {
+            state.status = 'succeeded';
+            state.followers = action.payload;
+        });
+        builder.addCase(fetchFollowers.rejected, (state, action: PayloadAction<any>) => {
+            state.status = 'failed';
+            state.error = action.payload;
+        });
+
+        builder.addCase(addVacationFollower.pending, (state) => {
+            state.status = 'loading';
+        });
+        builder.addCase(addVacationFollower.fulfilled, (state, action: PayloadAction<{ userId: number }>) => {
+            state.status = 'succeeded';
+            state.followers.push({ id: action.payload.userId });
+        });
+        builder.addCase(addVacationFollower.rejected, (state, action: PayloadAction<any>) => {
+            state.status = 'failed';
+            state.error = action.payload;
+        });
+
+        builder.addCase(removeVacationFollower.pending, (state) => {
+            state.status = 'loading';
+        });
+        builder.addCase(removeVacationFollower.fulfilled, (state, action: PayloadAction<{ userId: number }>) => {
+            state.status = 'succeeded';
+            state.followers = state.followers.filter(follower => follower.id !== action.payload.userId);
+        });
+        builder.addCase(removeVacationFollower.rejected, (state, action: PayloadAction<any>) => {
+            state.status = 'failed';
+            state.error = action.payload;
+        });
+    }
 });
+
+export const selectFollowers = (state: RootState) => state.followers.followers;
 
 export default followersSlice.reducer;

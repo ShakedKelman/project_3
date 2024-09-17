@@ -1,54 +1,41 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { siteConfig } from '../../utils/SiteConfig';
+import { addFollower, getFollowersForVacation, removeFollower } from './follower-api';
 
-// Define types for followers
-interface Follower {
-    id: number;
-    name: string;
-}
-
-// Thunk to fetch followers for a specific vacation
-export const fetchFollowers = createAsyncThunk<Follower[], number>(
+// Fetch followers for a specific vacation
+export const fetchFollowers = createAsyncThunk(
     'followers/fetchFollowers',
-    async (vacationId, { rejectWithValue }) => {
+    async (vacationId: number, thunkAPI) => {
         try {
-            const response = await axios.get(`${siteConfig.BASE_URL}vacations/${vacationId}/followers`);
-            return response.data;
+            const followers = await getFollowersForVacation(vacationId);
+            return followers;
         } catch (error) {
-            return rejectWithValue('Error fetching followers');
+            return thunkAPI.rejectWithValue('Failed to fetch followers');
         }
     }
 );
 
-// Thunk to add a follower to a vacation
-export const addFollower = createAsyncThunk<void, { userId: number; vacationId: number; token: string }>(
+// Add a follower to a vacation
+export const addVacationFollower = createAsyncThunk(
     'followers/addFollower',
-    async ({ userId, vacationId, token }, { rejectWithValue }) => {
+    async ({ userId, vacationId, token }: { userId: number, vacationId: number, token: string }, thunkAPI) => {
         try {
-            await axios.post(`${siteConfig.BASE_URL}vacations/${vacationId}/followers`, { userId }, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
+            await addFollower(userId, vacationId, token);
+            return { userId, vacationId };
         } catch (error) {
-            return rejectWithValue('Error adding follower');
+            return thunkAPI.rejectWithValue('Failed to add follower');
         }
     }
 );
 
-// Thunk to remove a follower from a vacation
-export const removeFollower = createAsyncThunk<void, { userId: number; vacationId: number; token: string }>(
+// Remove a follower from a vacation
+export const removeVacationFollower = createAsyncThunk(
     'followers/removeFollower',
-    async ({ userId, vacationId, token }, { rejectWithValue }) => {
+    async ({ userId, vacationId, token }: { userId: number, vacationId: number, token: string }, thunkAPI) => {
         try {
-            await axios.delete(`${siteConfig.BASE_URL}vacations/${vacationId}/followers/${userId}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
+            await removeFollower(userId, vacationId, token);
+            return { userId, vacationId };
         } catch (error) {
-            return rejectWithValue('Error removing follower');
+            return thunkAPI.rejectWithValue('Failed to remove follower');
         }
     }
 );

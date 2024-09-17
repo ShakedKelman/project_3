@@ -41,11 +41,11 @@ const RegisterComponent: React.FC = () => {
       dispatch(registerRequest());
   
       try {
-        const user: UserModel = { email, password, firstName, lastName, isAdmin };
-        const registeredUser = await register(user);
+        const userToRegister: UserModel = { email, password, firstName, lastName, isAdmin };
+        const { user: registeredUser, token } = await register(userToRegister);
   
-        dispatch(registerSuccess(registeredUser));
-        dispatch(loginSuccess(registeredUser));
+        // Dispatch registerSuccess with both user and token
+        dispatch(registerSuccess({ user: registeredUser, token }));
   
         navigate('/vacations');
       } catch (error) {
@@ -60,7 +60,7 @@ const RegisterComponent: React.FC = () => {
         }
       }
     };
-
+  
 
   return (
     <Container className="mt-4">
