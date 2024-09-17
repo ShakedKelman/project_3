@@ -9,6 +9,7 @@ import { Form, Button, Alert, Spinner, Image } from 'react-bootstrap';
 import { siteConfig } from '../../utils/SiteConfig';
 import { deleteImage, getImagesForVacation } from '../../api/images/images-api'; // Import the function to get images
 import { getPaginatedVacations } from '../../api/vactions/paginated-vacations-api';
+import axios from 'axios'; // Make sure this is present at the top of your file
 
 const EditVacationForm: React.FC = () => {
     const dispatch = useDispatch();
@@ -58,6 +59,13 @@ const EditVacationForm: React.FC = () => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         if (user?.token && vacation) {
+            // Validate input fields
+            if (!vacation.description || vacation.description.trim() === '') {
+                setError('Description cannot be empty');
+                return;
+            }
+            // Add other validations as needed
+    
             try {
                 const oldImageFileName = vacation.imageFileName;
     
@@ -84,10 +92,18 @@ const EditVacationForm: React.FC = () => {
                 navigate('/vacations');
             } catch (err) {
                 console.error(err);
-                setError('Failed to update vacation');
+                if (axios.isAxiosError(err) && err.response) {
+                    // Display the specific backend error message
+                    const errorMessage = err.response.data || 'Failed to update vacation';
+                    setError(errorMessage);
+                } else {
+                    setError('Failed to update vacation');
+                }
             }
         }
     };
+    
+    
     
     
     
