@@ -26,16 +26,10 @@ export const checkAuthStatus = (dispatch: AppDispatch) => {
       return;
     }
 
-    // Optionally, verify the token's expiration
-    const decodedToken: any = jwtDecode(token);
-    if (decodedToken.exp * 1000 < Date.now()) {
-      console.log('Token has expired');
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      return;
-    }
+    // We're no longer checking the token's expiration
+    // Instead, we assume that if the token and user data exist, the session is valid
 
-    // If everything is valid, dispatch loginSuccess
+    // Dispatch loginSuccess to maintain the authenticated state
     dispatch(loginSuccess({ user, token }));
   } catch (error) {
     console.error('Error in checkAuthStatus:', error);

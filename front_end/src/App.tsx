@@ -11,7 +11,12 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const performAuthCheck = () => {
-      checkAuthStatus(dispatch);
+      try {
+        checkAuthStatus(dispatch);
+      } catch (error) {
+        console.error('Error performing auth check:', error);
+        // Handle potential errors here
+      }
     };
 
     // Initial check
