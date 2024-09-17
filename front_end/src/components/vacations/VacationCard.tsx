@@ -17,7 +17,7 @@ import { deleteVacationReducer } from '../../store/slices/vacationslice';
 import '../../css/vacationCard.css';
 import { addVacationFollower, fetchFollowers, removeVacationFollower } from '../../api/followers/followersThunk';
 import { getFollowersForVacation } from '../../api/followers/follower-api';
-import { getImagesForVacation } from '../../api/images/images-api';
+import { getImageForVacation } from '../../api/images/images-api';
 import { selectFollowers } from '../../store/slices/followersSlice';
 import { AppDispatch } from '../../store/store';
 
@@ -52,7 +52,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
             try {
                 if (vacation.id) {
                     const vacationFollowers = await getFollowersForVacation(vacation.id);
-                    const vacationImages = await getImagesForVacation(vacation.id);
+                    const vacationImages = await getImageForVacation(vacation.id);
                     setImages(vacationImages);
             
                     dispatch(fetchFollowers(vacation.id));

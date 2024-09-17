@@ -9,6 +9,8 @@ interface VacationInterface {
     endDate: string; // ISO date string or format you prefer
     price: number;
     imageFileName?: string;
+    image_path?: string;
+
 }
 
 export default class VacationModel {
@@ -19,6 +21,8 @@ export default class VacationModel {
     endDate: string;
     price: number;
     imageFileName?: string; // Make this optional
+    image_path?: string;
+
 
     constructor(vacation: VacationInterface) {
         this.id = vacation.id;
@@ -28,6 +32,8 @@ export default class VacationModel {
         this.endDate = vacation.endDate;
         this.price = vacation.price;
         this.imageFileName = vacation.imageFileName; // Optional field
+        this.image_path = vacation.image_path; // Optional field
+
     }
 
     private static validateSchema = Joi.object({
@@ -37,7 +43,9 @@ export default class VacationModel {
         startDate: Joi.date().required(),
         endDate: Joi.date().required().greater(Joi.ref('startDate')),
         price: Joi.number().required().positive().max(10000),
-        imageFileName: Joi.string().optional().allow('').max(255) // Allow empty string but not required
+        imageFileName: Joi.string().optional().allow('').max(255), // Allow empty string but not required
+        image_path: Joi.string().optional().allow('').max(255) // Allow empty string but not required
+
     });
 
     validate(): void {

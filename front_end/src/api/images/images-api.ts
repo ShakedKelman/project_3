@@ -1,12 +1,12 @@
 import axios from "axios";
 import { siteConfig } from "../../utils/SiteConfig";
 
-export const getImagesForVacation = async (vacationId: number): Promise<string[]> => {
+export const getImageForVacation = async (vacationId: number): Promise<string[]> => {
     try {
-        const response = await axios.get(`${siteConfig.BASE_URL}vacations/${vacationId}/images`);
+        const response = await axios.get(`${siteConfig.BASE_URL}vacations/${vacationId}/image`);
         
-        // console.log("Raw response:", response);
-        // console.log("Response data:", response.data);
+        console.log("Raw response:", response);
+        console.log("Response data:", response.data);
         
         if (Array.isArray(response.data)) {
             if (response.data.length === 0) {

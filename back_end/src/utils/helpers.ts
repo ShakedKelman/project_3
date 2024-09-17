@@ -7,6 +7,9 @@ import { v4 as uuid } from "uuid";
 import { unlink } from 'fs/promises';
 import { promisify } from 'util';
 import { existsSync } from 'fs';
+import { Request, Response } from 'express';
+import { extname } from 'path';
+import { getImageByVacation } from "../services/imagesService";
 
 
 export async function isDbServerUp() {
@@ -46,34 +49,13 @@ export async function writeErrorLog(errMsg: string) {
 export async function writeAccessLog(msg: string) {
     await writeToFile(appConfig.accessLogFile, msg);
 }
-// export async function saveImage(image: UploadedFile) {
-//     const extension = image.name.substring(image.name.lastIndexOf("."));
-//     const filename = uuid() + extension;
-//     const fullPath = path.join(appConfig.vacationsImagesPrefix, filename);
-//     await image.mv(fullPath);
-//     return filename;
-//   }
-  // utils/helpers.ts
 
-// utils/helpers.ts
-
-
-// export async function deleteImage(imagePath: string) {
-//     const fullPath = path.join(appConfig.vacationsImagesPrefix, imagePath);
-//     console.log(`Attempting to delete image at: ${fullPath}`);
-//     try {
-//         await unlink(fullPath); // Asynchronously delete the image file
-//         console.log(`Deleted image: ${fullPath}`);
-//     } catch (error) {
-//         console.error(`Error deleting image: ${fullPath}`, error);
-//         throw error;
-//     }
-// }
 
 
 // Save image function
 export async function saveImage(image: UploadedFile): Promise<string> {
     const extension = path.extname(image.name);
+    console.log(image)
     const filename = uuid() + extension;
     const fullPath = path.join(appConfig.vacationsImagesPrefix, filename);
     console.log('Base path:', appConfig.vacationsImagesPrefix);
@@ -91,9 +73,9 @@ export async function saveImage(image: UploadedFile): Promise<string> {
  * Deletes an image file from the file system.
  * @param imageName - The name of the image to be deleted (UUID or any other naming convention).
  */
-export const deleteImage = async (imageName: string): Promise<void> => {
+export const deleteImage = async (imageUUID: string): Promise<void> => {
     // Construct the full path for the image
-    const fullPath = path.join(appConfig.vacationsImagesPrefix, imageName);
+    const fullPath = (appConfig.vacationsImagesPrefix, imageUUID);
 
     console.log('Base path:', appConfig.vacationsImagesPrefix);
     console.log('Deleting image from:', fullPath);
@@ -110,3 +92,37 @@ export const deleteImage = async (imageName: string): Promise<void> => {
         }
     }
 };
+
+
+
+// Function to serve image with response headers
+export async function serveImage(req: Request, res: Response) {
+    const vacationId = parseInt(req.params.vacationId, 10);
+
+    try {
+        // Fetch image path from the database
+        const imagePath = await getImageByVacation(vacationId);
+
+        if (!imagePath) {
+            return res.status(404).send('Image not found');
+        }
+
+        // Set appropriate headers
+        const extension = extname(imagePath).toLowerCase();
+        const mimeType = {
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.png': 'image/png',
+            '.gif': 'image/gif',
+        }[extension] || 'application/octet-stream';
+
+        res.setHeader('Content-Type', mimeType);
+        res.setHeader('Content-Disposition', `inline; filename="${path.basename(imagePath)}"`);
+
+        // Send the image file
+        res.sendFile(imagePath, { root: appConfig.vacationsImagesPrefix });
+    } catch (error) {
+        console.error('Error serving image:', error);
+        res.status(500).send('Internal Server Error');
+    }
+}

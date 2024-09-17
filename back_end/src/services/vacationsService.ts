@@ -41,8 +41,8 @@ export async function addVacation(v: VacationModel, image: UploadedFile | undefi
     try {
         // Prepare and execute the SQL query
         const q = `
-            INSERT INTO vacations (destination, description, startDate, endDate, price, imageFileName)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO vacations (destination, description, startDate, endDate, price, imageFileName,image_path)
+            VALUES (?, ?, ?, ?, ?, ?,?)
         `;
 
         const values = [
@@ -51,7 +51,9 @@ export async function addVacation(v: VacationModel, image: UploadedFile | undefi
             formattedStartDate,
             formattedEndDate,
             v.price,
-            v.imageFileName || null
+            v.imageFileName || null,
+            v.image_path || null
+
         ];
 
         // Execute the query and explicitly cast the result
@@ -61,13 +63,7 @@ export async function addVacation(v: VacationModel, image: UploadedFile | undefi
             const vacationId = result.insertId;
 
             if (image) {
-                const imagePath = await saveVacationImage(vacationId, image);
-                
-                // Update the vacations table with the image file name
-                await runQuery(
-                    'UPDATE vacations SET imageFileName = ? WHERE id = ?',
-                    [imagePath, vacationId]
-                );
+                 await saveVacationImage(vacationId, image);
             }
 
             await runQuery('COMMIT');
@@ -82,40 +78,6 @@ export async function addVacation(v: VacationModel, image: UploadedFile | undefi
 }
 
 
-
-
-// export async function editVacation(id: number, updates: Partial<VacationModel>[]): Promise<void> {
-//     if (updates.length === 0) {
-//         throw new ValidationError("No updates provided!");
-//     }
-
-//     const updateFields: Partial<VacationModel> = updates[0]; // Take the first object in the array
-
-//     if (Object.keys(updateFields).length === 0) {
-//         throw new ValidationError("No field specified to update!");
-//     }
-
-//     // Create a new VacationModel instance with the existing id and update fields
-//     const vacationToUpdate = new VacationModel({ id, ...updateFields } as VacationModel);
-
-//     // Validate only the fields that are being updated
-//     vacationToUpdate.validatePartial(updateFields);
-//     if (updateFields.startDate) {
-//         updateFields.startDate = new Date(updateFields.startDate).toISOString().split('T')[0];
-//     }
-//     if (updateFields.endDate) {
-//         updateFields.endDate = new Date(updateFields.endDate).toISOString().split('T')[0];
-//     }
-
-//     // Prepare the SQL query dynamically based on the fields to update
-//     const updateClauses = Object.keys(updateFields).map(field => `${field} = ?`).join(', ');
-//     const q = `UPDATE vacations SET ${updateClauses} WHERE id = ?`;
-//     // Extract values from the updateFields object
-//     const values = [...Object.values(updateFields), id];
-
-//     // Execute the query with the provided values
-//     await runQuery(q, values);
-// }
 
 export async function editVacation(id: number, updates: Partial<VacationModel>, image: UploadedFile | undefined): Promise<void> {
     if (Object.keys(updates).length === 0 && !image) {
@@ -142,19 +104,23 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
 
         if (image) {
             // Fetch the existing vacation to get the old image file name
-            const existingVacation = await runQuery('SELECT imageFileName FROM vacations WHERE id = ?', [id]);
-            const oldImageName = existingVacation[0]?.imageFileName;
+            const existingImageName= await runQuery('SELECT imageFileName FROM vacations WHERE id = ?', [id]);
+            let newImageName = image.name
             
             // Delete the old image if it exists
-            if (oldImageName) {
-                await deleteImage(oldImageName);
+            if (newImageName!==existingImageName) {
+                await deleteImage(existingImageName);
+            // Save the new image and get the new file name
+
+               newImageName=await saveImage(image);
+
             }
 
-            // Save the new image and get the new file name
-            const newImageName = await saveImage(image);
-            
+            await runQuery(
+                'UPDATE vacations SET imageFileName = ?,image_path=? WHERE id = ?',
+                [existingImageName, newImageName, id]
+            );
             // Update the vacation record with the new image file name
-            await runQuery('UPDATE vacations SET imageFileName = ? WHERE id = ?', [newImageName, id]);
         }
 
         await runQuery('COMMIT');
@@ -170,7 +136,6 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
 export async function deleteVacation(id: number): Promise<void> {
     await runQuery('START TRANSACTION');
     try {
-        await runQuery('DELETE FROM vacation_image WHERE vacation_id = ?', [id]);
         await runQuery('DELETE FROM followers WHERE vacationId = ?', [id]);
         await runQuery('DELETE FROM vacations WHERE id = ?', [id]);
         await runQuery('COMMIT');

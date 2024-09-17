@@ -7,7 +7,7 @@ import { editVacation, getVacations, uploadVacationImage } from '../../api/vacti
 import { updateVacation } from '../../store/slices/vacationslice';
 import { Form, Button, Alert, Spinner, Image } from 'react-bootstrap';
 import { siteConfig } from '../../utils/SiteConfig';
-import { deleteImage, getImagesForVacation } from '../../api/images/images-api';
+import { deleteImage, getImageForVacation } from '../../api/images/images-api';
 import axios from 'axios';
 
 const EditVacationForm: React.FC = () => {
@@ -29,7 +29,7 @@ const EditVacationForm: React.FC = () => {
                     const vacationData = await getVacations(Number(id));
                     if (vacationData.length > 0) {
                         setVacation(vacationData[0]);
-                        const vacationImages = await getImagesForVacation(Number(id));
+                        const vacationImages = await getImageForVacation(Number(id));
                         setImages(vacationImages);
 
                         // Log the current images
@@ -78,7 +78,7 @@ const EditVacationForm: React.FC = () => {
                 await editVacation(Number(id), vacation, user.token, oldImageFileName);
     
                 // Refresh images to ensure they are updated
-                const vacationImages = await getImagesForVacation(Number(id));
+                const vacationImages = await getImageForVacation(Number(id));
                 setImages(vacationImages);
     
                 setSuccessMessage('Vacation updated successfully!');

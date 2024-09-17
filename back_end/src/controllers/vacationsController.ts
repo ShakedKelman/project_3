@@ -9,7 +9,7 @@ import { getFollowersForVacation } from "../services/followersService";
 import runQuery from "../db/dal";
 import { ValidationError } from "../models/exceptions";
 import { deleteImage } from "../utils/helpers";
-import { getImagesByVacation } from "../services/imagesService";
+import { getImageByVacation } from "../services/imagesService";
 
 export const vacationRoutes = Router();
 
@@ -103,19 +103,6 @@ async (req: Request, res: Response, next: NextFunction) => {
 
 
 
-// vacationRoutes.put(appConfig.routePrefix + "/vacation/:id", 
-// async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//         const id = parseInt(req.params.id);
-//         const updates = Array.isArray(req.body) ? req.body : [req.body];
-//         await editVacation(id, updates);
-//         res.sendStatus(200);
-//     } catch (error) {
-//         console.error("Error in editVacationController:", error);
-//         next(error);
-//     }
-// }
-// );
 
 
 
@@ -138,17 +125,17 @@ vacationRoutes.delete(appConfig.routePrefix + "/vacations/:id",
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const id = parseInt(req.params.id, 10);
-            const vacationImages = await getImagesByVacation(id);
+            const vacationImagePaths = await getImageByVacation(id);
             
-            if (!vacationImages || vacationImages.length === 0) {
+            if (!vacationImagePaths || vacationImagePaths.length === 0) {
                 console.warn(`No images found for vacation ID ${id}`);
             }
 
-            for (const image of vacationImages) {
-                if (image.imageFileName) {
-                    await deleteImage(image.imageFileName);
+            for (const image_path of vacationImagePaths) {
+                if (image_path) {
+                    await deleteImage(image_path);
                 } else {
-                    console.warn(`No file name provided for image: ${JSON.stringify(image)}`);
+                    console.warn(`No file name provided for vacation: ${id}`);
                 }
             }
             

@@ -1,40 +1,48 @@
 // routes/vacationRoutes.ts
 import { NextFunction, Request, Response, Router } from "express";
-import { deleteImageFromVacation, getAllImages, getImagesByVacation, saveVacationImage } from "../services/imagesService";
+import { deleteImageFromVacation, getAllImages, getImageByVacation, saveVacationImage } from "../services/imagesService";
 import { appConfig } from "../utils/appConfig";
 import { StatusCode } from "../models/statusEnum";
 import multer from "multer";
 import { UploadedFile } from "express-fileupload";
-import { deleteImage } from "../utils/helpers"; // Adjust the import path if necessary
+import { deleteImage, serveImage } from "../utils/helpers"; // Adjust the import path if necessary
 import path from 'path';
 
-export const imagesnRoutes = Router();
+export const imagesRoute = Router();
 
 const upload = multer({ dest: 'uploads/' }); // Configure multer as needed
 
+
 // Route to get images by vacation ID
-imagesnRoutes.get(appConfig.routePrefix + "/vacations/:id/images",
-    async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const vacationId = parseInt(req.params.id, 10);
-            // console.log(`Fetching images for vacation ID: ${vacationId}`);
-            const images = await getImagesByVacation(vacationId);
-            
-            if (!images || images.length === 0) {
-                // console.log(`No images found for vacation ID: ${vacationId}`);
-                return res.status(StatusCode.Ok).json([]);
-            }
-            
-            res.status(StatusCode.Ok).json(images);
-        } catch (error) {
-            console.error("Error in getImagesByVacation route:", error);
-            res.status(StatusCode.ServerError).json({ error: "An error occurred while fetching images" });
+imagesRoute.get(appConfig.routePrefix + "/images/:id/", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const vacationId = parseInt(req.params.id, 10);
+        
+        // Fetch image path from the database
+        const imagePath = await getImageByVacation(vacationId);
+        console.log(imagePath);
+        
+        if (!imagePath) {
+            // No image found for the given vacation ID
+            return res.status(StatusCode.Ok).json([]);
         }
+        
+        // Use serveImage to serve the image with proper headers
+        // Here, we create a new Request object for serveImage
+        // Since serveImage function needs req and res, you will need to simulate or adapt this for direct use
+        // If you use Express, you might directly send file instead of using serveImage
+        return res.status(StatusCode.Ok).sendFile(imagePath, { root: appConfig.vacationsImagesPrefix });
+    } catch (error) {
+        console.error("Error in getImagesByVacation route:", error);
+        return res.status(StatusCode.ServerError).json({ error: "An error occurred while fetching images" });
     }
-);
+});
+
+export default imagesRoute;
+
 
 // Route to get all images
-imagesnRoutes.get(appConfig.routePrefix + "/images",
+imagesRoute.get(appConfig.routePrefix + "/images",
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const images = await getAllImages();
@@ -47,7 +55,7 @@ imagesnRoutes.get(appConfig.routePrefix + "/images",
 );
 
 
-imagesnRoutes.post(
+imagesRoute.post(
     appConfig.routePrefix + "/image/:vacationId",
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -68,34 +76,16 @@ imagesnRoutes.post(
   );
   
 
-//   imagesnRoutes.delete(appConfig.routePrefix + "/image/:vacationId/:imagePath",
-//   async (req: Request, res: Response, next: NextFunction) => {
-//       try {
-//           const { vacationId, imagePath } = req.params;
-//           console.log("Received vacationId:", vacationId);
-//           console.log("Received imagePath:", imagePath); // Ensure this is just the filename
-          
-//           // Construct full path from the imagePath
-//           const imageFullPath = path.join(appConfig.vacationsImagesPrefix, imagePath);
-          
-//           // Call the function to delete the image file
-//           await deleteImage(imageFullPath);
-          
-//           res.status(StatusCode.Ok).json({ message: "Image deleted successfully" });
-//       } catch (error) {
-//           console.error("Error deleting image:", error);
-//           next(error);
-//       }
-//   });
-imagesnRoutes.delete(appConfig.routePrefix + "/image/:vacationId/:imageName",
+
+imagesRoute.delete(appConfig.routePrefix + "/image/:vacationId/:imageName",
   async (req: Request, res: Response, next: NextFunction) => {
       try {
           const { vacationId, imageName } = req.params;
           console.log("Received vacationId:", vacationId);
           console.log("Received imageName:", imageName);
-          
+          const imageUUID=await getImageByVacation(Number(vacationId));
           // Construct the full path using the imageName
-          const imageFullPath = path.join(appConfig.vacationsImagesPrefix, imageName);
+          const imageFullPath = path.join(appConfig.vacationsImagesPrefix, imageUUID);
           console.log("Full image path:", imageFullPath);
           
           // Call deleteImage with the full path
