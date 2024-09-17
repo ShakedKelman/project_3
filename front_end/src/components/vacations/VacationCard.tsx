@@ -54,6 +54,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                     const vacationFollowers = await getFollowersForVacation(vacation.id);
                     const vacationImages = await getImageForVacation(vacation.id);
                     setImages(vacationImages);
+            console.log(vacationImages);
             
                     dispatch(fetchFollowers(vacation.id));
             
@@ -140,7 +141,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                             <Card.Img
                                 className="vacation-card-img"
                                 variant="top"
-                                src={images.length > 0 ? getImageUrl(images[0]) : 'placeholder.jpg'}
+                                src={ `${siteConfig.BASE_URL}images/${vacation.id}`}
                                 alt={vacation.destination}
                             />
                             <Card.Title className="vacation-card-title">{vacation.destination}</Card.Title>

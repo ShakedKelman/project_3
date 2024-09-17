@@ -14,7 +14,7 @@ const upload = multer({ dest: 'uploads/' }); // Configure multer as needed
 
 
 // Route to get images by vacation ID
-imagesRoute.get(appConfig.routePrefix + "/images/:id/", async (req: Request, res: Response, next: NextFunction) => {
+imagesRoute.get(appConfig.routePrefix + "/images/:id", async (req: Request, res: Response, next: NextFunction) => {
     try {
         const vacationId = parseInt(req.params.id, 10);
         

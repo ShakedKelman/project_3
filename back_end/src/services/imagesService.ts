@@ -35,7 +35,7 @@ export async function getImageByVacation(vacationId: number):Promise<string> {
         // Assuming you're using a database to fetch image information
         const images = await runQuery("SELECT image_path FROM vacations WHERE id = ?", [vacationId]);
         // console.log(`Images fetched from database:`, images);
-console.log(vacationId);
+// console.log(vacationId);
 
         if (!images || images.length === 0) {
             // console.log(`No images found for vacation ID: ${vacationId}`);
@@ -45,7 +45,7 @@ console.log(vacationId);
 
         const image_path= images[0].image_path;
 
-console.log(images);
+// console.log(images);
 
 
         return image_path;
