@@ -48,7 +48,6 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
     const dispatch = useDispatch<AppDispatch>();
     
     useEffect(() => {
-        console.log('User:', user); // Add this to debug user state
         const fetchAdditionalData = async () => {
             try {
                 if (vacation.id) {

@@ -5,61 +5,70 @@ import { UserModel } from '../../model/UserModel';
 import { register } from '../../api/auth/auth-api';
 import { Form, Button, Alert, Container } from 'react-bootstrap';
 import axios, { AxiosError } from 'axios';
-import { registerFailure, registerRequest, registerSuccess, loginSuccess } from '../../store/slices/authSlice';
+import { registerFailure, registerRequest, registerSuccess } from '../../store/slices/authSlice';
 
 interface ErrorResponse {
   message: string;
 }
 
 const RegisterComponent: React.FC = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleRegister = async () => {
+    if (!email || !password || !firstName || !lastName) {
+      setError('All fields are required.');
+      return;
+    }
   
-    const handleRegister = async () => {
-      if (!email || !password || !firstName || !lastName) {
-        setError('All fields are required.');
-        return;
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+  
+    if (password.length < 4) {
+      setError('Password must be at least 4 characters long.');
+      return;
+    }
+  
+    if (firstName.length < 2) {
+      setError('First name must be at least 2 characters long.');
+      return;
+    }
+  
+    if (lastName.length < 2) {
+      setError('Last name must be at least 2 characters long.');
+      return;
+    }
+  
+    dispatch(registerRequest());
+  
+    try {
+      const userToRegister: UserModel = { email, password, firstName, lastName, isAdmin };
+      const { user: registeredUser, token } = await register(userToRegister);
+  
+      dispatch(registerSuccess({ user: registeredUser, token }));
+      navigate('/vacations');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<ErrorResponse>;
+        const errorMessage = axiosError.response?.data?.message || 'Registration failed. Please try again.';
+        dispatch(registerFailure(errorMessage));
+        setError(errorMessage);
+      } else {
+        dispatch(registerFailure('Registration failed. Please try again.'));
+        setError('Registration failed. Please try again.');
       }
-  
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailPattern.test(email)) {
-        setError('Please enter a valid email address.');
-        return;
-      }
-  
-      if (password.length < 4) {
-        setError('Password must be at least 4 characters long.');
-        return;
-      }
-  
-      dispatch(registerRequest());
-  
-      try {
-        const userToRegister: UserModel = { email, password, firstName, lastName, isAdmin };
-        const { user: registeredUser, token } = await register(userToRegister);
-  
-        // Dispatch registerSuccess with both user and token
-        dispatch(registerSuccess({ user: registeredUser, token }));
-  
-        navigate('/vacations');
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          const axiosError = error as AxiosError<ErrorResponse>;
-          const errorMessage = axiosError.response?.data?.message || 'Registration failed. Please try again.';
-          dispatch(registerFailure(errorMessage));
-          setError(errorMessage);
-        } else {
-          dispatch(registerFailure('Registration failed. Please try again.'));
-          setError('Registration failed. Please try again.');
-        }
-      }
-    };
+      console.error("Error adding vacation:", error);
+    }
+  };
   
 
   return (
