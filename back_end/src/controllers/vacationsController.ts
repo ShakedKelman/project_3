@@ -101,7 +101,6 @@ async (req: Request, res: Response, next: NextFunction) => {
     }
 });
 
-export default vacationRoutes;
 
 
 // vacationRoutes.put(appConfig.routePrefix + "/vacation/:id", 

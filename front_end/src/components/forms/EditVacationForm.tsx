@@ -3,13 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { VacationModel } from '../../model/VacationModel';
-import { editVacation, getVacations, uploadVacationImage,  } from '../../api/vactions/vactions-api';
+import { editVacation, getVacations, uploadVacationImage } from '../../api/vactions/vactions-api';
 import { updateVacation } from '../../store/slices/vacationslice';
 import { Form, Button, Alert, Spinner, Image } from 'react-bootstrap';
 import { siteConfig } from '../../utils/SiteConfig';
-import { deleteImage, getImagesForVacation } from '../../api/images/images-api'; // Import the function to get images
-import { getPaginatedVacations } from '../../api/vactions/paginated-vacations-api';
-import axios from 'axios'; // Make sure this is present at the top of your file
+import { deleteImage, getImagesForVacation } from '../../api/images/images-api';
+import axios from 'axios';
 
 const EditVacationForm: React.FC = () => {
     const dispatch = useDispatch();
@@ -32,6 +31,9 @@ const EditVacationForm: React.FC = () => {
                         setVacation(vacationData[0]);
                         const vacationImages = await getImagesForVacation(Number(id));
                         setImages(vacationImages);
+
+                        // Log the current images
+                        console.log('Current images:', vacationImages);
                     } else {
                         setError('Vacation not found');
                     }
@@ -45,11 +47,9 @@ const EditVacationForm: React.FC = () => {
     
         fetchVacationDetails();
     }, [id]);
-    
-
 
     const getImageUrl = (imagePath: string) => {
-        return `${siteConfig.BASE_URL}${imagePath}`;
+        return `${siteConfig.BASE_URL}${imagePath}?t=${new Date().getTime()}`;
     };
 
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,56 +58,41 @@ const EditVacationForm: React.FC = () => {
     };
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
+    
         if (user?.token && vacation) {
-            // Validate input fields
-            if (!vacation.description || vacation.description.trim() === '') {
-                setError('Description cannot be empty');
-                return;
-            }
-            // Add other validations as needed
-    
             try {
-                const oldImageFileName = vacation.imageFileName;
-    
-                // Upload the new image if selected
                 if (selectedImage) {
+                    // Upload new image
                     await uploadVacationImage(Number(id), selectedImage, user.token);
-                    vacation.imageFileName = selectedImage.name;
+                    // Update vacation with new image file name
+                    setVacation(prev => prev ? { ...prev, imageFileName: selectedImage.name } : prev);
                 }
     
-                // Delete the old image if necessary
-                if (oldImageFileName && selectedImage) {
-                    try {
-                        await deleteImage(Number(id), oldImageFileName, user.token);
-                    } catch (deleteError) {
-                        console.error("Error deleting old image:", deleteError);
-                        // Continue with the update even if image deletion fails
-                    }
+                // Check and delete old image if necessary
+                const oldImageFileName = vacation.imageFileName;
+                if (oldImageFileName && oldImageFileName !== selectedImage?.name) {
+                    await deleteImage(Number(id), oldImageFileName, user.token);
                 }
     
-                // Edit vacation details
-                await editVacation(Number(id), vacation, user.token, vacation.imageFileName);
+                // Update vacation details
+                await editVacation(Number(id), vacation, user.token, oldImageFileName);
+    
+                // Refresh images to ensure they are updated
+                const vacationImages = await getImagesForVacation(Number(id));
+                setImages(vacationImages);
+    
                 setSuccessMessage('Vacation updated successfully!');
-                dispatch(updateVacation(vacation));
                 navigate('/vacations');
             } catch (err) {
                 console.error(err);
-                if (axios.isAxiosError(err) && err.response) {
-                    // Display the specific backend error message
-                    const errorMessage = err.response.data || 'Failed to update vacation';
-                    setError(errorMessage);
-                } else {
-                    setError('Failed to update vacation');
-                }
+                setError(axios.isAxiosError(err) && err.response ? err.response.data : 'Failed to update vacation');
             }
         }
     };
     
     
     
-    
-    
-    
+
     const formatDate = (date: string | undefined) => {
         if (!date) return '';
         const d = new Date(date);
@@ -121,6 +106,8 @@ const EditVacationForm: React.FC = () => {
         const file = event.target.files?.[0];
         if (file) {
             setSelectedImage(file);
+            // Log the selected image
+            console.log('Selected image:', file);
         }
     };
 
@@ -165,15 +152,15 @@ const EditVacationForm: React.FC = () => {
                 />
             </Form.Group>
             <Form.Group controlId="price">
-    <Form.Label>Price:</Form.Label>
-    <Form.Control
-        type="number"
-        value={vacation?.price || 0} // Ensure value is numeric
-        onChange={handlePriceChange}
-        min="0"
-        step="1" // Set step to 1 to increment/decrement by 1
-    />
-</Form.Group>
+                <Form.Label>Price:</Form.Label>
+                <Form.Control
+                    type="number"
+                    value={vacation?.price || 0}
+                    onChange={handlePriceChange}
+                    min="0"
+                    step="1"
+                />
+            </Form.Group>
 
             <Form.Group>
                 <Form.Label>Current Image:</Form.Label>

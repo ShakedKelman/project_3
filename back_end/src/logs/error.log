@@ -116,3 +116,4 @@ Unknown column 'NaN' in 'where clause'
 "description" length must be at least 5 characters long
 "destination" length must be at least 2 characters long, "description" length must be at least 5 characters long
 "destination" length must be at least 2 characters long, "description" length must be at least 5 characters long, "price" must be a positive number
+"destination" length must be at least 2 characters long

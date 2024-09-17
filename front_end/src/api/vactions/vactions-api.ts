@@ -59,28 +59,34 @@ export const apiAddVacation = async (formData: FormData): Promise<VacationModel>
 // Edit an existing vacation and replace the old image with a new one
 export const editVacation = async (id: number, vacation: VacationModel, token: string, oldImageFileName?: string): Promise<void> => {
     try {
-        // If there's an old image, remove it
+        // If there's an old image, attempt to remove it
         if (oldImageFileName) {
-            const deleteResponse = await axios.delete(`${siteConfig.BASE_URL}image/${id}/${oldImageFileName}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-            console.log('Old image deleted successfully', deleteResponse.data);
+            try {
+                await axios.delete(`${siteConfig.BASE_URL}image/${id}/${oldImageFileName}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                console.log('Old image deleted successfully');
+            } catch (deleteError) {
+                console.error('Error deleting old image:', deleteError);
+                // Optionally, handle the error or proceed with updating vacation
+            }
         }
 
         // Update the vacation details
-        const updateResponse = await axios.put(`${siteConfig.BASE_URL}vacation/${id}`, vacation, {
+        await axios.put(`${siteConfig.BASE_URL}vacation/${id}`, vacation, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
-        console.log('Vacation updated successfully', updateResponse.data);
+        console.log('Vacation updated successfully');
     } catch (error) {
         console.error("Error editing vacation:", error);
         throw error;
     }
 };
+
 
 
 // api/vactions-api.ts

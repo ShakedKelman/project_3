@@ -5,7 +5,7 @@ import { ValidationError } from "../models/exceptions";
 import { UploadedFile } from "express-fileupload";
 import { ResultSetHeader } from "mysql2";
 import { saveVacationImage } from "../services/imagesService"; // Ensure correct import
-import { deleteImage } from "../utils/helpers";
+import { deleteImage, saveImage } from "../utils/helpers";
 
 export async function getVacations(id?: number): Promise<VacationModel[]> {
     let q = `SELECT * FROM vacations`;
@@ -117,18 +117,14 @@ export async function addVacation(v: VacationModel, image: UploadedFile | undefi
 //     await runQuery(q, values);
 // }
 
-
-
 export async function editVacation(id: number, updates: Partial<VacationModel>, image: UploadedFile | undefined): Promise<void> {
     if (Object.keys(updates).length === 0 && !image) {
         throw new ValidationError("No updates provided!");
     }
 
-    // Create a new VacationModel instance with the existing id and update fields
     const vacationToUpdate = new VacationModel({ id, ...updates } as VacationModel);
-
-    // Validate only the fields that are being updated
     vacationToUpdate.validatePartial(updates);
+
     if (updates.startDate) {
         updates.startDate = new Date(updates.startDate).toISOString().split('T')[0];
     }
@@ -136,66 +132,56 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
         updates.endDate = new Date(updates.endDate).toISOString().split('T')[0];
     }
 
-    // Start a transaction
     await runQuery('START TRANSACTION');
-    
     try {
-        // Prepare the SQL query dynamically based on the fields to update
         const updateClauses = Object.keys(updates).map(field => `${field} = ?`).join(', ');
         const q = `UPDATE vacations SET ${updateClauses} WHERE id = ?`;
         const values = [...Object.values(updates), id];
 
-        // Execute the query with the provided values
         await runQuery(q, values);
 
-        // Handle image update if a new image is provided
         if (image) {
-            // Delete the old image if it exists
+            // Fetch the existing vacation to get the old image file name
             const existingVacation = await runQuery('SELECT imageFileName FROM vacations WHERE id = ?', [id]);
-            const oldImagePath = existingVacation[0]?.imageFileName;
-            if (oldImagePath) {
-                deleteImage(oldImagePath); // Ensure you have a function to delete the old image
+            const oldImageName = existingVacation[0]?.imageFileName;
+            
+            // Delete the old image if it exists
+            if (oldImageName) {
+                await deleteImage(oldImageName);
             }
 
-            // Save the new image and update the database
-            const newImagePath = await saveVacationImage(id, image);
-            await runQuery('UPDATE vacations SET imageFileName = ? WHERE id = ?', [newImagePath, id]);
+            // Save the new image and get the new file name
+            const newImageName = await saveImage(image);
+            
+            // Update the vacation record with the new image file name
+            await runQuery('UPDATE vacations SET imageFileName = ? WHERE id = ?', [newImageName, id]);
         }
 
-        // Commit the transaction
         await runQuery('COMMIT');
     } catch (error) {
-        // Rollback the transaction on error
         await runQuery('ROLLBACK');
         throw error;
     }
 }
 
 
-// services/vacationService.ts
-// services/vacationService.ts
+
 
 export async function deleteVacation(id: number): Promise<void> {
     await runQuery('START TRANSACTION');
-    
     try {
-        // First, delete related images
         await runQuery('DELETE FROM vacation_image WHERE vacation_id = ?', [id]);
-        
-        // Then, delete related followers
         await runQuery('DELETE FROM followers WHERE vacationId = ?', [id]);
-        
-        // Then, delete the vacation
         await runQuery('DELETE FROM vacations WHERE id = ?', [id]);
-        
-        // Commit the transaction
         await runQuery('COMMIT');
     } catch (error) {
-        // Rollback the transaction on error
         await runQuery('ROLLBACK');
         throw error;
     }
 }
+
+
+
 export async function getVacationsPaginated(page: number, limit: number): Promise<VacationModel[]> {
     const offset = (page - 1) * limit;
     const q = `SELECT * FROM vacations LIMIT ? OFFSET ?`;

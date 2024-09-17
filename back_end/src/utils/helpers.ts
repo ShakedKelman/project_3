@@ -46,13 +46,13 @@ export async function writeErrorLog(errMsg: string) {
 export async function writeAccessLog(msg: string) {
     await writeToFile(appConfig.accessLogFile, msg);
 }
-export async function saveImage(image: UploadedFile) {
-    const extension = image.name.substring(image.name.lastIndexOf("."));
-    const filename = uuid() + extension;
-    const fullPath = path.join(appConfig.vacationsImagesPrefix, filename);
-    await image.mv(fullPath);
-    return filename;
-  }
+// export async function saveImage(image: UploadedFile) {
+//     const extension = image.name.substring(image.name.lastIndexOf("."));
+//     const filename = uuid() + extension;
+//     const fullPath = path.join(appConfig.vacationsImagesPrefix, filename);
+//     await image.mv(fullPath);
+//     return filename;
+//   }
   // utils/helpers.ts
 
 // utils/helpers.ts
@@ -71,29 +71,42 @@ export async function saveImage(image: UploadedFile) {
 // }
 
 
+// Save image function
+export async function saveImage(image: UploadedFile): Promise<string> {
+    const extension = path.extname(image.name);
+    const filename = uuid() + extension;
+    const fullPath = path.join(appConfig.vacationsImagesPrefix, filename);
+    console.log('Base path:', appConfig.vacationsImagesPrefix);
+    console.log('Saving image to:', fullPath);
+
+    // Ensure the directory exists
+    await fs.mkdir(path.dirname(fullPath), { recursive: true });
+    
+    await image.mv(fullPath);
+    return filename;
+}
 
 
-export const deleteImage = async (imagePath: string): Promise<void> => {
-    console.log(`Attempting to delete image at: ${imagePath}`);
-    
-    if (!existsSync(imagePath)) {
-        console.log(`File does not exist at ${imagePath}. It may have been already deleted.`);
-        return; // Exit the function without throwing an error
-    }
-    
+/**
+ * Deletes an image file from the file system.
+ * @param imageName - The name of the image to be deleted (UUID or any other naming convention).
+ */
+export const deleteImage = async (imageName: string): Promise<void> => {
+    // Construct the full path for the image
+    const fullPath = path.join(appConfig.vacationsImagesPrefix, imageName);
+
+    console.log('Base path:', appConfig.vacationsImagesPrefix);
+    console.log('Deleting image from:', fullPath);
+
     try {
-        await unlink(imagePath);
-        console.log(`Successfully deleted image at ${imagePath}`);
+        await fs.unlink(fullPath);
+        console.log(`Successfully deleted image at ${fullPath}`);
     } catch (err) {
-        console.error(`Failed to delete image at ${imagePath}:`, err);
-        throw new Error(`Failed to delete image at ${imagePath}: ${err.message}`);
+        if (err.code === 'ENOENT') {
+            console.log(`File does not exist at ${fullPath}. It may have been already deleted.`);
+        } else {
+            console.error(`Failed to delete image at ${fullPath}:`, err);
+            throw new Error(`Failed to delete image at ${fullPath}: ${err.message}`);
+        }
     }
 };
-
-//   export async function saveImage(image: UploadedFile) {
-//     const extension = image.name.substring(image.name.lastIndexOf("."));
-//     const filename = uuid() + extension;
-//     const fullPath = path.join(appConfig.productsImagesPrefix, filename);
-//     await image.mv(fullPath);
-//     return filename;
-//   }
