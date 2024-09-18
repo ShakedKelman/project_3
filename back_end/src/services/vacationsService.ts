@@ -18,8 +18,16 @@ export async function getVacations(id?: number): Promise<VacationModel[]> {
         throw new Error("Vacation ID not found");
     }
 
-    return res.map((v: any) => new VacationModel(v));
-}
+    // Ensure consistent date formatting
+    return res.map((v: any) => {
+        const startDate = new Date(v.startDate);
+        v.startDate = `${startDate.getFullYear()}-${(startDate.getMonth() + 1).toString().padStart(2, '0')}-${startDate.getDate().toString().padStart(2, '0')}`;
+        
+        const endDate = new Date(v.endDate);
+        v.endDate = `${endDate.getFullYear()}-${(endDate.getMonth() + 1).toString().padStart(2, '0')}-${endDate.getDate().toString().padStart(2, '0')}`;
+
+        return new VacationModel(v);
+    });}
 // Define a type for the expected result from the INSERT query
 
 
@@ -89,14 +97,23 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
     const vacationToUpdate = new VacationModel({ id, ...updates } as VacationModel);
     vacationToUpdate.validatePartial(updates);
 
+    // if (updates.startDate) {
+    //     updates.startDate = new Date(updates.startDate).toISOString().split('T')[0];
+    // }
+    // if (updates.endDate) {
+    //     updates.endDate = new Date(updates.endDate).toISOString().split('T')[0];
+    // }
+
     if (updates.startDate) {
-        updates.startDate = new Date(updates.startDate).toISOString().split('T')[0];
+        const startDate = new Date(updates.startDate);
+        updates.startDate = `${startDate.getFullYear()}-${(startDate.getMonth() + 1).toString().padStart(2, '0')}-${startDate.getDate().toString().padStart(2, '0')}`;
     }
+    
     if (updates.endDate) {
-        updates.endDate = new Date(updates.endDate).toISOString().split('T')[0];
+        const endDate = new Date(updates.endDate);
+        updates.endDate = `${endDate.getFullYear()}-${(endDate.getMonth() + 1).toString().padStart(2, '0')}-${endDate.getDate().toString().padStart(2, '0')}`;
     }
-
-
+    
     await runQuery('START TRANSACTION');
     // A. check if the existing image is already in the database
 
