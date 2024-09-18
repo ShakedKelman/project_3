@@ -1,7 +1,7 @@
 // services/vacationService.ts
 import runQuery from "../db/dal";
 import VacationModel from "../models/VacationsModel";
-import { ValidationError } from "../models/exceptions";
+import { AppExcption, ValidationError } from "../models/exceptions";
 import { UploadedFile } from "express-fileupload";
 import { ResultSetHeader } from "mysql2";
 import { saveVacationImage } from "../services/imagesService"; // Ensure correct import
@@ -83,7 +83,9 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
     if (Object.keys(updates).length === 0 && !image) {
         throw new ValidationError("No updates provided!");
     }
-
+    if ((updates.imageFileName) === ''|| null) {
+        console.log("no image was sent")
+    }
     const vacationToUpdate = new VacationModel({ id, ...updates } as VacationModel);
     vacationToUpdate.validatePartial(updates);
 
@@ -99,6 +101,7 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
         const updateClauses = Object.keys(updates).map(field => `${field} = ?`).join(', ');
         const q = `UPDATE vacations SET ${updateClauses} WHERE id = ?`;
         const values = [...Object.values(updates), id];
+console.log("logging values",updates);
 
         await runQuery(q, values);
 

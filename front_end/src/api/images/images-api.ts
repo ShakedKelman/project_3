@@ -5,8 +5,8 @@ export const getImageForVacation = async (vacationId: number): Promise<string[]>
     try {
         const response = await axios.get(`${siteConfig.BASE_URL}images/${vacationId}`);
         
-        console.log("Raw response:", response);
-        console.log("Response data:", response.data);
+        // console.log("Raw response:", response);
+        // console.log("Response data:", response.data);
           // Check if the response contains image objects or just image paths
           const imagePaths = [response.data].map((item: any) => 
           typeof item === 'string' ? item : item.image_path

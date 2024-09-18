@@ -24,6 +24,7 @@ export default class VacationModel {
     image_path?: string;
 
 
+
     constructor(vacation: VacationInterface) {
         this.id = vacation.id;
         this.destination = vacation.destination;

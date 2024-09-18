@@ -31,9 +31,6 @@ const EditVacationForm: React.FC = () => {
                         setVacation(vacationData[0]);
                         const vacationImages = await getImageForVacation(Number(id));
                         setImages(vacationImages);
-
-                        // Log the current images
-                        console.log('Current images:', vacationImages);
                     } else {
                         setError('Vacation not found');
                     }
@@ -48,39 +45,41 @@ const EditVacationForm: React.FC = () => {
         fetchVacationDetails();
     }, [id]);
 
-    const getImageUrl = (imagePath: string) => {
-        return `${siteConfig.BASE_URL}${imagePath}?t=${new Date().getTime()}`;
-    };
-
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const formattedValue = e.target.value.replace(/[^0-9.]/g, '');
         setVacation(prev => prev ? { ...prev, price: parseFloat(formattedValue) || 0 } : prev);
     };
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
     
         if (user?.token && vacation) {
             try {
+                let newImageFileName = vacation.imageFileName;
+                
+                // If a new image is selected, upload it and update the model
                 if (selectedImage) {
-                    // Upload new image
                     await uploadVacationImage(Number(id), selectedImage, user.token);
-                    // Update vacation with new image file name
-                    setVacation(prev => prev ? { ...prev, imageFileName: selectedImage.name } : prev);
+                    newImageFileName = selectedImage.name;
                 }
-    
-                // Check and delete old image if necessary
+
+                // If there's an old image and a new image was uploaded, delete the old image
                 const oldImageFileName = vacation.imageFileName;
-                if (oldImageFileName && oldImageFileName !== selectedImage?.name) {
+                if (oldImageFileName && oldImageFileName !== newImageFileName) {
                     await deleteImage(Number(id), oldImageFileName, user.token);
                 }
-    
-                // Update vacation details
-                await editVacation(Number(id), vacation, user.token, oldImageFileName);
-    
+
+                // Update vacation details with the new image filename (if changed)
+                const updatedVacation = { ...vacation, imageFileName: newImageFileName };
+                await editVacation(Number(id), updatedVacation, user.token);
+
+                // Dispatch the updated vacation to Redux store
+                dispatch(updateVacation(updatedVacation));
+
                 // Refresh images to ensure they are updated
                 const vacationImages = await getImageForVacation(Number(id));
                 setImages(vacationImages);
-    
+
                 setSuccessMessage('Vacation updated successfully!');
                 navigate('/vacations');
             } catch (err) {
@@ -89,9 +88,6 @@ const EditVacationForm: React.FC = () => {
             }
         }
     };
-    
-    
-    
 
     const formatDate = (date: string | undefined) => {
         if (!date) return '';
@@ -106,26 +102,30 @@ const EditVacationForm: React.FC = () => {
         const file = event.target.files?.[0];
         if (file) {
             setSelectedImage(file);
-            // Log the selected image
-            console.log('Selected image:', file);
         }
     };
 
     if (isLoading) return <Spinner animation="border" />;
 
     let thisVacationImg;
-    if (0/* new image chosen */) { 
-        thisVacationImg = /* the new image */
-    } elseif ( vacation?.imageFileName )
-    { thisVacationImg =
-     (
-        <Image
-            src={`${siteConfig.BASE_URL}images/${vacation.id}`}
-            alt="Current vacation"
-            style={{ maxWidth: '200px', maxHeight: '200px' }}
-        />
-    )
+    if (selectedImage) {
+        thisVacationImg = (
+            <Image
+                src={URL.createObjectURL(selectedImage)}
+                alt="New vacation image"
+                style={{ maxWidth: '200px', maxHeight: '200px' }}
+            />
+        );
+    } else if (vacation?.imageFileName) {
+        thisVacationImg = (
+            <Image
+                src={`${siteConfig.BASE_URL}images/${vacation.imageFileName}`}
+                alt="Current vacation image"
+                style={{ maxWidth: '200px', maxHeight: '200px' }}
+            />
+        );
     }
+
     return (
         <Form onSubmit={handleSubmit}>
             {error && <Alert variant="danger">{error}</Alert>}
@@ -177,10 +177,10 @@ const EditVacationForm: React.FC = () => {
 
             <Form.Group>
                 <Form.Label>Current Image:</Form.Label>
-                {thisVacationImg && thisVacationImg  }
+                {thisVacationImg}
             </Form.Group>
             <Form.Group controlId="newImage">
-                <Form.Label>New Image:</Form.Label>
+                <Form.Label>New Image</Form.Label>
                 <Form.Control
                     type="file"
                     accept="image/*"

@@ -8,6 +8,7 @@ export class VacationModel {
     imageFileName?: string;
     image_path?: string;
 
+
   
     constructor(obj: Partial<VacationModel>) {
         this.id = obj.id;
