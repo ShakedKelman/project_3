@@ -80,7 +80,7 @@ export async function addVacation(v: VacationModel, image: UploadedFile | undefi
 
 
 export async function editVacation(id: number, updates: Partial<VacationModel>, image: UploadedFile | undefined): Promise <any> {
-    if (Object.keys(updates).length === 0 && !image) {
+    if (Object.keys(updates).length === 0 && (image === null || image === undefined)) {
         throw new ValidationError("No updates provided!");
     }
     if ((updates.imageFileName) === ''|| null) {
@@ -103,6 +103,7 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
     let do_update_image = false;
     let existingImageName;
     let newImageName, existingImagePath;
+    let newImagePath; let newImage;
 
     try {
         console.log('vacationServices.ts START TRANSACTION, updates.id:', updates.id);
@@ -111,14 +112,15 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
         const existingImage = await runQuery('SELECT imageFileName, image_path FROM vacations WHERE id = ?', [updates.id]);
         ( { imageFileName: existingImageName, image_path: existingImagePath } = existingImage[0] );
         //existingImageName= await runQuery(`SELECT imageFileName FROM vacations WHERE id = ${updates.id}`);
-        console.log('vacationServices.ts START TRANSACTION, here', existingImageName,  existingImagePath )
-        newImageName = updates.imageFileName
-        const image_path = updates.image_path
+        //console.log('vacationServices.ts START TRANSACTION, here', existingImageName,  existingImagePath )
+        
+        ( { image_path: newImagePath, image: newImage, imageFileName: newImageName } = updates )
 
         if (newImageName !== existingImageName) { // if image name is identical to the name in database, do not update
             do_update_image = true;
         }
-        if (image_path !== '') {
+        console.log('---------------->', newImage)
+        if (!( newImage === 'null' || newImage === null ) ) {
             do_update_image = true;
         }
 
@@ -133,7 +135,8 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
 
     // B. update the rest of the fields (excluding image fields)
 
-    let updateFields = Object.keys(updates)
+    const { id: dummy_id, ...updates_ } = updates;
+    let updateFields = Object.keys(updates_);
     try {
         if (do_update_image) {
             //update the image fields
@@ -154,10 +157,18 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
         }
         console.log('#### updateFields:', updateFields);
 
+        const subsetFields = updateFields
+            .reduce((acc, key) => {
+                acc[key] = updates[key];  // Add the filtered key-value pairs to the accumulator
+                return acc;
+            }, {});
+
         const updateClauses = updateFields.map(field => `${field} = ?`).join(', ');
         const q = `UPDATE vacations SET ${updateClauses} WHERE id = ?`;
-        const values = [...Object.values(updates), id];
-        console.log("logging values",updates);
+        const values = [...Object.values(subsetFields), id];
+        console.log("logging values",subsetFields);
+        console.log('update clause', updateClauses)
+        console.log('update values', values);
         await runQuery(q, values);   
 
         if (0 && image && updates.image_path!=='') {
@@ -170,7 +181,7 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
         }
 
         await runQuery('COMMIT');
-return updates
+        return updates;
 } catch (error) {
     await runQuery('ROLLBACK');
     if (error instanceof NotDeletedError) {

@@ -86,10 +86,11 @@ const EditVacationForm: React.FC = () => {
                 console.log(selectedImage)
                 console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 
-                if (selectedImage) {
-                    await uploadVacationImage(Number(id), selectedImage, user.token);
-                    newImageFileName = selectedImage.name;
-                }
+                //if (selectedImage) {
+                    //await uploadVacationImage(Number(id), selectedImage, user.token);
+                    await editVacation(Number(id), formData, user.token);
+                    newImageFileName = selectedImage?.name;
+                //}
 
                 // Dispatch the updated vacation to Redux store
                 dispatch(updateVacation(updatedVacation));

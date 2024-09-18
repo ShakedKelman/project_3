@@ -58,10 +58,8 @@ export const apiAddVacation = async (formData: FormData): Promise<VacationModel>
 
 // Edit an existing vacation and replace the old image with a new one
 export const editVacation = async (id: number, formData: FormData, token: string): Promise<void> => {
-    console.log(formData);
     
     try {
-    
     
         // // If there's an old image, attempt to remove it
         // if (oldImageFileName) {
@@ -82,16 +80,25 @@ export const editVacation = async (id: number, formData: FormData, token: string
         // console.log('HERE ----- vacation ---- ', vacation)
         // const vacation_ = Object.assign( {}, vacation, { image_path : '' } );
         // console.log('THERE ----- vacation ---- ', vacation_)
+        const entries = Array.from(formData.entries());
+        console.log(entries); // Should log array of key-value pairs                await editVacation(Number(id), formData, user.token);
+        console.log("::::::::::::::::::::::::::::::::::::::::::::::::")
 
 
-
-        await axios.put(`${siteConfig.BASE_URL}vacation/${id}`, {
+        const response = await fetch(`${siteConfig.BASE_URL}vacation/${id}`, {
+            method: 'PUT',
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
             },
             body: formData,
-
         });
+
+        // await axios.put(`${siteConfig.BASE_URL}vacation/${id}`, {
+        //     headers: {
+        //         'Authorization': `Bearer ${token}`
+        //     },
+        //     body: formData,
+        // });
         console.log('Vacation updated successfully');
     } catch (error) {
         console.error("Error editing vacation:", error);

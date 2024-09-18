@@ -55,7 +55,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                     const vacationFollowers = await getFollowersForVacation(vacation.id);
                     const vacationImages = await getImageForVacation(vacation.id);
                     setImages(vacationImages);
-            console.log(vacationImages);
+            //console.log(vacationImages);
             
                     dispatch(fetchFollowers(vacation.id));
             

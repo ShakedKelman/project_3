@@ -82,20 +82,25 @@ vacationRoutes.post(
 
 vacationRoutes.put(appConfig.routePrefix + "/vacation/:id", 
 async (req: Request, res: Response, next: NextFunction) => {
+    console.log('^^^^^^^^^^^^^^^');
     try {
         const id = parseInt(req.params.id, 10);
         
         // Handle file upload if present
-        const image = req.files?.image as UploadedFile;
+        let image = req.files?.image as UploadedFile;
 
         // Assuming req.body contains the update fields
         const updates: Partial<VacationModel> = req.body;
-console.log(req,"}}}}}}}}");
-
-console.log(image,"}}}}}}}}");
+        console.log(updates,"}}}}}}}}");
+        console.log(req.body,"}}}}}}}}");
+console.log(req.files,"}}}}}}}}");
 
         // Call the editVacation function with the updates and image if present
-       const vacationUpdated= await editVacation(id, updates, image);
+        // const vacationKeys = Object.keys(updates).filter( k => k !== 'image');
+        // let vacationOnly = updates;
+        // if (image === undefined || image === null ) 
+        //     ({ image, ...vacationOnly } = updates)
+        const vacationUpdated= await editVacation(id, updates, image);
 
         res.status(StatusCode.Ok).json(vacationUpdated);
     } catch (error) {
