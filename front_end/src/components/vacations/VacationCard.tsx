@@ -141,7 +141,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                             <Card.Img
                                 className="vacation-card-img"
                                 variant="top"
-                                src={ `${siteConfig.BASE_URL}images/${vacation.id}`}
+                                src={`${siteConfig.BASE_URL}images/${vacation.id}`}
                                 alt={vacation.destination}
                             />
                             <Card.Title className="vacation-card-title">{vacation.destination}</Card.Title>

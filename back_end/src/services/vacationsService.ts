@@ -106,6 +106,8 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
             // Fetch the existing vacation to get the old image file name
             const existingImageName= await runQuery('SELECT imageFileName FROM vacations WHERE id = ?', [id]);
             let newImageName = image.name
+            console.log(newImageName);
+            console.log(existingImageName);
             
             // Delete the old image if it exists
             if (newImageName!==existingImageName) {

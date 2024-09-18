@@ -113,6 +113,19 @@ const EditVacationForm: React.FC = () => {
 
     if (isLoading) return <Spinner animation="border" />;
 
+    let thisVacationImg;
+    if (0/* new image chosen */) { 
+        thisVacationImg = /* the new image */
+    } elseif ( vacation?.imageFileName )
+    { thisVacationImg =
+     (
+        <Image
+            src={`${siteConfig.BASE_URL}images/${vacation.id}`}
+            alt="Current vacation"
+            style={{ maxWidth: '200px', maxHeight: '200px' }}
+        />
+    )
+    }
     return (
         <Form onSubmit={handleSubmit}>
             {error && <Alert variant="danger">{error}</Alert>}
@@ -164,13 +177,7 @@ const EditVacationForm: React.FC = () => {
 
             <Form.Group>
                 <Form.Label>Current Image:</Form.Label>
-                {vacation?.imageFileName && (
-                    <Image
-                        src={images.length > 0 ? getImageUrl(images[0]) : 'placeholder.jpg'}
-                        alt="Current vacation"
-                        style={{ maxWidth: '200px', maxHeight: '200px' }}
-                    />
-                )}
+                {thisVacationImg && thisVacationImg  }
             </Form.Group>
             <Form.Group controlId="newImage">
                 <Form.Label>New Image:</Form.Label>
