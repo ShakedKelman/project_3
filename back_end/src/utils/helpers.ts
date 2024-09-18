@@ -10,6 +10,7 @@ import { existsSync } from 'fs';
 import { Request, Response } from 'express';
 import { extname } from 'path';
 import { getImageByVacation } from "../services/imagesService";
+import { NotDeletedError } from "../models/exceptions";
 
 
 export async function isDbServerUp() {
@@ -54,15 +55,16 @@ export async function writeAccessLog(msg: string) {
 
 // Save image function
 export async function saveImage(image: UploadedFile): Promise<string> {
+    console.log("+===========",image)
+
     const extension = path.extname(image.name);
-    console.log(image)
     const filename = uuid() + extension;
     const fullPath = path.join(appConfig.vacationsImagesPrefix, filename);
     console.log('Base path:', appConfig.vacationsImagesPrefix);
     console.log('Saving image to:', fullPath);
 
     // Ensure the directory exists
-    await fs.mkdir(path.dirname(fullPath), { recursive: true });
+    await fs.mkdir(appConfig.vacationsImagesPrefix, { recursive: true });
     
     await image.mv(fullPath);
     return filename;
@@ -88,7 +90,7 @@ export const deleteImage = async (imageUUID: string): Promise<void> => {
             console.log(`File does not exist at ${fullPath}. It may have been already deleted.`);
         } else {
             console.error(`Failed to delete image at ${fullPath}:`, err);
-            throw new Error(`Failed to delete image at ${fullPath}: ${err.message}`);
+            throw new NotDeletedError(`Failed to delete image at ${fullPath}: ${err.message}`);
         }
     }
 };

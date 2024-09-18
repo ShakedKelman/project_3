@@ -32,10 +32,11 @@ export const saveVacationImage = async (vacationId: number, image: UploadedFile)
 
 export async function getImageByVacation(vacationId: number):Promise<string> {
     try {
+console.log("vacationid&&&&&",vacationId);
+
         // Assuming you're using a database to fetch image information
         const images = await runQuery("SELECT image_path FROM vacations WHERE id = ?", [vacationId]);
         // console.log(`Images fetched from database:`, images);
-// console.log(vacationId);
 
         if (!images || images.length === 0) {
             // console.log(`No images found for vacation ID: ${vacationId}`);
@@ -75,21 +76,22 @@ export async function getImageByVacation(vacationId: number):Promise<string> {
 
 
 // Function to delete an image from the file system and the database
-export const deleteImageFromVacation = async (vacationId: number): Promise<void> => {
-    let image_paths;
-    try {
-        let query = `SELECT image_path FROM vacations WHERE id = ?`;
-        image_paths= await runQuery(query, [vacationId]);
-        if (image_paths!==undefined&& image_paths.length>0) {
-        // Delete the image file from the server
-        await deleteImage(image_paths[0]);                  
-        // Remove the image entry from the database
-         query = `UPDATE vacations SET imageFileName=?,image_path=? WHERE id = ?`;
-        await runQuery(query, [null,null,vacationId]);
-    }
+// export const deleteImageFromVacation = async (vacationId: number): Promise<void> => {
+//     let image_paths;
+//     try {
+// console.log(vacationId);
+//         let query = `SELECT image_path FROM vacations WHERE id = ?`;
+//         image_paths= await runQuery(query, [vacationId]);
+//         if (image_paths!==undefined&& image_paths.length>0) {
+//         // Delete the image file from the server
+//         await deleteImage(image_paths[0]);                  
+//         // Remove the image entry from the database
+//          query = `UPDATE vacations SET imageFileName=?,image_path=? WHERE id = ?`;
+//         await runQuery(query, [null,null,vacationId]);
+//     }
 
-    } catch (error) {
-        console.error(`Error deleting image ${image_paths[0]} for vacation ${vacationId}:`, error);
-        throw error;
-    }
-};
+//     } catch (error) {
+//         console.error(`Error deleting image ${image_paths[0]} for vacation ${vacationId}:`, error);
+//         throw error;
+//     }
+// };

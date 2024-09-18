@@ -7,7 +7,7 @@ import { addVacation, deleteVacation, editVacation, getVacations, getVacationsPa
 import { UploadedFile } from "express-fileupload";
 import { getFollowersForVacation } from "../services/followersService";
 import runQuery from "../db/dal";
-import { ValidationError } from "../models/exceptions";
+import { AppExcption, ValidationError } from "../models/exceptions";
 import { deleteImage } from "../utils/helpers";
 import { getImageByVacation } from "../services/imagesService";
 
@@ -90,11 +90,14 @@ async (req: Request, res: Response, next: NextFunction) => {
 
         // Assuming req.body contains the update fields
         const updates: Partial<VacationModel> = req.body;
+console.log(req,"}}}}}}}}");
+
+console.log(image,"}}}}}}}}");
 
         // Call the editVacation function with the updates and image if present
-        await editVacation(id, updates, image);
+       const vacationUpdated= await editVacation(id, updates, image);
 
-        res.sendStatus(200);
+        res.status(StatusCode.Ok).json(vacationUpdated);
     } catch (error) {
         console.error("Error in editVacationController:", error);
         next(error);
@@ -125,6 +128,8 @@ vacationRoutes.delete(appConfig.routePrefix + "/vacations/:id",
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const id = parseInt(req.params.id, 10);
+            console.log("---------reparamsid",id);
+
             const vacationImagePaths = await getImageByVacation(id);
             
             if (!vacationImagePaths || vacationImagePaths.length === 0) {

@@ -57,28 +57,40 @@ export const apiAddVacation = async (formData: FormData): Promise<VacationModel>
 // };
 
 // Edit an existing vacation and replace the old image with a new one
-export const editVacation = async (id: number, vacation: VacationModel, token: string, oldImageFileName?: string): Promise<void> => {
+export const editVacation = async (id: number, formData: FormData, token: string): Promise<void> => {
+    console.log(formData);
+    
     try {
-        // If there's an old image, attempt to remove it
-        if (oldImageFileName) {
-            try {
-                await axios.delete(`${siteConfig.BASE_URL}image/${id}/${oldImageFileName}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
-                console.log('Old image deleted successfully');
-            } catch (deleteError) {
-                console.error('Error deleting old image:', deleteError);
-                // Optionally, handle the error or proceed with updating vacation
-            }
-        }
+    
+    
+        // // If there's an old image, attempt to remove it
+        // if (oldImageFileName) {
+        //     try {
+        //         await axios.delete(`${siteConfig.BASE_URL}image/${id}/${oldImageFileName}`, {
+        //             headers: {
+        //                 'Authorization': `Bearer ${token}`,
+        //             },
+        //         });
+        //         console.log('Old image deleted successfully');
+        //     } catch (deleteError) {
+        //         console.error('Error deleting old image:', deleteError);
+        //         // Optionally, handle the error or proceed with updating vacation
+        //     }
+        // }
 
         // Update the vacation details
-        await axios.put(`${siteConfig.BASE_URL}vacation/${id}`, vacation, {
+        // console.log('HERE ----- vacation ---- ', vacation)
+        // const vacation_ = Object.assign( {}, vacation, { image_path : '' } );
+        // console.log('THERE ----- vacation ---- ', vacation_)
+
+
+
+        await axios.put(`${siteConfig.BASE_URL}vacation/${id}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            body: formData,
+
         });
         console.log('Vacation updated successfully');
     } catch (error) {

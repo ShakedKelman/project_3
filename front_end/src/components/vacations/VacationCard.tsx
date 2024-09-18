@@ -49,6 +49,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
     
     useEffect(() => {
         const fetchAdditionalData = async () => {
+            if (vacation.id === undefined || isNaN(vacation.id)) return;
             try {
                 if (vacation.id) {
                     const vacationFollowers = await getFollowersForVacation(vacation.id);

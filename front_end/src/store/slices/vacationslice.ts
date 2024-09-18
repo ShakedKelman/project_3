@@ -24,9 +24,14 @@ const vacationSlice = createSlice({
             state.vacations.push(action.payload);
         },
         updateVacation(state, action: PayloadAction<VacationModel>) {
+            console.log('----------------------', state);
+
             const index = state.vacations.findIndex(vacation => vacation.id === action.payload.id);
             if (index !== -1) {
+
                 console.log('----------------------', action.payload);
+                console.log('----------------------', state);
+
                 
                 state.vacations[index] = action.payload;
             }

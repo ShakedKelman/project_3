@@ -1,7 +1,7 @@
 // services/vacationService.ts
 import runQuery from "../db/dal";
 import VacationModel from "../models/VacationsModel";
-import { AppExcption, ValidationError } from "../models/exceptions";
+import { AppExcption, NotDeletedError, ValidationError } from "../models/exceptions";
 import { UploadedFile } from "express-fileupload";
 import { ResultSetHeader } from "mysql2";
 import { saveVacationImage } from "../services/imagesService"; // Ensure correct import
@@ -79,7 +79,7 @@ export async function addVacation(v: VacationModel, image: UploadedFile | undefi
 
 
 
-export async function editVacation(id: number, updates: Partial<VacationModel>, image: UploadedFile | undefined): Promise<void> {
+export async function editVacation(id: number, updates: Partial<VacationModel>, image: UploadedFile | undefined): Promise <any> {
     if (Object.keys(updates).length === 0 && !image) {
         throw new ValidationError("No updates provided!");
     }
@@ -96,31 +96,72 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
         updates.endDate = new Date(updates.endDate).toISOString().split('T')[0];
     }
 
+
     await runQuery('START TRANSACTION');
+    // A. check if the existing image is already in the database
+
+    let do_update_image = false;
+    let existingImageName;
+    let newImageName, existingImagePath;
+
     try {
-        const updateClauses = Object.keys(updates).map(field => `${field} = ?`).join(', ');
+        console.log('vacationServices.ts START TRANSACTION, updates.id:', updates.id);
+        console.log('vacationServices.ts START TRANSACTION, updates:', updates);
+        // Fetch the existing vacation to get the old image file name
+        const existingImage = await runQuery('SELECT imageFileName, image_path FROM vacations WHERE id = ?', [updates.id]);
+        ( { imageFileName: existingImageName, image_path: existingImagePath } = existingImage[0] );
+        //existingImageName= await runQuery(`SELECT imageFileName FROM vacations WHERE id = ${updates.id}`);
+        console.log('vacationServices.ts START TRANSACTION, here', existingImageName,  existingImagePath )
+        newImageName = updates.imageFileName
+        const image_path = updates.image_path
+
+        if (newImageName !== existingImageName) { // if image name is identical to the name in database, do not update
+            do_update_image = true;
+        }
+        if (image_path !== '') {
+            do_update_image = true;
+        }
+
+    } catch (e){
+        console.error('couldnt perform SELECT', e.message)
+    }
+
+    console.log('#### newImageName:', newImageName);
+    console.log('#### existingImageName:', existingImageName);
+    console.log('#### existingImagePath:', existingImagePath);
+    console.log('#### do_update_image:', do_update_image);
+
+    // B. update the rest of the fields (excluding image fields)
+
+    let updateFields = Object.keys(updates)
+    try {
+        if (do_update_image) {
+            //update the image fields
+            console.log('updating everything, incl. images')
+            // C. if not existing: update the image, update the name
+            try {
+                await deleteImage(existingImagePath);
+            } catch (error) {
+                console.log('couldnt delete file')
+            }
+            console.log(image,"//////////");
+            
+            // Save the new image and get the new file name
+            const newImagePath = await saveImage(image);
+            updates.image_path = newImagePath;
+        } else {
+            updateFields = updateFields.filter(k => !/^image/.test(k));
+        }
+        console.log('#### updateFields:', updateFields);
+
+        const updateClauses = updateFields.map(field => `${field} = ?`).join(', ');
         const q = `UPDATE vacations SET ${updateClauses} WHERE id = ?`;
         const values = [...Object.values(updates), id];
-console.log("logging values",updates);
+        console.log("logging values",updates);
+        await runQuery(q, values);   
 
-        await runQuery(q, values);
-
-        if (image) {
-            // Fetch the existing vacation to get the old image file name
-            const existingImageName= await runQuery('SELECT imageFileName FROM vacations WHERE id = ?', [id]);
-            let newImageName = image.name
-            console.log(newImageName);
-            console.log(existingImageName);
-            
-            // Delete the old image if it exists
-            if (newImageName!==existingImageName) {
-                await deleteImage(existingImageName);
-            // Save the new image and get the new file name
-
-               newImageName=await saveImage(image);
-
-            }
-
+        if (0 && image && updates.image_path!=='') {
+                        
             await runQuery(
                 'UPDATE vacations SET imageFileName = ?,image_path=? WHERE id = ?',
                 [existingImageName, newImageName, id]
@@ -129,12 +170,16 @@ console.log("logging values",updates);
         }
 
         await runQuery('COMMIT');
-    } catch (error) {
-        await runQuery('ROLLBACK');
-        throw error;
+return updates
+} catch (error) {
+    await runQuery('ROLLBACK');
+    if (error instanceof NotDeletedError) {
+        // Do not throw, silently handle this error
+    } else {
+        throw error;  // Rethrow other errors
     }
 }
-
+}
 
 
 

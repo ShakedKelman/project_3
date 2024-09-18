@@ -54,27 +54,46 @@ const EditVacationForm: React.FC = () => {
         event.preventDefault();
     
         if (user?.token && vacation) {
+
             try {
-                let newImageFileName = vacation.imageFileName;
+                let newImageFileName = (selectedImage !== null) ? selectedImage.name : vacation.imageFileName;
                 
                 // If a new image is selected, upload it and update the model
+               
+                // If there's an old image and a new image was uploaded, delete the old image
+                const oldImageFileName = vacation.imageFileName;
+                if (oldImageFileName && oldImageFileName !== newImageFileName) {
+                    //await deleteImage(Number(id), oldImageFileName, user.token);
+
+                }
+
+                // Update vacation details with the new image filename (if changed)
+                const updatedVacation = { ...vacation, imageFileName: newImageFileName };
+
+                // insert everything into a form data object
+                const formData = new FormData();
+                for (const [key, value] of Object.entries(updatedVacation)) {
+                    console.log(key, value)
+                    if (value !== undefined) {
+                        formData.append(key, value as string); // Type assertion to string or Blob
+                    }
+                }
+                formData.append('image', selectedImage as File);
+                
+                // Inspecting FormData entries
+                const entries = Array.from(formData.entries());
+                console.log(entries); // Should log array of key-value pairs                await editVacation(Number(id), formData, user.token);
+                console.log(selectedImage)
+                console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+
                 if (selectedImage) {
                     await uploadVacationImage(Number(id), selectedImage, user.token);
                     newImageFileName = selectedImage.name;
                 }
 
-                // If there's an old image and a new image was uploaded, delete the old image
-                const oldImageFileName = vacation.imageFileName;
-                if (oldImageFileName && oldImageFileName !== newImageFileName) {
-                    await deleteImage(Number(id), oldImageFileName, user.token);
-                }
-
-                // Update vacation details with the new image filename (if changed)
-                const updatedVacation = { ...vacation, imageFileName: newImageFileName };
-                await editVacation(Number(id), updatedVacation, user.token);
-
                 // Dispatch the updated vacation to Redux store
                 dispatch(updateVacation(updatedVacation));
+                
 
                 // Refresh images to ensure they are updated
                 const vacationImages = await getImageForVacation(Number(id));
@@ -119,7 +138,7 @@ const EditVacationForm: React.FC = () => {
     } else if (vacation?.imageFileName) {
         thisVacationImg = (
             <Image
-                src={`${siteConfig.BASE_URL}images/${vacation.imageFileName}`}
+                src={`${siteConfig.BASE_URL}images/${vacation.id}`}
                 alt="Current vacation image"
                 style={{ maxWidth: '200px', maxHeight: '200px' }}
             />

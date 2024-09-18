@@ -1,6 +1,6 @@
 // routes/vacationRoutes.ts
 import { NextFunction, Request, Response, Router } from "express";
-import { deleteImageFromVacation, getAllImages, getImageByVacation, saveVacationImage } from "../services/imagesService";
+import {  getAllImages, getImageByVacation, saveVacationImage } from "../services/imagesService";
 import { appConfig } from "../utils/appConfig";
 import { StatusCode } from "../models/statusEnum";
 import multer from "multer";
@@ -20,6 +20,8 @@ imagesRoute.get(appConfig.routePrefix + "/images/:id", async (req: Request, res:
         
         // Fetch image path from the database
         const imagePath = await getImageByVacation(vacationId);
+        console.log("++++++++reparamsvacationId",vacationId);
+
         console.log(imagePath);
         
         if (!imagePath) {
@@ -82,7 +84,7 @@ imagesRoute.delete(appConfig.routePrefix + "/image/:vacationId/:imageName",
       try {
           const { vacationId, imageName } = req.params;
           console.log("Received vacationId:", vacationId);
-          console.log("Received imageName:", imageName);
+          console.log("Received imageName: (imageName)", imageName);
           const imageUUID=await getImageByVacation(Number(vacationId));
           // Construct the full path using the imageName
           const imageFullPath = path.join(appConfig.vacationsImagesPrefix, imageUUID);
