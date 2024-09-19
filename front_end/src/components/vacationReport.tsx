@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';  // Import Bar chart instead of Line chart
 import { CSVLink } from 'react-csv';
 import * as XLSX from 'xlsx';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,8 +15,7 @@ import {
     Title,
     Tooltip,
     Legend,
-    LineElement,
-    PointElement,
+    BarElement,
 } from 'chart.js';
 import { VacationModel } from '../model/VacationModel';
 import { getVacations } from '../api/vactions/vactions-api';
@@ -27,13 +26,11 @@ ChartJS.register(
     Title,
     Tooltip,
     Legend,
-    LineElement,
-    PointElement
+    BarElement
 );
 
 const Report: React.FC = () => {
     const { user } = useSelector((state: RootState) => state.auth);
-    const dispatch = useDispatch<AppDispatch>();
     const vacations = useSelector(selectVacations);
     const [data, setData] = useState<{ destination: string; followers: number }[]>([]);
     const [allVacations, setAllVacations] = useState<VacationModel[]>([]);
@@ -45,7 +42,6 @@ const Report: React.FC = () => {
             try {
                 const vacations = await getVacations();
                 setAllVacations(vacations);
-                const totalVacations = vacations.length;
 
                 const reportData = await Promise.all(vacations.map(async (vacation) => {
                     if (vacation.id === undefined) {
@@ -79,9 +75,40 @@ const Report: React.FC = () => {
                 backgroundColor: 'rgba(75,192,192,0.4)',
                 borderColor: 'rgba(75,192,192,1)',
                 borderWidth: 1,
+                barThickness: 35, // Adjust this to control the thickness of the bars
             },
         ],
     };
+    const chartOptions = {
+        scales: {
+            x: {
+                type: 'category' as const, // Use 'as const' to ensure the type is correctly inferred
+                ticks: {
+                    autoSkip: false, // Ensures all labels are displayed
+                    maxRotation: 90, // Rotates labels if they are too long
+                    minRotation: 0, // Minimum rotation
+                },
+                grid: {
+                    display: false, // Hide grid lines to emphasize the vertical bars
+                },
+            },
+            y: {
+                beginAtZero: true,
+                grid: {
+                    drawBorder: false,
+                    display: true, // Ensure grid lines are visible
+                },
+            },
+        },
+        plugins: {
+            legend: {
+                display: true,
+            },
+        },
+    };
+    
+    
+    
 
     const handleExportExcel = () => {
         const ws = XLSX.utils.json_to_sheet(data);
@@ -91,17 +118,31 @@ const Report: React.FC = () => {
     };
 
     return (
-        <div>
-            <h2>Vacation Report</h2>
-            <Line data={chartData} />
-            <div>
-                <button onClick={handleExportExcel}>Export to Excel</button>
-                <CSVLink data={data} filename="vacation_report.csv">
-                    Export to CSV
-                </CSVLink>
+            <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: '100vh', 
+                width: '100vw',
+                overflow: 'auto'
+            }}>
+                <div style={{ 
+                    width: '700px', 
+                    height: '700px', 
+                    overflow: 'auto'
+                }}>
+                    <h2>Vacation Report</h2>
+                    <Bar data={chartData} options={chartOptions} />
+                    <div>
+                        <button onClick={handleExportExcel}>Export to Excel</button>
+                        <CSVLink data={data} filename="vacation_report.csv">
+                            Export to CSV
+                        </CSVLink>
+                    </div>
+                </div>
             </div>
-        </div>
-    );
-};
+        );
+    };
+    
 
 export default Report;
