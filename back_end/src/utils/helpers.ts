@@ -77,7 +77,8 @@ export async function saveImage(image: UploadedFile): Promise<string> {
  */
 export const deleteImage = async (imageUUID: string): Promise<void> => {
     // Construct the full path for the image
-    const fullPath = (appConfig.vacationsImagesPrefix, imageUUID);
+    // const fullPath = (appConfig.vacationsImagesPrefix, imageUUID);
+    const fullPath = path.join(appConfig.vacationsImagesPrefix, imageUUID);
 
     console.log('Base path:', appConfig.vacationsImagesPrefix);
     console.log('Deleting image from:', fullPath);
