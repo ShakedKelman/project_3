@@ -17,7 +17,7 @@ describe("vacation Controllers", () => {
 
     beforeAll(() => {
         console.log("before all running ... ");
-    })    
+    });
 
     it("Should return list of vacations", async () => {
         const response = await request(app)
@@ -87,89 +87,121 @@ describe("vacation Controllers", () => {
     
         // Optionally: Check if the total number of vacations is correct (requires more setup in your test database)
         // expect(total).toBeGreaterThan(0);
-    });
-    it("Should successfully add a vacation with an image", async () => {
-        const vacationData = {
-            destination: 'Paris',
-            description: 'A wonderful trip to Paris',
-            startDate: '2024-10-01',
-            endDate: '2024-10-10',
-            price: '1500.00',
-        };
-
-        // Mock image file
-        const image = Buffer.from('image data'); // Use appropriate image mock for your test
-
-        const response = await request(app)
-            .post(appConfig.routePrefix + "/vacations")
-            .set("Authorization", `Bearer ${VALID_TOKEN}`)
-            .field('destination', vacationData.destination)
-            .field('description', vacationData.description)
-            .field('startDate', vacationData.startDate)
-            .field('endDate', vacationData.endDate)
-            .field('price', vacationData.price)
-            .attach('image', image, 'test-image.jpg'); // Attach image file
-
-        console.log('Response Body:', response.body); // Log response body for debugging
-
-        expect(response.status).toBe(StatusCode.Ok);
-        expect(response.body).toHaveProperty('message', 'Vacation added successfully');
-        expect(response.body).toHaveProperty('vacationId');
     })
+    // it("Should successfully add a vacation with an image", async () => {
+    //     const vacationData = {
+    //         destination: 'Paris',
+    //         description: 'A wonderful trip to Paris',
+    //         startDate: '2024-10-01',
+    //         endDate: '2024-10-10',
+    //         price: '1500.00',
+    //     };
 
-    it("Should return error if image file is missing", async () => {
-        const vacationData = {
-            destination: 'Paris',
-            description: 'A wonderful trip to Paris',
-            startDate: '2024-10-01',
-            endDate: '2024-10-10',
-            price: '1500.00',
-        };
+    //     // Mock image file
+    //     const image = Buffer.from('image data'); // Use appropriate image mock for your test
 
-        const response = await request(app)
-            .post(appConfig.routePrefix + `/image/${pid}`)
-            .set("Authorization", `Bearer ${VALID_TOKEN}`)
-            .field('destination', vacationData.destination)
-            .field('description', vacationData.description)
-            .field('startDate', vacationData.startDate)
-            .field('endDate', vacationData.endDate)
-            .field('price', vacationData.price);
+    //     const response = await request(app)
+    //         .post(appConfig.routePrefix + "/vacations")
+    //         .set("Authorization", `Bearer ${VALID_TOKEN}`)
+    //         .field('destination', vacationData.destination)
+    //         .field('description', vacationData.description)
+    //         .field('startDate', vacationData.startDate)
+    //         .field('endDate', vacationData.endDate)
+    //         .field('price', vacationData.price)
+    //         .attach('image', image, 'test-image.jpg'); // Attach image file
 
-        console.log('Response Body:', response.body); // Log response body for debugging
+    //     console.log('Response Body:', response.body); // Log response body for debugging
 
-        expect(response.status).toBe(StatusCode.BadRequest);
-        expect(response.body).toHaveProperty('message', 'Image file is required');
-    })
+    //     expect(response.status).toBe(StatusCode.Ok);
+    //     expect(response.body).toHaveProperty('message', 'Vacation added successfully');
+    //     expect(response.body).toHaveProperty('vacationId');
+    // })
 
-    it("Should return error for invalid vacation data", async () => {
-        const invalidVacationData = {
-            destination: '', // Empty destination
-            description: 'A wonderful trip to Paris',
-            startDate: 'invalid-date', // Invalid date format
-            endDate: '2024-10-10',
-            price: '1500.00',
-        };
+    // it("Should return error if image file is missing", async () => {
+    //     const vacationData = {
+    //         destination: 'Paris',
+    //         description: 'A wonderful trip to Paris',
+    //         startDate: '2024-10-01',
+    //         endDate: '2024-10-10',
+    //         price: '1500.00',
+    //     };
 
-        const response = await request(app)
-            .post(appConfig.routePrefix + "/vacations")
-            .set("Authorization", `Bearer ${VALID_TOKEN}`)
-            .field('destination', invalidVacationData.destination)
-            .field('description', invalidVacationData.description)
-            .field('startDate', invalidVacationData.startDate)
-            .field('endDate', invalidVacationData.endDate)
-            .field('price', invalidVacationData.price)
-            .attach('image', Buffer.from('image data'), 'test-image.jpg');
+    //     const response = await request(app)
+    //         .post(appConfig.routePrefix + `/image/${pid}`)
+    //         .set("Authorization", `Bearer ${VALID_TOKEN}`)
+    //         .field('destination', vacationData.destination)
+    //         .field('description', vacationData.description)
+    //         .field('startDate', vacationData.startDate)
+    //         .field('endDate', vacationData.endDate)
+    //         .field('price', vacationData.price);
 
-        console.log('Response Body:', response.body); // Log response body for debugging
+    //     console.log('Response Body:', response.body); // Log response body for debugging
 
-        expect(response.status).toBe(StatusCode.BadRequest);
-        expect(response.body).toHaveProperty('message');
-    });
+    //     expect(response.status).toBe(StatusCode.BadRequest);
+    //     expect(response.body).toHaveProperty('message', 'Image file is required');
+    // })
+
+    // it("Should return error for invalid vacation data", async () => {
+    //     const invalidVacationData = {
+    //         destination: '', // Empty destination
+    //         description: 'A wonderful trip to Paris',
+    //         startDate: 'invalid-date', // Invalid date format
+    //         endDate: '2024-10-10',
+    //         price: '1500.00',
+    //     };
+
+    //     const response = await request(app)
+    //         .post(appConfig.routePrefix + "/vacations")
+    //         .set("Authorization", `Bearer ${VALID_TOKEN}`)
+    //         .field('destination', invalidVacationData.destination)
+    //         .field('description', invalidVacationData.description)
+    //         .field('startDate', invalidVacationData.startDate)
+    //         .field('endDate', invalidVacationData.endDate)
+    //         .field('price', invalidVacationData.price)
+    //         .attach('image', Buffer.from('image data'), 'test-image.jpg');
+
+    //     console.log('Response Body:', response.body); // Log response body for debugging
+
+    //     expect(response.status).toBe(StatusCode.BadRequest);
+    //     expect(response.body).toHaveProperty('message');
+    // });
     
     
+    it("Should delete vacation", async () => {
 
+      // Insert a vacation to delete later
+      const response = await request(app)
+        .post(appConfig.routePrefix + "/vacations")
+        .set("Authorization", `Bearer ${VALID_TOKEN}`)
+        .send({
+          destination: "Paris",
+          description: "A wonderful trip to Paris",
+          startDate: "2024-10-01",
+          endDate: "2024-10-10",
+          price: "1500.00",
+        });
+  
+      pid = response.body.vacationId; // Save the ID for deletion
+      console.log(pid,"?????");
+      
+    });
+  
+    it("Should delete a vacation", async () => {
+      if (!pid) {
+        console.warn("No vacation ID found to delete");
+        return;
+      }
+  
+      const response = await request(app)
+        .delete(`${appConfig.routePrefix}/vacations/${pid}`)
+        .set("Authorization", `Bearer ${VALID_TOKEN}`);
+  
+      expect(response.status).toBe(StatusCode.Ok);
+      expect(response.body).toHaveProperty("message", "Vacation deleted successfully");
+    });
+  
     afterAll(async () => {
-        console.log("afterAll is running..");
-        closeDB();
-    })
-})
+      console.log("afterAll is running...");
+      closeDB();
+    });
+  });

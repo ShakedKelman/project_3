@@ -19,6 +19,7 @@ import {
 } from 'chart.js';
 import { VacationModel } from '../model/VacationModel';
 import { getVacations } from '../api/vactions/vactions-api';
+import { Button } from 'react-bootstrap';
 
 ChartJS.register(
     CategoryScale,
@@ -134,10 +135,18 @@ const Report: React.FC = () => {
                     <h2>Vacation Report</h2>
                     <Bar data={chartData} options={chartOptions} />
                     <div>
-                        <button onClick={handleExportExcel}>Export to Excel</button>
-                        <CSVLink data={data} filename="vacation_report.csv">
-                            Export to CSV
-                        </CSVLink>
+                    <Button 
+                        variant="primary" 
+                        className="me-2" 
+                        onClick={handleExportExcel}
+                    >
+                        Export to Excel
+                    </Button>                        <CSVLink 
+                        data={data} 
+                        filename="vacation_report.csv"
+                    >
+                        <Button variant="success">Export to CSV</Button>
+                    </CSVLink>
                     </div>
                 </div>
             </div>
