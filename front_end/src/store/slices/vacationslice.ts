@@ -37,7 +37,9 @@ const vacationSlice = createSlice({
             }
         },
         deleteVacationReducer(state, action: PayloadAction<number>) {
+            console.log('deleteVacationReducer before', state.vacations)
             state.vacations = state.vacations.filter(vacation => vacation.id !== action.payload);
+            console.log('deleteVacationReducer after', state.vacations)
         },
     },
     extraReducers: builder => {

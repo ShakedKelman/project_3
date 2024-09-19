@@ -134,18 +134,19 @@ vacationRoutes.delete(appConfig.routePrefix + "/vacations/:id",
             // console.log("---------reparamsid",id);
 
             const vacationImagePaths = await getImageByVacation(id);
+            console.log(vacationImagePaths,"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             
             if (!vacationImagePaths || vacationImagePaths.length === 0) {
                 console.warn(`No images found for vacation ID ${id}`);
             }
 
-            for (const image_path of vacationImagePaths) {
-                if (image_path) {
-                    await deleteImage(image_path);
-                } else {
-                    console.warn(`No file name provided for vacation: ${id}`);
-                }
-            }
+            // for (const image_path of vacationImagePaths) {
+            //     if (image_path) {
+            //         await deleteImage(image_path);
+            //     } else {
+            //         console.warn(`No file name provided for vacation: ${id}`);
+            //     }
+            // }
             
             await deleteVacation(id);
             res.status(StatusCode.Ok).send(); // No content to return after successful deletion

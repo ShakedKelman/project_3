@@ -213,6 +213,7 @@ export async function deleteVacation(id: number): Promise<void> {
         await runQuery('DELETE FROM followers WHERE vacationId = ?', [id]);
         await runQuery('DELETE FROM vacations WHERE id = ?', [id]);
         await runQuery('COMMIT');
+        console.log('vacation deleted successfully from the db')
     } catch (error) {
         await runQuery('ROLLBACK');
         throw error;

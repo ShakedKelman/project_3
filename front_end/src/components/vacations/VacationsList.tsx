@@ -11,6 +11,7 @@ import { getVacations } from '../../api/vactions/vactions-api';
 import { selectVacations } from '../../store/slices/followersSlice';
 import { getVacationsPerUser } from '../../api/followers/follower-api';
 import { fetchVacationsPerUser } from '../../api/followers/followersThunk';
+import { deleteVacationReducer } from '../../store/slices/vacationslice';
 
 const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -22,6 +23,7 @@ const VacationList: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [allVacations, setAllVacations] = useState<VacationModel[]>([]);
     const followedVacations = useSelector(selectVacations);
+    const deletedVacations : any[] = [];
 
     const isAdmin = user?.isAdmin;
 
@@ -84,10 +86,35 @@ const VacationList: React.FC = () => {
         fetchFilteredData();
     }, [filter, page]);
 
-    const callback = (vacationId: number, whatChanged: string) => {
-        if (whatChanged === 'follow' && user?.id !== undefined) dispatch(fetchVacationsPerUser(user.id));
-    }
+    // const callback = (vacationId: number, whatChanged: string) => {
+    //     switch (whatChanged) {
+    //     case  'follow':
+    //         if (user?.id !== undefined) dispatch(fetchVacationsPerUser(user.id));
+    //         break;
+    //     case 'delete':
+    //         console.log('render vacations', vacations)
 
+    //         dispatch(deleteVacationReducer(vacationId))
+    //         console.log('render after', vacations)
+
+    //         //dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
+    //         deletedVacations.push(vacationId);
+    //         break;
+    //     }
+    // }
+    const callback = (vacationId: number, whatChanged: string) => {
+        switch (whatChanged) {
+            case 'follow':
+                if (user?.id !== undefined) dispatch(fetchVacationsPerUser(user.id));
+                break;
+            case 'delete':
+                dispatch(deleteVacationReducer(vacationId));
+                // Remove vacation from the state
+                setAllVacations(prevVacations => prevVacations.filter(vac => vac.id !== vacationId));
+                break;
+        }
+    };
+    
     const applyFilter = (vacations: VacationModel[], filter: string) => {
         const now = new Date();
         return vacations.filter((vacation: VacationModel) => {
@@ -121,10 +148,15 @@ const VacationList: React.FC = () => {
     if (status === 'loading' || loading) return <div>Loading...</div>;
     if (status === 'failed') return <div>{error}</div>;
 
-    // Filter and sort vacations
-    const filteredVacations = applyFilter(allVacations, filter);
+    let filteredVacations = allVacations;
+    if (!isAdmin) {
+        // Filter vacations
+        filteredVacations = applyFilter(allVacations, filter);
+    }
+
+    // sort vacations
     console.log('FFFFFFFFFFFFFFFFFFFF', filteredVacations)
-    console.log(followedVacations.map( v => v.id))
+    console.log('followed vacations (admin has [])', followedVacations.map( v => v.id))
     const sortedVacations = [...filteredVacations].sort((a, b) => {
         const dateA = new Date(a.startDate);
         const dateB = new Date(b.startDate);
@@ -174,13 +206,22 @@ const VacationList: React.FC = () => {
                     />
                 </Form>
             )}
-            <Row>
-                {paginatedVacations.map((vacation: VacationModel) => (
+            {/* <Row>
+                {paginatedVacations.filter( v => !deletedVacations.includes(v.id)).map((vacation: VacationModel) => (
                     <Col key={vacation.id || "placeholder"} md={4} className="mb-4">
                         <VacationCard vacation={vacation} onChangeFn={callback} />
                     </Col>
                 ))}
-            </Row>
+                
+            </Row> */}
+            <Row>
+    {paginatedVacations.map((vacation: VacationModel) => (
+        <Col key={vacation.id || "placeholder"} md={4} className="mb-4">
+            <VacationCard vacation={vacation} onChangeFn={callback} />
+        </Col>
+    ))}
+</Row>
+
             <Stack spacing={2} className="mt-4">
                 <Pagination
                     count={totalPages}

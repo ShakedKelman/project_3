@@ -169,7 +169,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => 
             }
     
             onChangeFn(user?.id, 'follow');
-            
+
             // // Re-fetch followers to get the correct total count
             // await dispatch(fetchFollowers(vacation.id));
 
@@ -213,6 +213,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => 
             try {
                 await deleteVacation(vacation.id, token);
                 dispatch(deleteVacationReducer(vacation.id));
+                onChangeFn(vacation?.id, 'delete')
             } catch (error) {
                 setError('Failed to delete vacation. Please try again later.');
                 console.error('Error deleting vacation:', error);
