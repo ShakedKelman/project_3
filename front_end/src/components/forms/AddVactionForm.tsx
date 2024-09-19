@@ -6,7 +6,7 @@ import { useAppDispatch } from '../../store/store';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { apiAddVacation } from '../../api/vactions/vactions-api';
 import { addVacation } from '../../store/slices/vacationslice';
-import { fetchPaginatedVacations } from '../../api/vactions/vacationsThunk';
+import { fetchPaginatedVacations, fetchVacations } from '../../api/vactions/vacationsThunk';
 
 const AddVacationForm: React.FC = () => {
     const [newVacation, setNewVacation] = useState<VacationModel>(new VacationModel({}));
@@ -65,6 +65,7 @@ const AddVacationForm: React.FC = () => {
 
             const addedVacation = await apiAddVacation(formData);
             dispatch(addVacation(addedVacation)); // Dispatch action to add vacation to Redux store
+            dispatch(fetchVacations()); // Fetch all vacations to update the dropdown
             dispatch(fetchPaginatedVacations({ page: 1, limit: 10 })); // Fetch paginated vacations
             setSuccess("Vacation added successfully");
             navigate('/vacations');

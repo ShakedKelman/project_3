@@ -15,7 +15,7 @@ const NavbarWeb: React.FC = () => {
 
     useEffect(() => {
         if (user?.isAdmin) {
-            dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
+            // dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
             dispatch(fetchVacations()); // Fetch all vacations for dropdown
         }
     }, [user?.isAdmin, dispatch]);
