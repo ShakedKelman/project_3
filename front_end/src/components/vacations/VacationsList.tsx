@@ -86,22 +86,6 @@ const VacationList: React.FC = () => {
         fetchFilteredData();
     }, [filter, page]);
 
-    // const callback = (vacationId: number, whatChanged: string) => {
-    //     switch (whatChanged) {
-    //     case  'follow':
-    //         if (user?.id !== undefined) dispatch(fetchVacationsPerUser(user.id));
-    //         break;
-    //     case 'delete':
-    //         console.log('render vacations', vacations)
-
-    //         dispatch(deleteVacationReducer(vacationId))
-    //         console.log('render after', vacations)
-
-    //         //dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
-    //         deletedVacations.push(vacationId);
-    //         break;
-    //     }
-    // }
     const callback = (vacationId: number, whatChanged: string) => {
         switch (whatChanged) {
             case 'follow':
@@ -155,8 +139,6 @@ const VacationList: React.FC = () => {
     }
 
     // sort vacations
-    console.log('FFFFFFFFFFFFFFFFFFFF', filteredVacations)
-    console.log('followed vacations (admin has [])', followedVacations.map( v => v.id))
     const sortedVacations = [...filteredVacations].sort((a, b) => {
         const dateA = new Date(a.startDate);
         const dateB = new Date(b.startDate);

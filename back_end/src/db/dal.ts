@@ -35,3 +35,7 @@ export default function runQuery(q: string, params: any[] = []): Promise<any> {
 }
 
 // runQuery("select * from product").then(...).catch(...)
+
+export const closeDB = async () =>{
+    connection.end()
+}

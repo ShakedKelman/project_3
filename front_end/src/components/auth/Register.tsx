@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { UserModel } from '../../model/UserModel';
 import { register } from '../../api/auth/auth-api';
@@ -124,6 +124,9 @@ const RegisterComponent: React.FC = () => {
           Register
         </Button>
       </Form>
+      <div className="mt-3">
+        <p>Already a member? <Link to="/login">Login</Link></p>
+      </div>
     </Container>
   );
 };

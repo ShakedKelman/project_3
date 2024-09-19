@@ -38,14 +38,6 @@ export const login = async (email: string, password: string): Promise<{ user: Us
   
 
 
-// export const register = async (user: UserModel): Promise<UserModel> => {
-//   const response = await axios.post(`${siteConfig.BASE_URL}register`, user);
-//   const registeredUser = response.data; // Ensure this matches `UserModel`
-//   console.log('Registered user:', registeredUser); // Log the user information
-//   return response.data; // Ensure this matches `UserModel`
-// };
-
-
 export const register = async (user: UserModel): Promise<{ user: UserModel, token: string }> => {
   try {
     const response = await axios.post(`${siteConfig.BASE_URL}register`, user);

@@ -8,8 +8,6 @@ export const getFollowersForVacation = async (vacationId: number): Promise<{ id:
         // console.log(response);
          // Log the number of followers received
          const followerCount = response.data.length;
-         console.log(`Number of followers received: ${followerCount}`);
- 
         return response.data.map((id: number) => ({ id })); // Ensure data structure is [{ id: number }]
     
     } catch (error) {
@@ -22,11 +20,8 @@ export const getFollowersForVacation = async (vacationId: number): Promise<{ id:
 export const getVacationsPerUser = async (userId: number): Promise<{ id: number }[]> => {
     try {
         const response = await axios.get(`${siteConfig.BASE_URL}followers/${userId}/vacations`);
-        // console.log(response);
          // Log the number of followers received
          const vacationsCount = response.data.length;
-         console.log(`Number of vacations received: ${vacationsCount}`);
- 
         return response.data.map((id: number) => ({ id })); // Ensure data structure is [{ id: number }]
     
     } catch (error) {

@@ -15,7 +15,7 @@ import { selectUser } from '../../store/slices/authSlice';
 import { deleteVacation } from '../../api/vactions/vactions-api';
 import { deleteVacationReducer } from '../../store/slices/vacationslice';
 import '../../css/vacationCard.css';
-import { addVacationFollower, fetchFollowers, fetchVacationsPerUser, removeVacationFollower } from '../../api/followers/followersThunk';
+import { addVacationFollower, removeVacationFollower } from '../../api/followers/followersThunk';
 import { getFollowersForVacation } from '../../api/followers/follower-api';
 import { getImageForVacation } from '../../api/images/images-api';
 import { selectFollowers } from '../../store/slices/followersSlice';
@@ -75,80 +75,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => 
         fetchAdditionalData();
     }, [vacation.id, user]);
     
-    // useEffect(() => {
-    //     const fetchAdditionalData = async () => {
-    //         if (vacation.id === undefined || isNaN(vacation.id)) return;
-    //         try {
-    //             if (vacation.id) {
-    //                 const vacationFollowers = await getFollowersForVacation(vacation.id);
-    //                 const vacationImages = await getImageForVacation(vacation.id);
-    //                 setImages(vacationImages);
-    //         //console.log(vacationImages);
-            
-    //             let followersTotal= dispatch(fetchFollowers(vacation.id));
-    //             // console.log(followersTotal,"{{{{");
-                
-            
-    //                 if (user && user.id !== undefined) {
-    //                     const followerIds = vacationFollowers.map(follower => follower.id);
-    //                     console.log(followerIds);
-
-                        
-    //                     setIsFollowing(followerIds.includes(user.id));
-    //                 } else {
-    //                     setIsFollowing(false);
-    //                 }
-    //             }
-    //         } catch (error) {
-    //             console.error('Error fetching additional data:', error);
-    //         }
-    //     };
-        
-    //     fetchAdditionalData();
-    // }, [vacation.id, user, dispatch]);
-    
-    const getImageUrl = (imagePath: string) => {
-        return `${siteConfig.BASE_URL}${imagePath}`;
-    };
-    
-    // const handleFollowClick = async () => {
-    //     const token = getToken(); // Retrieve the token
-        
-    //     console.log('User:', user); // Debug user state
-    //     console.log('Vacation ID:', vacation.id); // Debug vacation ID
-    //     console.log('User Token:', token); // Safely access token
-    
-    //     if (!user?.id || !vacation.id || !token) {
-    //         setError('User or Vacation ID or token is missing');
-    //         return;
-    //     }
-    
-    //     try {
-    //         if (isFollowing) {
-    //             // Remove follower
-    //             await dispatch(removeVacationFollower({ userId: user.id, vacationId: vacation.id, token }) as any);
-    //             setIsFollowing(false);
-    //         } else {
-    //             // Add follower
-    //             await dispatch(addVacationFollower({ userId: user.id, vacationId: vacation.id, token }) as any);
-    //             setIsFollowing(true);
-    //         }
-    
-    //         // Re-fetch followers to get the correct total count
-    //         let followersTotal= await dispatch(fetchFollowers(vacation.id));
-    //         // console.log(followersTotal,"$$$$$$")
-    
-    //         // Update the following status based on the new list of followers
-    //         const vacationFollowers = await getFollowersForVacation(vacation.id);
-    //         const followerIds = vacationFollowers.map(follower => follower.id);
-    //         setIsFollowing(followerIds.includes(user.id));
-    
-    //         setError(null);
-    //     } catch (error) {
-    //         setError('Failed to update follower status. Please try again later.');
-    //         console.error('Error updating follower:', error);
-    //     }
-    // };
+  
     const handleFollowClick = async () => {
         const token = getToken(); // Retrieve the token
     
@@ -170,15 +97,11 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => 
     
             onChangeFn(user?.id, 'follow');
 
-            // // Re-fetch followers to get the correct total count
-            // await dispatch(fetchFollowers(vacation.id));
-
-            // Re-fetch followers to get the correct total count
+            // Re-fetch vacations to get the correct total followers
             const vacationFollowers = await getFollowersForVacation(vacation.id);
             setTotalFollowers(vacationFollowers.length); // Update total followers count
 
             // Update the following status based on the new list of followers
-            // const vacationFollowers = await getFollowersForVacation(vacation.id);
             const followerIds = vacationFollowers.map(follower => follower.id);
             setIsFollowing(followerIds.includes(user.id));
     
@@ -189,7 +112,6 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => 
         }
 
     };
-    
     
     
     const handleEditVacation = () => {

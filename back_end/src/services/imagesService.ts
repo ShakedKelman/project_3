@@ -32,7 +32,7 @@ export const saveVacationImage = async (vacationId: number, image: UploadedFile)
 
 export async function getImageByVacation(vacationId: number):Promise<string> {
     try {
-console.log("vacationid&&&&&",vacationId);
+// console.log("vacationid&&&&&",vacationId);
 
         // Assuming you're using a database to fetch image information
         const images = await runQuery("SELECT image_path FROM vacations WHERE id = ?", [vacationId]);

@@ -7,7 +7,7 @@ import { editVacation, getVacations } from '../../api/vactions/vactions-api';
 import { updateVacation } from '../../store/slices/vacationslice';
 import { Form, Button, Alert, Spinner, Image } from 'react-bootstrap';
 import { siteConfig } from '../../utils/SiteConfig';
-import { deleteImage, getImageForVacation } from '../../api/images/images-api';
+import { getImageForVacation } from '../../api/images/images-api';
 import axios from 'axios';
 
 const EditVacationForm: React.FC = () => {
@@ -60,9 +60,6 @@ const EditVacationForm: React.FC = () => {
 
                 // If there's an old image and a new image was uploaded, delete the old image
                 const oldImageFileName = vacation.imageFileName;
-                // if (oldImageFileName && oldImageFileName !== newImageFileName) {
-                //     //await deleteImage(Number(id), oldImageFileName, user.token);
-                // }
 
                 // Update vacation details with the new image filename (if changed)
                 const updatedVacation = { ...vacation, imageFileName: newImageFileName };
@@ -70,7 +67,6 @@ const EditVacationForm: React.FC = () => {
                 // insert everything into a form data object
                 const formData = new FormData();
                 for (const [key, value] of Object.entries(updatedVacation)) {
-                    console.log(key, value)
                     if (value !== undefined) {
                         formData.append(key, value as string); // Type assertion to string or Blob
                     }

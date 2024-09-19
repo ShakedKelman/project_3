@@ -24,22 +24,15 @@ const vacationSlice = createSlice({
             state.vacations.push(action.payload);
         },
         updateVacation(state, action: PayloadAction<VacationModel>) {
-            console.log('----------------------', state);
 
             const index = state.vacations.findIndex(vacation => vacation.id === action.payload.id);
             if (index !== -1) {
 
-                console.log('----------------------', action.payload);
-                console.log('----------------------', state);
-
-                
                 state.vacations[index] = action.payload;
             }
         },
         deleteVacationReducer(state, action: PayloadAction<number>) {
-            console.log('deleteVacationReducer before', state.vacations)
             state.vacations = state.vacations.filter(vacation => vacation.id !== action.payload);
-            console.log('deleteVacationReducer after', state.vacations)
         },
     },
     extraReducers: builder => {

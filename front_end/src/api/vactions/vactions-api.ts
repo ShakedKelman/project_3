@@ -4,11 +4,10 @@ import { siteConfig } from '../../utils/SiteConfig';
 
 // Fetch all vacations or a specific vacation by ID
 export const getVacations = async (id?: number): Promise<VacationModel[]> => {
-    console.log("calling get vacation");
-
     try {
         const url = id ? `${siteConfig.BASE_URL}vacations/${id}` : `${siteConfig.BASE_URL}vacations`;
         const response = await axios.get(url);
+        console.log('got vacations successfully', response.data);
         return response.data; // Ensure this matches `VacationModel[]`
     } catch (error) {
         console.error("Error fetching vacations:", error);
@@ -18,11 +17,8 @@ export const getVacations = async (id?: number): Promise<VacationModel[]> => {
 
 
   
-// api/vacations-api.ts
-
+// function to add vacation
 export const apiAddVacation = async (formData: FormData): Promise<VacationModel> => {
-    console.log("calling add vacation");
-
     try {
         const response = await axios.post(`${siteConfig.BASE_URL}vacations`, formData, {
             headers: {
@@ -40,13 +36,9 @@ export const apiAddVacation = async (formData: FormData): Promise<VacationModel>
 
 // Edit an existing vacation and replace the old image with a new one
 export const editVacation = async (id: number, formData: FormData, token: string): Promise<void> => {
-    console.log("calling edit vacation");
-    
     try {
-    
         const entries = Array.from(formData.entries());
         console.log(entries); // Should log array of key-value pairs           
-
         const response = await fetch(`${siteConfig.BASE_URL}vacation/${id}`, {
             method: 'PUT',
             headers: {
@@ -54,7 +46,6 @@ export const editVacation = async (id: number, formData: FormData, token: string
             },
             body: formData,
         });
-
       // Check if the response is not successful
       if (!response.ok) {
         // Try to parse the error response as JSON
