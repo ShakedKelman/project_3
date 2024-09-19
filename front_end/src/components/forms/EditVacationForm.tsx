@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { VacationModel } from '../../model/VacationModel';
-import { editVacation, getVacations, uploadVacationImage } from '../../api/vactions/vactions-api';
+import { editVacation, getVacations } from '../../api/vactions/vactions-api';
 import { updateVacation } from '../../store/slices/vacationslice';
 import { Form, Button, Alert, Spinner, Image } from 'react-bootstrap';
 import { siteConfig } from '../../utils/SiteConfig';
@@ -41,7 +41,7 @@ const EditVacationForm: React.FC = () => {
                 }
             }
         };
-    
+
         fetchVacationDetails();
     }, [id]);
 
@@ -52,20 +52,17 @@ const EditVacationForm: React.FC = () => {
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-    
+
         if (user?.token && vacation) {
 
             try {
                 let newImageFileName = (selectedImage !== null) ? selectedImage.name : vacation.imageFileName;
-                
-                // If a new image is selected, upload it and update the model
-               
+
                 // If there's an old image and a new image was uploaded, delete the old image
                 const oldImageFileName = vacation.imageFileName;
-                if (oldImageFileName && oldImageFileName !== newImageFileName) {
-                    //await deleteImage(Number(id), oldImageFileName, user.token);
-
-                }
+                // if (oldImageFileName && oldImageFileName !== newImageFileName) {
+                //     //await deleteImage(Number(id), oldImageFileName, user.token);
+                // }
 
                 // Update vacation details with the new image filename (if changed)
                 const updatedVacation = { ...vacation, imageFileName: newImageFileName };
@@ -79,22 +76,15 @@ const EditVacationForm: React.FC = () => {
                     }
                 }
                 formData.append('image', selectedImage as File);
-                
+
                 // Inspecting FormData entries
                 const entries = Array.from(formData.entries());
-                console.log(entries); // Should log array of key-value pairs                await editVacation(Number(id), formData, user.token);
-                console.log(selectedImage)
-                console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 
-                //if (selectedImage) {
-                    //await uploadVacationImage(Number(id), selectedImage, user.token);
-                    await editVacation(Number(id), formData, user.token);
-                    newImageFileName = selectedImage?.name;
-                //}
+                await editVacation(Number(id), formData, user.token);
+                newImageFileName = selectedImage?.name;
 
                 // Dispatch the updated vacation to Redux store
                 dispatch(updateVacation(updatedVacation));
-                
 
                 // Refresh images to ensure they are updated
                 const vacationImages = await getImageForVacation(Number(id));
@@ -104,14 +94,15 @@ const EditVacationForm: React.FC = () => {
                 navigate('/vacations');
             } catch (err) {
                 console.error(err);
-     // This ensures both Axios and non-Axios errors are handled.
-     const errorMessage = axios.isAxiosError(err) && err.response
-     ? err.response.data.message || 'Failed to update vacation'
-     : err instanceof Error
-     ? err.message
-     : 'Failed to update vacation';
+                // This ensures both Axios and non-Axios errors are handled.
+                const errorMessage = axios.isAxiosError(err) && err.response
+                    ? err.response.data.message || 'Failed to update vacation'
+                    : err instanceof Error
+                        ? err.message
+                        : 'Failed to update vacation';
 
- setError(errorMessage);            }
+                setError(errorMessage);
+            }
         }
     };
 
@@ -156,7 +147,7 @@ const EditVacationForm: React.FC = () => {
         <Form onSubmit={handleSubmit}>
             {error && <Alert variant="danger">{error}</Alert>}
             {successMessage && <Alert variant="success">{successMessage}</Alert>}
-            
+
             <Form.Group controlId="destination">
                 <Form.Label>Destination:</Form.Label>
                 <Form.Control

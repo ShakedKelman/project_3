@@ -5,7 +5,13 @@ import { siteConfig } from '../../utils/SiteConfig';
 export const getFollowersForVacation = async (vacationId: number): Promise<{ id: number }[]> => {
     try {
         const response = await axios.get(`${siteConfig.BASE_URL}vacations/${vacationId}/followers`);
+        // console.log(response);
+         // Log the number of followers received
+         const followerCount = response.data.length;
+         console.log(`Number of followers received: ${followerCount}`);
+ 
         return response.data.map((id: number) => ({ id })); // Ensure data structure is [{ id: number }]
+    
     } catch (error) {
         console.error("Error fetching followers:", error);
         throw error;

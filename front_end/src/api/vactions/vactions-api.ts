@@ -15,11 +15,6 @@ export const getVacations = async (id?: number): Promise<VacationModel[]> => {
 };
 
 
-// export const getPaginatedVacations = async (page: number, limit: number = 10) => {
-//     const response = await fetch(`http://localhost:4000/api/v1/vacations-pg?page=${page}&limit=${limit}`);
-//     const data = await response.json();
-//     return data;
-// };
   
 // api/vacations-api.ts
 
@@ -39,31 +34,13 @@ export const apiAddVacation = async (formData: FormData): Promise<VacationModel>
     }
 };
 
-
-
-
-// // Edit an existing vacation
-// export const editVacation = async (id: number, vacation: VacationModel, token: string): Promise<void> => {
-//     try {
-//         await axios.put(`${siteConfig.BASE_URL}vacation/${id}`, vacation, {
-//             headers: {
-//                 'Authorization': `Bearer ${token}`
-//             }
-//         });
-//     } catch (error) {
-//         console.error("Error editing vacation:", error);
-//         throw error;
-//     }
-// };
-
 // Edit an existing vacation and replace the old image with a new one
 export const editVacation = async (id: number, formData: FormData, token: string): Promise<void> => {
     
     try {
     
         const entries = Array.from(formData.entries());
-        console.log(entries); // Should log array of key-value pairs                await editVacation(Number(id), formData, user.token);
-
+        console.log(entries); // Should log array of key-value pairs           
 
         const response = await fetch(`${siteConfig.BASE_URL}vacation/${id}`, {
             method: 'PUT',

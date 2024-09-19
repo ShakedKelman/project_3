@@ -46,45 +46,111 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
     const followers = useSelector(selectFollowers);
     const [error, setError] = useState<string | null>(null);
     const dispatch = useDispatch<AppDispatch>();
-    
+    const [totalFollowers, setTotalFollowers] = useState<number>(0); // Added state for total followers
+
     useEffect(() => {
         const fetchAdditionalData = async () => {
             if (vacation.id === undefined || isNaN(vacation.id)) return;
             try {
-                if (vacation.id) {
-                    const vacationFollowers = await getFollowersForVacation(vacation.id);
-                    const vacationImages = await getImageForVacation(vacation.id);
-                    setImages(vacationImages);
-            //console.log(vacationImages);
-            
-                    dispatch(fetchFollowers(vacation.id));
-            
-                    if (user && user.id !== undefined) {
-                        const followerIds = vacationFollowers.map(follower => follower.id);
-                        setIsFollowing(followerIds.includes(user.id));
-                    } else {
-                        setIsFollowing(false);
-                    }
+                // Fetch vacation followers and images
+                const vacationFollowers = await getFollowersForVacation(vacation.id);
+                setTotalFollowers(vacationFollowers.length);
+
+                const vacationImages = await getImageForVacation(vacation.id);
+                setImages(vacationImages);
+    
+                // Check if the user is following
+                if (user && user.id !== undefined) {
+                    const followerIds = vacationFollowers.map(follower => follower.id);
+                    setIsFollowing(followerIds.includes(user.id));
+                } else {
+                    setIsFollowing(false);
                 }
             } catch (error) {
                 console.error('Error fetching additional data:', error);
             }
         };
-        
+    
         fetchAdditionalData();
-    }, [vacation.id, user, dispatch]);
+    }, [vacation.id, user]);
+    
+    // useEffect(() => {
+    //     const fetchAdditionalData = async () => {
+    //         if (vacation.id === undefined || isNaN(vacation.id)) return;
+    //         try {
+    //             if (vacation.id) {
+    //                 const vacationFollowers = await getFollowersForVacation(vacation.id);
+    //                 const vacationImages = await getImageForVacation(vacation.id);
+    //                 setImages(vacationImages);
+    //         //console.log(vacationImages);
+            
+    //             let followersTotal= dispatch(fetchFollowers(vacation.id));
+    //             // console.log(followersTotal,"{{{{");
+                
+            
+    //                 if (user && user.id !== undefined) {
+    //                     const followerIds = vacationFollowers.map(follower => follower.id);
+    //                     console.log(followerIds);
+
+                        
+    //                     setIsFollowing(followerIds.includes(user.id));
+    //                 } else {
+    //                     setIsFollowing(false);
+    //                 }
+    //             }
+    //         } catch (error) {
+    //             console.error('Error fetching additional data:', error);
+    //         }
+    //     };
+        
+    //     fetchAdditionalData();
+    // }, [vacation.id, user, dispatch]);
     
     const getImageUrl = (imagePath: string) => {
         return `${siteConfig.BASE_URL}${imagePath}`;
     };
     
+    // const handleFollowClick = async () => {
+    //     const token = getToken(); // Retrieve the token
+        
+    //     console.log('User:', user); // Debug user state
+    //     console.log('Vacation ID:', vacation.id); // Debug vacation ID
+    //     console.log('User Token:', token); // Safely access token
+    
+    //     if (!user?.id || !vacation.id || !token) {
+    //         setError('User or Vacation ID or token is missing');
+    //         return;
+    //     }
+    
+    //     try {
+    //         if (isFollowing) {
+    //             // Remove follower
+    //             await dispatch(removeVacationFollower({ userId: user.id, vacationId: vacation.id, token }) as any);
+    //             setIsFollowing(false);
+    //         } else {
+    //             // Add follower
+    //             await dispatch(addVacationFollower({ userId: user.id, vacationId: vacation.id, token }) as any);
+    //             setIsFollowing(true);
+    //         }
+    
+    //         // Re-fetch followers to get the correct total count
+    //         let followersTotal= await dispatch(fetchFollowers(vacation.id));
+    //         // console.log(followersTotal,"$$$$$$")
+    
+    //         // Update the following status based on the new list of followers
+    //         const vacationFollowers = await getFollowersForVacation(vacation.id);
+    //         const followerIds = vacationFollowers.map(follower => follower.id);
+    //         setIsFollowing(followerIds.includes(user.id));
+    
+    //         setError(null);
+    //     } catch (error) {
+    //         setError('Failed to update follower status. Please try again later.');
+    //         console.error('Error updating follower:', error);
+    //     }
+    // };
     const handleFollowClick = async () => {
         const token = getToken(); // Retrieve the token
-        
-        console.log('User:', user); // Debug user state
-        console.log('Vacation ID:', vacation.id); // Debug vacation ID
-        console.log('User Token:', token); // Safely access token
-
+    
         if (!user?.id || !vacation.id || !token) {
             setError('User or Vacation ID or token is missing');
             return;
@@ -92,18 +158,34 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
     
         try {
             if (isFollowing) {
+                // Remove follower
                 await dispatch(removeVacationFollower({ userId: user.id, vacationId: vacation.id, token }) as any);
                 setIsFollowing(false);
             } else {
+                // Add follower
                 await dispatch(addVacationFollower({ userId: user.id, vacationId: vacation.id, token }) as any);
                 setIsFollowing(true);
             }
+    
+            // // Re-fetch followers to get the correct total count
+            // await dispatch(fetchFollowers(vacation.id));
+      // Re-fetch followers to get the correct total count
+      const vacationFollowers = await getFollowersForVacation(vacation.id);
+      setTotalFollowers(vacationFollowers.length); // Update total followers count
+
+            // Update the following status based on the new list of followers
+            // const vacationFollowers = await getFollowersForVacation(vacation.id);
+            const followerIds = vacationFollowers.map(follower => follower.id);
+            setIsFollowing(followerIds.includes(user.id));
+    
             setError(null);
         } catch (error) {
             setError('Failed to update follower status. Please try again later.');
             console.error('Error updating follower:', error);
         }
     };
+    
+    
     
     const handleEditVacation = () => {
         navigate(`/edit-vacation/${vacation.id}`);
@@ -167,7 +249,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                                                     onClick={handleFollowClick}
                                                 />
                                             )}
-                                            <span>{followers.length}</span>
+                                              <span>{totalFollowers}</span> {/* Display total followers */}
                                             {user && isFollowing && (
                                                 <span className="following" style={{ marginLeft: '10px' }}>
                                                     You follow this vacation
