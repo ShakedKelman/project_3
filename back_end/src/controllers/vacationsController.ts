@@ -82,7 +82,6 @@ vacationRoutes.post(
 
 vacationRoutes.put(appConfig.routePrefix + "/vacation/:id", 
 async (req: Request, res: Response, next: NextFunction) => {
-    console.log('^^^^^^^^^^^^^^^');
     try {
         const id = parseInt(req.params.id, 10);
         
@@ -91,22 +90,21 @@ async (req: Request, res: Response, next: NextFunction) => {
 
         // Assuming req.body contains the update fields
         const updates: Partial<VacationModel> = req.body;
-        console.log(updates,"}}}}}}}}");
-        console.log(req.body,"}}}}}}}}");
-console.log(req.files,"}}}}}}}}");
-
-        // Call the editVacation function with the updates and image if present
-        // const vacationKeys = Object.keys(updates).filter( k => k !== 'image');
-        // let vacationOnly = updates;
-        // if (image === undefined || image === null ) 
-        //     ({ image, ...vacationOnly } = updates)
+ 
         const vacationUpdated= await editVacation(id, updates, image);
 
         res.status(StatusCode.Ok).json(vacationUpdated);
     } catch (error) {
+        
         console.error("Error in editVacationController:", error);
-        next(error);
-    }
+        if (error instanceof ValidationError) {
+            res.status(StatusCode.BadRequest).json({
+                error: "Validation Error",
+                message: error.message
+            });
+        } else {
+            next(error); // Pass the error to the next middleware (for other error types)
+        }    }
 });
 
 

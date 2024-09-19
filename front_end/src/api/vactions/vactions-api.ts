@@ -61,28 +61,8 @@ export const editVacation = async (id: number, formData: FormData, token: string
     
     try {
     
-        // // If there's an old image, attempt to remove it
-        // if (oldImageFileName) {
-        //     try {
-        //         await axios.delete(`${siteConfig.BASE_URL}image/${id}/${oldImageFileName}`, {
-        //             headers: {
-        //                 'Authorization': `Bearer ${token}`,
-        //             },
-        //         });
-        //         console.log('Old image deleted successfully');
-        //     } catch (deleteError) {
-        //         console.error('Error deleting old image:', deleteError);
-        //         // Optionally, handle the error or proceed with updating vacation
-        //     }
-        // }
-
-        // Update the vacation details
-        // console.log('HERE ----- vacation ---- ', vacation)
-        // const vacation_ = Object.assign( {}, vacation, { image_path : '' } );
-        // console.log('THERE ----- vacation ---- ', vacation_)
         const entries = Array.from(formData.entries());
         console.log(entries); // Should log array of key-value pairs                await editVacation(Number(id), formData, user.token);
-        console.log("::::::::::::::::::::::::::::::::::::::::::::::::")
 
 
         const response = await fetch(`${siteConfig.BASE_URL}vacation/${id}`, {
@@ -93,12 +73,12 @@ export const editVacation = async (id: number, formData: FormData, token: string
             body: formData,
         });
 
-        // await axios.put(`${siteConfig.BASE_URL}vacation/${id}`, {
-        //     headers: {
-        //         'Authorization': `Bearer ${token}`
-        //     },
-        //     body: formData,
-        // });
+      // Check if the response is not successful
+      if (!response.ok) {
+        // Try to parse the error response as JSON
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update vacation');
+    }
         console.log('Vacation updated successfully');
     } catch (error) {
         console.error("Error editing vacation:", error);

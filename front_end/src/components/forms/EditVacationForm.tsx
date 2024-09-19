@@ -104,8 +104,14 @@ const EditVacationForm: React.FC = () => {
                 navigate('/vacations');
             } catch (err) {
                 console.error(err);
-                setError(axios.isAxiosError(err) && err.response ? err.response.data : 'Failed to update vacation');
-            }
+     // This ensures both Axios and non-Axios errors are handled.
+     const errorMessage = axios.isAxiosError(err) && err.response
+     ? err.response.data.message || 'Failed to update vacation'
+     : err instanceof Error
+     ? err.message
+     : 'Failed to update vacation';
+
+ setError(errorMessage);            }
         }
     };
 

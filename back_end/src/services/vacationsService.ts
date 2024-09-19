@@ -6,6 +6,7 @@ import { UploadedFile } from "express-fileupload";
 import { ResultSetHeader } from "mysql2";
 import { saveVacationImage } from "../services/imagesService"; // Ensure correct import
 import { deleteImage, saveImage } from "../utils/helpers";
+import { validate } from "uuid";
 
 export async function getVacations(id?: number): Promise<VacationModel[]> {
     let q = `SELECT * FROM vacations`;
@@ -88,6 +89,7 @@ export async function addVacation(v: VacationModel, image: UploadedFile | undefi
 
 
 export async function editVacation(id: number, updates: Partial<VacationModel>, image: UploadedFile | undefined): Promise <any> {
+
     if (Object.keys(updates).length === 0 && (image === null || image === undefined)) {
         throw new ValidationError("No updates provided!");
     }
@@ -97,12 +99,6 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
     const vacationToUpdate = new VacationModel({ id, ...updates } as VacationModel);
     vacationToUpdate.validatePartial(updates);
 
-    // if (updates.startDate) {
-    //     updates.startDate = new Date(updates.startDate).toISOString().split('T')[0];
-    // }
-    // if (updates.endDate) {
-    //     updates.endDate = new Date(updates.endDate).toISOString().split('T')[0];
-    // }
 
     if (updates.startDate) {
         const startDate = new Date(updates.startDate);
