@@ -33,8 +33,8 @@ vacationRoutes.post(
     appConfig.routePrefix + "/vacations",
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log("Received vacation data:", req.body);
-            console.log("Received files:", req.files);
+            // console.log("Received vacation data:", req.body);
+            // console.log("Received files:", req.files);
 
             const vacationData = {
                 destination: req.body.destination,
@@ -131,7 +131,7 @@ vacationRoutes.delete(appConfig.routePrefix + "/vacations/:id",
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const id = parseInt(req.params.id, 10);
-            console.log("---------reparamsid",id);
+            // console.log("---------reparamsid",id);
 
             const vacationImagePaths = await getImageByVacation(id);
             

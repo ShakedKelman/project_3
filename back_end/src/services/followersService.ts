@@ -14,6 +14,17 @@ export async function getFollowersForVacation(vacationId: number): Promise<numbe
 }
 
 
+// Function to get followers for a specific vacation
+export async function getVacationsPerUser(userId: number): Promise<number[]> {
+    const q = `
+        SELECT vacationId FROM followers WHERE userId= ?
+    `;
+    const res = await runQuery(q, [userId]);
+
+    // Extract user IDs from the result
+    return res.map((row: any) => row.vacationId);
+}
+
 
 // Function to add a follower to a specific vacation
 export async function addFollower(vacationId: number, userId: number): Promise<void> {

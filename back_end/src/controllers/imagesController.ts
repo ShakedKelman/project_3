@@ -20,9 +20,9 @@ imagesRoute.get(appConfig.routePrefix + "/images/:id", async (req: Request, res:
         
         // Fetch image path from the database
         const imagePath = await getImageByVacation(vacationId);
-        console.log("++++++++reparamsvacationId",vacationId);
+        // console.log("++++++++reparamsvacationId",vacationId);
 
-        console.log(imagePath);
+        // console.log(imagePath);
         
         if (!imagePath) {
             // No image found for the given vacation ID
@@ -83,12 +83,12 @@ imagesRoute.delete(appConfig.routePrefix + "/image/:vacationId/:imageName",
   async (req: Request, res: Response, next: NextFunction) => {
       try {
           const { vacationId, imageName } = req.params;
-          console.log("Received vacationId:", vacationId);
-          console.log("Received imageName: (imageName)", imageName);
+        //   console.log("Received vacationId:", vacationId);
+        //   console.log("Received imageName: (imageName)", imageName);
           const imageUUID=await getImageByVacation(Number(vacationId));
           // Construct the full path using the imageName
           const imageFullPath = path.join(appConfig.vacationsImagesPrefix, imageUUID);
-          console.log("Full image path:", imageFullPath);
+        //   console.log("Full image path:", imageFullPath);
           
           // Call deleteImage with the full path
           await deleteImage(imageFullPath);

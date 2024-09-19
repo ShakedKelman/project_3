@@ -4,6 +4,8 @@ import { siteConfig } from '../../utils/SiteConfig';
 
 // Fetch all vacations or a specific vacation by ID
 export const getVacations = async (id?: number): Promise<VacationModel[]> => {
+    console.log("calling get vacation");
+
     try {
         const url = id ? `${siteConfig.BASE_URL}vacations/${id}` : `${siteConfig.BASE_URL}vacations`;
         const response = await axios.get(url);
@@ -19,6 +21,8 @@ export const getVacations = async (id?: number): Promise<VacationModel[]> => {
 // api/vacations-api.ts
 
 export const apiAddVacation = async (formData: FormData): Promise<VacationModel> => {
+    console.log("calling add vacation");
+
     try {
         const response = await axios.post(`${siteConfig.BASE_URL}vacations`, formData, {
             headers: {
@@ -36,6 +40,7 @@ export const apiAddVacation = async (formData: FormData): Promise<VacationModel>
 
 // Edit an existing vacation and replace the old image with a new one
 export const editVacation = async (id: number, formData: FormData, token: string): Promise<void> => {
+    console.log("calling edit vacation");
     
     try {
     

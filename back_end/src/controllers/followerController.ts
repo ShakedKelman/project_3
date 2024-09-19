@@ -1,7 +1,7 @@
 import { appConfig } from "../utils/appConfig";
 import { NextFunction, Request, Response, Router } from "express";
 import { StatusCode } from "../models/statusEnum";
-import { addFollower, getFollowersForVacation, removeFollower } from "../services/followersService";
+import { addFollower, getFollowersForVacation, getVacationsPerUser, removeFollower } from "../services/followersService";
 
 export const followerRoutes = Router();
 
@@ -22,6 +22,26 @@ followerRoutes.get(appConfig.routePrefix + "/vacations/:id/followers",
             res.status(StatusCode.Ok).json(followers);
         } catch (error) {
             console.error("Error in getFollowersForVacation route:", error);
+            next(error);
+        }
+    }
+);
+
+// Route to get all vacations for a spesific user
+followerRoutes.get(appConfig.routePrefix + "/followers/:id/vacations", 
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = parseInt(req.params.id, 10);
+
+            // Validate if vacationId is a valid number
+            if (isNaN(userId)) {
+                return res.status(StatusCode.BadRequest).json({ message: "Invalid vacation ID" });
+            }
+
+            const vacations = await getVacationsPerUser(userId);
+            res.status(StatusCode.Ok).json(vacations);
+        } catch (error) {
+            console.error("Error in getVacationsPerUser route:", error);
             next(error);
         }
     }

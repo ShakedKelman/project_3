@@ -55,13 +55,13 @@ export async function writeAccessLog(msg: string) {
 
 // Save image function
 export async function saveImage(image: UploadedFile): Promise<string> {
-    console.log("+===========",image)
+    // console.log("+===========",image)
 
     const extension = path.extname(image.name);
     const filename = uuid() + extension;
     const fullPath = path.join(appConfig.vacationsImagesPrefix, filename);
-    console.log('Base path:', appConfig.vacationsImagesPrefix);
-    console.log('Saving image to:', fullPath);
+    // console.log('Base path:', appConfig.vacationsImagesPrefix);
+    // console.log('Saving image to:', fullPath);
 
     // Ensure the directory exists
     await fs.mkdir(appConfig.vacationsImagesPrefix, { recursive: true });

@@ -15,7 +15,7 @@ import { selectUser } from '../../store/slices/authSlice';
 import { deleteVacation } from '../../api/vactions/vactions-api';
 import { deleteVacationReducer } from '../../store/slices/vacationslice';
 import '../../css/vacationCard.css';
-import { addVacationFollower, fetchFollowers, removeVacationFollower } from '../../api/followers/followersThunk';
+import { addVacationFollower, fetchFollowers, fetchVacationsPerUser, removeVacationFollower } from '../../api/followers/followersThunk';
 import { getFollowersForVacation } from '../../api/followers/follower-api';
 import { getImageForVacation } from '../../api/images/images-api';
 import { selectFollowers } from '../../store/slices/followersSlice';
@@ -36,9 +36,10 @@ const formatDate = (isoDate: string): string => {
 
 interface VacationCardProps {
     vacation: VacationModel;
+    onChangeFn: Function;
 }
 
-const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
+const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => {
     const [images, setImages] = useState<string[]>([]);
     const [isFollowing, setIsFollowing] = useState<boolean>(false);
     const navigate = useNavigate();
@@ -167,11 +168,14 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                 setIsFollowing(true);
             }
     
+            onChangeFn(user?.id, 'follow');
+            
             // // Re-fetch followers to get the correct total count
             // await dispatch(fetchFollowers(vacation.id));
-      // Re-fetch followers to get the correct total count
-      const vacationFollowers = await getFollowersForVacation(vacation.id);
-      setTotalFollowers(vacationFollowers.length); // Update total followers count
+
+            // Re-fetch followers to get the correct total count
+            const vacationFollowers = await getFollowersForVacation(vacation.id);
+            setTotalFollowers(vacationFollowers.length); // Update total followers count
 
             // Update the following status based on the new list of followers
             // const vacationFollowers = await getFollowersForVacation(vacation.id);
@@ -183,6 +187,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
             setError('Failed to update follower status. Please try again later.');
             console.error('Error updating follower:', error);
         }
+
     };
     
     

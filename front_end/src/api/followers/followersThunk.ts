@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { addFollower, getFollowersForVacation, removeFollower } from './follower-api';
+import { addFollower, getFollowersForVacation, getVacationsPerUser, removeFollower } from './follower-api';
+import { VacationModel } from '../../model/VacationModel';
 
 // Fetch followers for a specific vacation
 export const fetchFollowers = createAsyncThunk(
@@ -13,6 +14,21 @@ export const fetchFollowers = createAsyncThunk(
         }
     }
 );
+
+// Fetch vacations for a specific user
+export const fetchVacationsPerUser = createAsyncThunk(
+    'vacations/fetchVacationsPerUser',
+    async (userId: number, thunkAPI) => {
+        try {
+            const vacations = await getVacationsPerUser(userId);
+            return vacations as VacationModel[]; // Ensure this is typed correctly
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to fetch vacations');
+        }
+    }
+);
+
+
 
 // Add a follower to a vacation
 export const addVacationFollower = createAsyncThunk(
