@@ -18,6 +18,8 @@ import {
     LineElement,
     PointElement,
 } from 'chart.js';
+import { VacationModel } from '../model/VacationModel';
+import { getVacations } from '../api/vactions/vactions-api';
 
 ChartJS.register(
     CategoryScale,
@@ -34,12 +36,17 @@ const Report: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const vacations = useSelector(selectVacations);
     const [data, setData] = useState<{ destination: string; followers: number }[]>([]);
+    const [allVacations, setAllVacations] = useState<VacationModel[]>([]);
 
     const isAdmin = user?.isAdmin;
 
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const vacations = await getVacations();
+                setAllVacations(vacations);
+                const totalVacations = vacations.length;
+
                 const reportData = await Promise.all(vacations.map(async (vacation) => {
                     if (vacation.id === undefined) {
                         return {
