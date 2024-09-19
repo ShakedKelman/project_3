@@ -121,6 +121,9 @@ const EditVacationForm: React.FC = () => {
             setSelectedImage(file);
         }
     };
+    const handleCancel = () => {
+        navigate('/vacations');
+    };
 
     if (isLoading) return <Spinner animation="border" />;
 
@@ -206,6 +209,9 @@ const EditVacationForm: React.FC = () => {
             </Form.Group>
             <Button variant="primary" type="submit">
                 Update Vacation
+            </Button>
+            <Button variant="secondary" onClick={handleCancel}>
+                Cancel
             </Button>
         </Form>
     );

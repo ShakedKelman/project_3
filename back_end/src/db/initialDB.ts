@@ -11,7 +11,9 @@ import runQuery from "./dal";
 //             email VARCHAR(100) NOT NULL UNIQUE,
 //             hashedPassword VARCHAR(255) NOT NULL,
 //             isAdmin TINYINT(1) NOT NULL DEFAULT 0,
-//             token VARCHAR(1024) DEFAULT NULL 
+//             token VARCHAR(1024) DEFAULT NULL,
+// CONSTRAINT unique_fname_lname UNIQUE (FirstName, LastName)
+
 
 //         );
 //     `;
@@ -76,18 +78,19 @@ import runQuery from "./dal";
     // // let Q = `
     // //     INSERT INTO vacations (destination, description, startDate, endDate, price, imageFileName,image_path)
     // //     VALUES 
-    // //         ('Paris', 'A wonderful trip to Paris', '2024-10-01', '2024-10-10', 1500.00, '',''),
-    // //         ('New York', 'Explore the Big Apple', '2024-11-05', '2024-11-12', 2000.00, '',''),
-    // //         ('Tokyo', 'Experience the vibrant city of Tokyo', '2024-12-01', '2024-12-10', 1800.00, '',''),
-    // //         ('Sydney', 'Enjoy the sights of Sydney', '2024-10-15', '2024-10-25', 1700.00, '',''),
-    // //         ('Rome', 'Discover ancient Rome', '2024-11-15', '2024-11-22', 1600.00, '',''),
-    // //         ('London', 'A classic visit to London', '2024-12-05', '2024-12-12', 1900.00, '',''),
-    // //         ('Barcelona', 'Explore the beauty of Barcelona', '2024-10-20', '2024-10-30', 1400.00,'',''),
-    // //         ('Dubai', 'Experience the luxury of Dubai', '2024-11-10', '2024-11-20', 2100.00, '',''),
-    // //         ('Amsterdam', 'A charming trip to Amsterdam', '2024-12-10', '2024-12-15', 1300.00, '',''),
-    // //         ('Istanbul', 'Explore the historic city of Istanbul', '2024-10-05', '2024-10-12', 1600.00, '',''),
-    // //         ('Lisbon', 'Enjoy the warmth of Lisbon', '2024-11-20', '2024-11-30', 1500.00, '',''),
-    // //         ('Prague', 'Discover the beauty of Prague', '2024-12-15', '2024-12-22', 1400.00, '','');
+// //('Bora Bora', 'A luxurious escape to Bora Bora', '2024-10-01', '2024-10-10', 2500.00, '', ''),
+// ('Iceland', 'Explore the stunning landscapes of Iceland', '2024-11-05', '2024-11-12', 2200.00, '', ''),
+// ('Alaska', 'Experience the wilderness of Alaska', '2024-12-01', '2024-12-10', 2000.00, '', ''),
+// ('Mexico', 'Relax in the beaches of Mexico', '2024-10-15', '2024-10-25', 1700.00, '', ''),
+// ('Bahamas', 'Enjoy the tropical beauty of the Bahamas', '2024-11-15', '2024-11-22', 1800.00, '', ''),
+// ('Paris', 'A romantic getaway to Paris', '2024-12-05', '2024-12-12', 1900.00, '', ''),
+// ('Japan', 'Discover the culture and sights of Japan', '2024-10-20', '2024-10-30', 2100.00, '', ''),
+// ('Africa', 'Explore the wildlife of Africa', '2024-11-10', '2024-11-20', 2300.00, '', ''),
+// ('Greece', 'Enjoy the history and islands of Greece', '2024-12-10', '2024-12-20', 1800.00, '', ''),
+// ('Hawaii', 'Experience paradise in Hawaii', '2024-10-05', '2024-10-12', 2400.00, '', ''),
+// ('Seychelles', 'Relax in the beautiful Seychelles islands', '2024-11-20', '2024-11-30', 2500.00, '', ''),
+// ('Rome', 'Discover the ancient history of Rome', '2024-12-15', '2024-12-22', 2000.00, '', '');
+
     // // `;
     // // await runQuery(Q);
 
