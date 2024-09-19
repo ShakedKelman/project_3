@@ -20,19 +20,11 @@ imagesRoute.get(appConfig.routePrefix + "/images/:id", async (req: Request, res:
         
         // Fetch image path from the database
         const imagePath = await getImageByVacation(vacationId);
-        // console.log("++++++++reparamsvacationId",vacationId);
-
-        // console.log(imagePath);
-        
         if (!imagePath) {
             // No image found for the given vacation ID
             return res.status(StatusCode.Ok).json([]);
         }
         
-        // Use serveImage to serve the image with proper headers
-        // Here, we create a new Request object for serveImage
-        // Since serveImage function needs req and res, you will need to simulate or adapt this for direct use
-        // If you use Express, you might directly send file instead of using serveImage
         return res.status(StatusCode.Ok).sendFile(imagePath, { root: appConfig.vacationsImagesPrefix });
     } catch (error) {
         console.error("Error in getImagesByVacation route:", error);

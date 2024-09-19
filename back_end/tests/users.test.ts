@@ -72,6 +72,20 @@ describe("User Controllers", () => {
             throw new Error('Token is not in the expected format');
         }
     });
+    it("Should fetch all users", async () => {
+        const response = await request(app)
+            .get(appConfig.routePrefix + "/allUsers")
+            .set('Authorization', `Bearer ${VALID_TOKEN}`) // Set the Authorization header
+            .send();  // GET requests do not typically need a body
     
+        expect(response.status).toBe(StatusCode.Ok);
+        expect(response.body).toBeInstanceOf(Array); // Ensure the response is an array
+        // Optionally, you can also add more assertions based on expected user properties
+    });
     
 });
+
+afterAll(async () => {
+    console.log("afterAll is running..");
+    closeDB();
+})

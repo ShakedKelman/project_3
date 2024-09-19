@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import AddVacationForm from '../forms/AddVactionForm';
 import VacationList from '../vacations/VacationsList';
+import Report from '../vacationReport';
 
 const SiteRoutes: React.FC = () => {
   const { status, user } = useSelector((state: RootState) => state.auth);
@@ -27,6 +28,11 @@ const SiteRoutes: React.FC = () => {
       />
 
       {/* Protected Routes */}
+      <Route
+  path="/report"
+  element={isAuthenticated && isAdmin ? <Report /> : <Navigate to="/vacations" />}
+/>
+
       <Route
         path="/vacations"
         element={isAuthenticated ? <VacationList /> : <Navigate to="/login" />}

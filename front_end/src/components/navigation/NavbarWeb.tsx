@@ -46,6 +46,8 @@ const NavbarWeb: React.FC = () => {
                             {isAdmin && (
                                 <>
                                     <Nav.Link as={Link} to="/add-vacation">Add Vacation</Nav.Link>
+                                    <Nav.Link as={Link} to="/report">Report</Nav.Link> {/* Added this line */}
+
                                     <Dropdown>
                                         <Dropdown.Toggle variant="success" id="dropdown-basic">
                                             Edit Vacation

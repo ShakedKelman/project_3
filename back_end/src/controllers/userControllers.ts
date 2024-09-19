@@ -28,21 +28,6 @@ userRoutes.post(appConfig.routePrefix + "/register",
     });
 
 
-
-    // userRoutes.post(appConfig.routePrefix + "/login", 
-    // async (req: Request, res: Response, next: NextFunction)=>{
-    //     try {
-    //       const email = req.body.email;
-    //       const password = req.body.password;
-    //       const token = await login(email, password);
-    //       res.status(StatusCode.Ok).json(token)
-    //     } catch (error) {
-    //         console.error('Error in login function:', error); // Debugging output
-
-    //         next(error);
-    //     }        
-    // })
-  
     
     userRoutes.post(appConfig.routePrefix + "/login", 
         async (req: Request, res: Response, next: NextFunction) => {
@@ -72,6 +57,7 @@ userRoutes.post(appConfig.routePrefix + "/register",
             }        
         });
 
+        
   userRoutes.get(appConfig.routePrefix + "/allUsers", 
   async (req: Request, res: Response, next: NextFunction)=>{
         try {
