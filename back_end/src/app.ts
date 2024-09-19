@@ -2,7 +2,6 @@ import express, { NextFunction, Request, Response } from "express"
 import cors from "cors"
 import { appConfig } from "./utils/appConfig";
 import { isDbServerUp, serveImage } from "./utils/helpers";
-import { userRoutes } from "./controllers/userControllers";
 import catchAll from "./middlewares/catchAll";
 import { logMW } from "./middlewares/logMW";
 import { vacationRoutes } from "./controllers/vacationsController";
@@ -11,6 +10,7 @@ import fileUpload from "express-fileupload";
 import path from "path";
 import { followerRoutes } from "./controllers/followerController";
 import { imagesRoute } from "./controllers/imagesController";
+import { userRoutes } from "./controllers/userControllers";
 
 
 // create server

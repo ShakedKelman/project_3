@@ -88,7 +88,66 @@ describe("vacation Controllers", () => {
         // Optionally: Check if the total number of vacations is correct (requires more setup in your test database)
         // expect(total).toBeGreaterThan(0);
     });
+  
+    // describe('POST /vacations', () => {
+    //     it('Should successfully add a vacation with an image', async () => {
+    //         const vacationData = {
+    //             destination: 'Paris',
+    //             description: 'A wonderful trip to Paris',
+    //             startDate: '2024-10-01',
+    //             endDate: '2024-10-10',
+    //             price: '1500.00',
+    //         };
     
+    //         // Mock image file
+    //         const image = Buffer.from('image data'); // Ensure this is appropriate for your test setup
+    
+    //         const response = await request(app)
+    //             .post('/api/v1/vacations') // Ensure the route is correct
+    //             .field('destination', vacationData.destination)
+    //             .field('description', vacationData.description)
+    //             .field('startDate', vacationData.startDate)
+    //             .field('endDate', vacationData.endDate)
+    //             .field('price', vacationData.price)
+    //             .attach('image', image, 'test-image.jpg');
+    
+    //         console.log('Response Body:', response.body); // Log response body for debugging
+    //         console.log('Response Status:', response.status); // Log response status for debugging
+    
+    //         expect(response.status).toBe(StatusCode.Created);
+    //         expect(response.body).toHaveProperty('message', 'Vacation added successfully');
+    //         expect(response.body).toHaveProperty('vacationId');
+    //     });
+    
+    //     it('Should return error if image file is missing', async () => {
+    //         const vacationData = {
+    //             destination: 'Paris',
+    //             description: 'A wonderful trip to Paris',
+    //             startDate: '2024-10-01',
+    //             endDate: '2024-10-10',
+    //             price: '1500.00',
+    //         };
+    //         const response = await request(app)
+    //         .post(`${appConfig.routePrefix}/vacations`)
+    //         .set('Content-Type', 'multipart/form-data')
+    //         .field('destination', vacationData.destination)
+    //         .field('description', vacationData.description)
+    //         .field('startDate', vacationData.startDate)
+    //         .field('endDate', vacationData.endDate)
+    //         .field('price', vacationData.price)
+    //         .attach('image', `${appConfig.vacationsImagesPrefix}/5d57dc1b-8ca4-4457-872c-abc5c7af9801.webp`);
+        
+    
+    //         console.log('Response Body:', response.body); // Log response body for debugging
+    //         console.log('Response Status:', response.status); // Log response status for debugging
+    
+    //         expect(response.status).toBe(StatusCode.BadRequest);
+    //         expect(response.body).toHaveProperty('message', 'Image file is required');
+    //     });
+    // });
+    
+    // Add additional tests for other edge cases as needed
+
     ;
     
     
