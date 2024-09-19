@@ -19,6 +19,18 @@ describe("vacation Controllers", () => {
         console.log("before all running ... ");
     })    
 
+    it("Should return list of vacations", async () => {
+        const response = await request(app)
+            .get(appConfig.routePrefix + "/vacations")
+            // .send({})  // for request with body
+            .set("Authorization", `Bearer ${VALID_TOKEN}`)
+
+        pid = response.body[0].id
+
+        expect(response.status).toBe(StatusCode.Ok);
+        expect(Array.isArray(response.body)).toBe(true);        
+    })
+
     it("Should return a single vacation", async () => {
         if (!pid) {
             console.warn("There are no vacations to check 'Should return a single vacation'");
@@ -44,7 +56,40 @@ describe("vacation Controllers", () => {
         expect(vacation).toHaveProperty("id");
         // Remove or update this line if 'name' is not part of the response
         // expect(vacation).toHaveProperty("name");
+    })
+    it("Should return paginated list of vacations", async () => {
+        const page = 1; // Specify the page number
+        const limit = 10; // Specify the limit per page
+    
+        const response = await request(app)
+            .get(`${appConfig.routePrefix}/vacations-pg?page=${page}&limit=${limit}`)
+            .set("Authorization", `Bearer ${VALID_TOKEN}`);
+    
+        console.log(response.body); // Log to check actual response structure
+        
+        expect(response.status).toBe(StatusCode.Ok);
+    
+        // Check if response body is an object
+        expect(typeof response.body).toBe('object');
+    
+        // Adjust these expectations based on the actual response structure
+        const { vacations = [], total = 0, pageCount = 0 } = response.body;
+    
+        // Validate that vacations is an array
+        expect(Array.isArray(vacations)).toBe(true);
+    
+        // Validate that the length of the array is not greater than the limit
+        expect(vacations.length).toBeLessThanOrEqual(limit);
+    
+        // Validate other properties if they are included in the response
+        expect(typeof total).toBe('number');
+        expect(typeof pageCount).toBe('number');
+    
+        // Optionally: Check if the total number of vacations is correct (requires more setup in your test database)
+        // expect(total).toBeGreaterThan(0);
     });
+    
+    ;
     
     
 
