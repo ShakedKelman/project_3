@@ -107,7 +107,7 @@ const insertData = async () => {
     // Insert sample data into followers
 
         Q = `
-    INSERT INTO followers (userId, vacationId)
+    INSERT IGNORE INTO followers (userId, vacationId)
     VALUES 
         (1, 1),
         (1, 2),
@@ -121,7 +121,49 @@ const insertData = async () => {
 
 const copyImages = async () => {
     const sourceDir = path.join(__dirname, 'images');
-    const targetDir = path.join(__dirname, 'assets/images'); // Change to your desired target directory
+    const targetDir = path.join(__dirname, '..','assets/images'); // Change to your desired target directory
+
+  // Delete existing files in the target directory
+  // Delete existing files and subdirectories in the target directory
+  const deleteFiles = (dir) => {
+    fs.readdir(dir, (err, files) => {
+        if (err) {
+            console.error(`Error reading directory ${dir}:`, err);
+            return;
+        }
+        for (const file of files) {
+            const filePath = path.join(dir, file);
+            fs.stat(filePath, (err, stat) => {
+                if (err) {
+                    console.error(`Error getting file stats for ${filePath}:`, err);
+                    return;
+                }
+                if (stat.isDirectory()) {
+                    // If it's a directory, recursively delete its contents
+                    deleteFiles(filePath);
+                    fs.rmdir(filePath, (err) => {
+                        if (err) {
+                            console.error(`Error deleting directory ${filePath}:`, err);
+                        } else {
+                            console.log(`Deleted directory ${filePath}`);
+                        }
+                    });
+                } else {
+                    // If it's a file, delete it
+                    fs.unlink(filePath, (err) => {
+                        if (err) {
+                            console.error(`Error deleting file ${filePath}:`, err);
+                        } else {
+                            console.log(`Deleted file ${filePath}`);
+                        }
+                    });
+                }
+            });
+        }
+    });
+};
+
+deleteFiles(targetDir);
 
     // Fetch the image paths
     const fetchImagePathsQuery = 'SELECT image_path FROM vacations';
