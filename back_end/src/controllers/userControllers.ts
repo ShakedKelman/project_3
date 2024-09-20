@@ -47,6 +47,9 @@ userRoutes.post(appConfig.routePrefix + "/register",
                 }
     
                 console.log(`Successful login for email: ${email}`); // Log successful login
+                
+                console.log(token,"tokennnn");
+                
                 res.status(StatusCode.Ok).json({ token });
             } catch (error) {
                 console.error('Error in login route:', error);
@@ -57,7 +60,7 @@ userRoutes.post(appConfig.routePrefix + "/register",
             }        
         });
 
-        
+
   userRoutes.get(appConfig.routePrefix + "/allUsers", 
   async (req: Request, res: Response, next: NextFunction)=>{
         try {

@@ -97,10 +97,10 @@ export async function encryptPassword(password: string): Promise<string> {
 }
 
 export async function validatePassword(password: string, hashedPassword: string): Promise<boolean> { 
-    console.log(password);
-    console.log(hashedPassword);    
+    console.log(password, "passwordddddddddddddddddd");
+    console.log(hashedPassword,"fcv");    
     const res = await bcrypt.compare(String(password), hashedPassword);
-    console.log(res);
+    console.log(res, "resssssssssssssssss");
     
     return res
 }

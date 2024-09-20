@@ -36,7 +36,7 @@ describe("User Login", () => {
         console.log("afterAll: Closing DB");
         await closeDB();
     });
-
+//Should login a registered user
     it("Should login a registered user", async () => {
         const response = await request(app)
             .post(appConfig.routePrefix + "/login")
@@ -52,6 +52,8 @@ describe("User Login", () => {
 
         // Decode and verify the JWT token
         const decodedToken = jwt.decode(response.body.token);
+        console.log(decodedToken,"%%%%%%%%%%%5");
+        
         expect(decodedToken).toBeTruthy();
 
         if (decodedToken && typeof decodedToken !== "string") {
@@ -62,7 +64,7 @@ describe("User Login", () => {
             throw new Error("Token is not in the expected format");
         }
     });
-
+//Should return an error for invalid credentials
     it("Should return an error for invalid credentials", async () => {
         const response = await request(app)
             .post(appConfig.routePrefix + "/login")
@@ -75,6 +77,8 @@ describe("User Login", () => {
         expect(response.body).toHaveProperty("message", "Invalid email or password");
     });
 
+//Should return an error for missing email or password
+
     it("Should return an error for missing email or password", async () => {
         const response = await request(app)
             .post(appConfig.routePrefix + "/login")
@@ -86,4 +90,13 @@ describe("User Login", () => {
         expect(response.status).toBe(StatusCode.BadRequest);
         expect(response.body).toHaveProperty("message", "Email and password are required");
     });
+//checking route get all users 
+    it("Should return list of users", async () => {
+        const response = await request(app)
+            .get(appConfig.routePrefix + "/allUsers")
+
+        expect(response.status).toBe(StatusCode.Ok);
+        expect(Array.isArray(response.body)).toBe(true);        
+    })
+
 });
