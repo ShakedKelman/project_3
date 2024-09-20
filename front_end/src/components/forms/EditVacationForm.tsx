@@ -49,6 +49,7 @@ const EditVacationForm: React.FC = () => {
         const formattedValue = e.target.value.replace(/[^0-9.]/g, '');
         setVacation(prev => prev ? { ...prev, price: parseFloat(formattedValue) || 0 } : prev);
     };
+    
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();

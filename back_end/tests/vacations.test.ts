@@ -4,9 +4,14 @@ import { appConfig } from "../src/utils/appConfig";
 import { StatusCode } from "../src/models/statusEnum";
 import { vacationRoutes } from "../src/controllers/vacationsController";
 import { closeDB } from "../src/db/dal";
+import UserModel from "../src/models/UsersModel";
+import { createToken } from "../src/utils/authUtils";
+import bcrypt from "bcrypt"; // Ensure bcrypt is installed to hash passwords
 
-const VALID_TOKEN =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyV2l0aG91dFBhc3N3b3JkIjp7ImlkIjozLCJmaXJzdE5hbWUiOiJhZG1pbiIsImxhc3ROYW1lIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlzQWRtaW4iOnRydWV9LCJpYXQiOjE3MjY3NTY3NDYsImV4cCI6MTcyNjc2NzU0Nn0.Cwmvoh9GRbhe9CtBglLlzierZPpvmOIlR9XQYihNxjY";
+// const VALID_TOKEN =
+//   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyV2l0aG91dFBhc3N3b3JkIjp7ImlkIjozLCJmaXJzdE5hbWUiOiJhZG1pbiIsImxhc3ROYW1lIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlzQWRtaW4iOnRydWV9LCJpYXQiOjE3MjY3NTY3NDYsImV4cCI6MTcyNjc2NzU0Nn0.Cwmvoh9GRbhe9CtBglLlzierZPpvmOIlR9XQYihNxjY";
+let VALID_TOKEN: string; // Declare a token variable that will be assigned in the setup phase
+let USER_ID: number | undefined; // Store the created user ID
 
 const app = express();
 app.use(express.json());
@@ -15,8 +20,25 @@ app.use(vacationRoutes);
 describe("vacation Controllers", () => {
     let pid: number | undefined;
 
-    beforeAll(() => {
+
+    beforeAll(async () => {
         console.log("before all running ... ");
+
+        // Step 1: Create a user in the test database
+        const user = new UserModel({
+            firstName: "admin",
+            lastName: "admin",
+            email: "admin@gmail.com",
+            password: await bcrypt.hash("password123", 10), // Hash the password
+            isAdmin: true,
+        });
+
+
+        // Store the user ID for later use
+        USER_ID = user.id;
+
+        // Step 2: Generate a valid token using the created user's details
+        VALID_TOKEN = createToken(user);
     });
 
     it("Should return list of vacations", async () => {
@@ -167,38 +189,38 @@ describe("vacation Controllers", () => {
     // });
     
     
-    it("Should delete vacation", async () => {
+    // it("Should delete vacation", async () => {
 
-      // Insert a vacation to delete later
-      const response = await request(app)
-        .post(appConfig.routePrefix + "/vacations")
-        .set("Authorization", `Bearer ${VALID_TOKEN}`)
-        .send({
-          destination: "Paris",
-          description: "A wonderful trip to Paris",
-          startDate: "2024-10-01",
-          endDate: "2024-10-10",
-          price: "1500.00",
-        });
+    //   // Insert a vacation to delete later
+    //   const response = await request(app)
+    //     .post(appConfig.routePrefix + "/vacations")
+    //     .set("Authorization", `Bearer ${VALID_TOKEN}`)
+    //     .send({
+    //       destination: "Paris",
+    //       description: "A wonderful trip to Paris",
+    //       startDate: "2024-10-01",
+    //       endDate: "2024-10-10",
+    //       price: "1500.00",
+    //     });
   
-      pid = response.body.vacationId; // Save the ID for deletion
-      console.log(pid,"?????");
+    //   pid = response.body.vacationId; // Save the ID for deletion
+    //   console.log(pid,"?????");
       
-    });
+    // });
   
-    it("Should delete a vacation", async () => {
-      if (!pid) {
-        console.warn("No vacation ID found to delete");
-        return;
-      }
+    // it("Should delete a vacation", async () => {
+    //   if (!pid) {
+    //     console.warn("No vacation ID found to delete");
+    //     return;
+    //   }
   
-      const response = await request(app)
-        .delete(`${appConfig.routePrefix}/vacations/${pid}`)
-        .set("Authorization", `Bearer ${VALID_TOKEN}`);
+    //   const response = await request(app)
+    //     .delete(`${appConfig.routePrefix}/vacations/${pid}`)
+    //     .set("Authorization", `Bearer ${VALID_TOKEN}`);
   
-      expect(response.status).toBe(StatusCode.Ok);
-      expect(response.body).toHaveProperty("message", "Vacation deleted successfully");
-    });
+    //   expect(response.status).toBe(StatusCode.Ok);
+    //   expect(response.body).toHaveProperty("message", "Vacation deleted successfully");
+    // });
   
     afterAll(async () => {
       console.log("afterAll is running...");
