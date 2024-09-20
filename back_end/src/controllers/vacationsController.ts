@@ -114,7 +114,7 @@ async (req: Request, res: Response, next: NextFunction) => {
 
 
 // Route to get followers for a specific vacation
-vacationRoutes.get(appConfig.routePrefix + "/vacations/:id/followers", 
+vacationRoutes.get(appConfig.routePrefix + "/vacations/:id/followers", verifyToeknMW,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const vacationId = parseInt(req.params.id, 10);
@@ -160,7 +160,7 @@ vacationRoutes.delete(appConfig.routePrefix + "/vacations/:id", verifyToeknAdmin
 
 // routes/vacationRoutes.ts
 
-vacationRoutes.get(appConfig.routePrefix + "/vacations-pg",  async (req: Request, res: Response, next: NextFunction) => {
+vacationRoutes.get(appConfig.routePrefix + "/vacations-pg",verifyToeknMW, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { page = 1, limit = 10 } = req.query;
         const vacations = await getVacationsPaginated(Number(page), Number(limit));

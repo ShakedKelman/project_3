@@ -2,13 +2,14 @@ import { appConfig } from "../utils/appConfig";
 import { NextFunction, Request, Response, Router } from "express";
 import { StatusCode } from "../models/statusEnum";
 import { addFollower, getFollowersForVacation, getVacationsPerUser, removeFollower } from "../services/followersService";
+import { verifyToeknMW } from "../middlewares/authMiddlewares";
 
 export const followerRoutes = Router();
 
 
 
 // Route to get followers for a specific vacation
-followerRoutes.get(appConfig.routePrefix + "/vacations/:id/followers", 
+followerRoutes.get(appConfig.routePrefix + "/vacations/:id/followers", verifyToeknMW,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const vacationId = parseInt(req.params.id, 10);
@@ -28,7 +29,7 @@ followerRoutes.get(appConfig.routePrefix + "/vacations/:id/followers",
 );
 
 // Route to get all vacations for a spesific user
-followerRoutes.get(appConfig.routePrefix + "/followers/:id/vacations", 
+followerRoutes.get(appConfig.routePrefix + "/followers/:id/vacations", verifyToeknMW,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userId = parseInt(req.params.id, 10);
@@ -50,7 +51,7 @@ followerRoutes.get(appConfig.routePrefix + "/followers/:id/vacations",
 
 
 // Route to add a follower to a specific vacation
-followerRoutes.post(appConfig.routePrefix + "/vacations/:id/followers", 
+followerRoutes.post(appConfig.routePrefix + "/vacations/:id/followers", verifyToeknMW,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const vacationId = parseInt(req.params.id, 10);
@@ -79,7 +80,7 @@ followerRoutes.post(appConfig.routePrefix + "/vacations/:id/followers",
 
 
 // Route to remove a follower from a specific vacation
-followerRoutes.delete(appConfig.routePrefix + "/vacations/:id/followers", 
+followerRoutes.delete(appConfig.routePrefix + "/vacations/:id/followers", verifyToeknMW,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const vacationId = parseInt(req.params.id, 10);

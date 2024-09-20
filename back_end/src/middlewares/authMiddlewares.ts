@@ -16,6 +16,7 @@ import { verifyToken } from "../utils/authUtils";
 
 export function verifyToeknMW(req: Request, res: Response, next: NextFunction) {
     try {
+        
         let token = req.header("Authorization")?.substring(7) || null;
         if (!token) token = req.query.token as string || req.body.token; // Check query params or body
 
@@ -26,7 +27,7 @@ export function verifyToeknMW(req: Request, res: Response, next: NextFunction) {
             throw new Error('Token not found');
         }
 
-        const userWithoutPassword = verifyToken(token); // Verify the token
+        const userWithoutPassword = verifyToken(token,false); // Verify the token
         console.log('Before log: userWithoutPassword:', userWithoutPassword); // Log before attaching to res.locals
 
         res.locals.user = userWithoutPassword; // Attach user to res.locals

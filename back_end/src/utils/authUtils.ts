@@ -5,20 +5,25 @@ import UserModel from "../models/UsersModel";
 import bcrypt from "bcrypt"
 
 export function verifyToken(token: string, adminRequired: boolean = false) {
+    // if (!token) {
+    //     throw new UnauthorizedError(JSON.stringify({ error: "Missing Credentials!" }));
+    // }
     if (!token) {
         throw new UnauthorizedError(JSON.stringify({ error: "Missing Credentials!" }));
     }
-
     let decoded;
     try {
         decoded = jwt.verify(token, appConfig.jwtSecret) as { userWithoutPassword: UserModel };
         console.log('Decoded token:', decoded); // Log to ensure token is decoded correctly
+        console.log('Decoded token payload:', decoded.userWithoutPassword);
+
     } catch (error) {
-        throw new UnauthorizedError(JSON.stringify({ error: "ERROR: token expired!" }));
+        throw new UnauthorizedError(JSON.stringify({ error: "wrong Credentials!" }));
     }
 
     const { password, ...userWithoutPassword } = decoded.userWithoutPassword;
     // Explicitly include firstName and lastName
+    
     const userInfo = {
         ...userWithoutPassword,
         firstName: decoded.userWithoutPassword.firstName,
@@ -27,10 +32,6 @@ export function verifyToken(token: string, adminRequired: boolean = false) {
     if (adminRequired && !userWithoutPassword.isAdmin) {
         throw new UnauthorizedError(JSON.stringify({ error: "Only admin users have access!" }));
     }
-    console.log('Token payload before signing:', userWithoutPassword); // In createToken
-console.log('Decoded token payload:', decoded.userWithoutPassword); // In verifyToken
-
-    console.log('User sent after verification:', userWithoutPassword); // Check the user fields
 
     return userInfo;
 }
