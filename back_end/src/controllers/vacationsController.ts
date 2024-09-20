@@ -10,11 +10,12 @@ import runQuery from "../db/dal";
 import { AppExcption, ValidationError } from "../models/exceptions";
 import { deleteImage } from "../utils/helpers";
 import { getImageByVacation } from "../services/imagesService";
+import { verifyToeknAdminMW, verifyToeknMW } from "../middlewares/authMiddlewares";
 
 export const vacationRoutes = Router();
 
 // Route to get all vacations or a specific vacation by ID
-vacationRoutes.get(appConfig.routePrefix + "/vacations/:id?", 
+vacationRoutes.get(appConfig.routePrefix + "/vacations/:id?", verifyToeknMW,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const id = req.params.id ? parseInt(req.params.id, 10) : undefined;
@@ -30,7 +31,7 @@ vacationRoutes.get(appConfig.routePrefix + "/vacations/:id?",
 
 
 vacationRoutes.post(
-    appConfig.routePrefix + "/vacations",
+    appConfig.routePrefix + "/vacations", verifyToeknAdminMW,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             // console.log("Received vacation data:", req.body);
@@ -80,7 +81,7 @@ vacationRoutes.post(
 
 
 
-vacationRoutes.put(appConfig.routePrefix + "/vacation/:id", 
+vacationRoutes.put(appConfig.routePrefix + "/vacation/:id", verifyToeknAdminMW,
 async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id = parseInt(req.params.id, 10);
@@ -127,7 +128,7 @@ vacationRoutes.get(appConfig.routePrefix + "/vacations/:id/followers",
 );
 
 
-vacationRoutes.delete(appConfig.routePrefix + "/vacations/:id", 
+vacationRoutes.delete(appConfig.routePrefix + "/vacations/:id", verifyToeknAdminMW,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const id = parseInt(req.params.id, 10);

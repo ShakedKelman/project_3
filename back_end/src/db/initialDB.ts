@@ -6,13 +6,13 @@ import runQuery from "./dal";
 //     let Q = `
 //     CREATE TABLE IF NOT EXISTS users (
 //         id INT AUTO_INCREMENT PRIMARY KEY,
-//             FirstName VARCHAR(50) NOT NULL,
-//             LastName VARCHAR(50) NOT NULL,
+//             firstName VARCHAR(50) NOT NULL,
+//             lastName VARCHAR(50) NOT NULL,
 //             email VARCHAR(100) NOT NULL UNIQUE,
 //             hashedPassword VARCHAR(255) NOT NULL,
 //             isAdmin TINYINT(1) NOT NULL DEFAULT 0,
 //             token VARCHAR(1024) DEFAULT NULL,
-// CONSTRAINT unique_fname_lname UNIQUE (FirstName, LastName)
+// CONSTRAINT unique_fname_lname UNIQUE (firstName, lastName)
 
 
 //         );
@@ -65,7 +65,7 @@ import runQuery from "./dal";
 
         // // Insert sample data into users with hashed passwords
         // let Q = `
-        // INSERT INTO users (FirstName, LastName, email, hashedPassword, isAdmin, token)
+        // INSERT INTO users (firstName, lastName, email, hashedPassword, isAdmin, token)
         // VALUES 
         //     ('John', 'Doe', 'john.doe@example.com', ?, 0, NULL),
         //     ('Jane', 'Smith', 'jane.smith@example.com', ?, 1, NULL);

@@ -11,6 +11,7 @@ import path from "path";
 import { followerRoutes } from "./controllers/followerController";
 import { imagesRoute } from "./controllers/imagesController";
 import { userRoutes } from "./controllers/userControllers";
+import { verifyToeknMW } from "./middlewares/authMiddlewares";
 
 
 // create server
@@ -48,6 +49,9 @@ server.use(fileUpload({
 // log
 server.use(logMW);
 
+// authorization middleware
+//server.use(verifyToeknMW)
+
 // load body
 server.use(express.json());
 
@@ -56,9 +60,6 @@ server.use("/", userRoutes);
 server.use("/", vacationRoutes);
 server.use("/", imagesRoute);
 server.use("/", followerRoutes);
-
-
-
 
 
 

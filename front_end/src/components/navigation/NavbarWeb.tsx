@@ -16,9 +16,13 @@ const NavbarWeb: React.FC = () => {
     useEffect(() => {
         if (user?.isAdmin) {
             // dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
-            dispatch(fetchVacations()); // Fetch all vacations for dropdown
+            if (vacations.length === 0) dispatch(fetchVacations()); // Fetch all vacations for dropdown
         }
-    }, [user?.isAdmin, dispatch]);
+        console.log(user?.firstName);
+        console.log(user);
+        
+        
+    }, [user, dispatch]);
 
     const handleLogout = () => {
         if (window.confirm('Are you sure you want to logout?')) {
@@ -34,6 +38,8 @@ const NavbarWeb: React.FC = () => {
     const isLoggedIn = status === 'succeeded';
     const isAdmin = user?.isAdmin;
 
+    if (user === null || user.email === undefined) return null;
+
     return (
         <Navbar className="navbar-lilac" variant="light">
             <Container>
@@ -41,9 +47,9 @@ const NavbarWeb: React.FC = () => {
                     {isLoggedIn ? 'Vacations' : 'Login'}
                 </Navbar.Brand>
                 <Nav className="me-auto">
-                    {isLoggedIn && (
+                    {isLoggedIn && 
                         <>
-                            {isAdmin && (
+                            {isAdmin && 
                                 <>
                                     <Nav.Link as={Link} to="/add-vacation">Add Vacation</Nav.Link>
                                     <Nav.Link as={Link} to="/report">Report</Nav.Link> {/* Added this line */}
@@ -69,10 +75,10 @@ const NavbarWeb: React.FC = () => {
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 </>
-                            )}
+                            }
                             <Nav.Link as="button" onClick={handleLogout}>Logout</Nav.Link>
                         </>
-                    )}
+                    }
                     {!isLoggedIn && (
                         <Nav.Link as={Link} to="/register">A New User?</Nav.Link>
                     )}

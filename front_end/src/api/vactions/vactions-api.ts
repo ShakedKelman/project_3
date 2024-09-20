@@ -2,10 +2,12 @@ import axios from 'axios';
 import { VacationModel } from '../../model/VacationModel';
 import { siteConfig } from '../../utils/SiteConfig';
 
+let token= localStorage.getItem('token') || null;
+
 // Fetch all vacations or a specific vacation by ID
 export const getVacations = async (id?: number): Promise<VacationModel[]> => {
     try {
-        const url = id ? `${siteConfig.BASE_URL}vacations/${id}` : `${siteConfig.BASE_URL}vacations`;
+        const url = id ? `${siteConfig.BASE_URL}vacations/${id}?token=${token}` : `${siteConfig.BASE_URL}vacations?token=${token}`;
         const response = await axios.get(url);
         console.log('got vacations successfully', response.data);
         return response.data; // Ensure this matches `VacationModel[]`
@@ -23,6 +25,7 @@ export const apiAddVacation = async (formData: FormData): Promise<VacationModel>
         const response = await axios.post(`${siteConfig.BASE_URL}vacations`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${token}`,
             },
         });
         console.log('FormData being sent:', formData);

@@ -9,6 +9,7 @@ export const login = async (email: string, password: string): Promise<{ user: Us
     try {
       const response = await axios.post(`${siteConfig.BASE_URL}login`, { email, password });
       const token = response.data.token; // Assuming the token is in the response.data.token
+      console.log(token);
       
       // Decode the JWT token
       const decodedToken: any = jwtDecode(token);
