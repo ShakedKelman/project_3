@@ -20,8 +20,8 @@ const NavbarWeb: React.FC = () => {
         }
         console.log(user?.firstName);
         console.log(user);
-        
-        
+
+
     }, [user, dispatch]);
 
     const handleLogout = () => {
@@ -36,10 +36,15 @@ const NavbarWeb: React.FC = () => {
     };
 
     const isLoggedIn = status === 'succeeded';
-    const isAdmin = user?.isAdmin;
+    // const isAdmin = user?.isAdmin;
+    const isAdmin = Boolean(user?.isAdmin); // Converts 0 to false, 1 to true
+
 
     if (user === null || user.email === undefined) return null;
-
+    console.log('Before rendering string:', 'fhbfhjfbjhfbfj');
+    console.log("User:", user);
+    console.log("Is Logged In:", isLoggedIn);
+    
     return (
         <Navbar className="navbar-lilac" variant="light">
             <Container>
@@ -47,22 +52,20 @@ const NavbarWeb: React.FC = () => {
                     {isLoggedIn ? 'Vacations' : 'Login'}
                 </Navbar.Brand>
                 <Nav className="me-auto">
-                    {isLoggedIn && 
+                                    {isLoggedIn && (
                         <>
-                            {isAdmin && 
+                            {isAdmin && (
                                 <>
                                     <Nav.Link as={Link} to="/add-vacation">Add Vacation</Nav.Link>
-                                    <Nav.Link as={Link} to="/report">Report</Nav.Link> {/* Added this line */}
-
+                                    <Nav.Link as={Link} to="/report">Report</Nav.Link>
                                     <Dropdown>
                                         <Dropdown.Toggle variant="success" id="dropdown-basic">
                                             Edit Vacation
                                         </Dropdown.Toggle>
-
                                         <Dropdown.Menu className="custom-dropdown-menu">
                                             {vacations.map(vacation => (
                                                 <Dropdown.Item
-                                                    key={vacation.id || `vacation-${Math.random()}`} // fallback if id is undefined
+                                                    key={vacation.id || `vacation-${vacation.destination}`} // ensure uniqueness
                                                     onClick={() => {
                                                         if (vacation.id !== undefined) {
                                                             handleEditVacation(vacation.id);
@@ -75,10 +78,10 @@ const NavbarWeb: React.FC = () => {
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 </>
-                            }
+                            )}
                             <Nav.Link as="button" onClick={handleLogout}>Logout</Nav.Link>
                         </>
-                    }
+                    )}
                     {!isLoggedIn && (
                         <Nav.Link as={Link} to="/register">A New User?</Nav.Link>
                     )}
