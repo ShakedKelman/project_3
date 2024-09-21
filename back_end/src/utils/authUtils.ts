@@ -5,17 +5,13 @@ import UserModel from "../models/UsersModel";
 import bcrypt from "bcrypt"
 
 export function verifyToken(token: string, adminRequired: boolean = false) {
-    // if (!token) {
-    //     throw new UnauthorizedError(JSON.stringify({ error: "Missing Credentials!" }));
-    // }
+  
     if (!token) {
         throw new UnauthorizedError(JSON.stringify({ error: "Missing Credentials!" }));
     }
     let decoded;
     try {
         decoded = jwt.verify(token, appConfig.jwtSecret) as { userWithoutPassword: UserModel };
-        console.log('Decoded token:', decoded); // Log to ensure token is decoded correctly
-        console.log('Decoded token payload:', decoded.userWithoutPassword);
 
     } catch (error) {
         throw new UnauthorizedError(JSON.stringify({ error: "wrong Credentials!" }));
@@ -37,43 +33,6 @@ export function verifyToken(token: string, adminRequired: boolean = false) {
 }
 
 
-// export function verifyToken(token: string, adminRequired: boolean = false) {
-//     console.log('TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT')
-//     console.log(token)
-//     console.log(adminRequired)
-//     if (token === '' || token === null) {
-//         throw new UnauthorizedError(JSON.stringify({ error: "Missing Credentials!"}));
-//     }
-//     let decoded;
-//     try {
-//         console.log('here', appConfig.jwtSecret)
-//         decoded = jwt.verify(token, appConfig.jwtSecret) as { userWithoutPassword: UserModel };
-//     } catch (error) {
-//         console.log(error.message) // assume this is expired
-//         throw new UnauthorizedError(JSON.stringify({ error: "ERROR: token expired!"}));
-//     }
-//     try {  
-//         console.log(decoded)
-//         if (adminRequired && !decoded.userWithoutPassword.isAdmin) {
-//             throw new UnauthorizedError(JSON.stringify({ error: "Only admin user has access!"}));
-//         }
-//         return decoded.userWithoutPassword;
-//     } catch (error) {
-//         throw new UnauthorizedError(JSON.stringify({ error: "ERROR: Wrong Credentials!"}));
-//     }
-// }
-
-// export function createToken(user: UserModel): string {
-//     const userWithoutPassword = { ...user };
-//     console.log('createToken userWithoutPassword', userWithoutPassword)
-//     delete userWithoutPassword.password;
-
-//     const options = { /* expiresIn: "never" */ };
-//     const token = jwt.sign({ userWithoutPassword }, appConfig.jwtSecret, options);
-
-//     return token;
-// }
-
 export function createToken(user: UserModel): string {
     const userWithoutPassword = {
         id: user.id,
@@ -83,24 +42,19 @@ export function createToken(user: UserModel): string {
         lastName: user.lastName,
         // Remove the token field if it's not needed
     };
-    console.log('createToken userWithoutPassword', userWithoutPassword);
 
     const token = jwt.sign({ userWithoutPassword }, appConfig.jwtSecret);
     return token;
 }
 
+
 export async function encryptPassword(password: string): Promise<string> {
-    console.log(password);
     const epw = await bcrypt.hash(password, 10);
-    console.log(epw);
     return epw
 }
 
 export async function validatePassword(password: string, hashedPassword: string): Promise<boolean> { 
-    console.log(password, "passwordddddddddddddddddd");
-    console.log(hashedPassword,"fcv");    
     const res = await bcrypt.compare(String(password), hashedPassword);
-    console.log(res, "resssssssssssssssss");
     
     return res
 }

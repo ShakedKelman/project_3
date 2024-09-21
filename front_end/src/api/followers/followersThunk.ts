@@ -36,7 +36,6 @@ export const clearVacationsPerUser = createAsyncThunk(
     'vacations/clearVacationsPerUser',
     async (_, thunkAPI) => {
         try {
-            console.log('clearVacationsPerUser dispatched')
             return [];
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to clear followers');
@@ -73,10 +72,4 @@ export const removeVacationFollower = createAsyncThunk(
     }
 );
 
-
-
-// export const clearVacationsFollowed = () => (dispatch: AppDispatch) => {
-//     console.log('CLEAR VACATIONS FOLLOWED')
-//   dispatch(clearVacationsPerUser());
-// };
 

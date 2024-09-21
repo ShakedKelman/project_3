@@ -4,9 +4,6 @@ import { promises as fs } from "fs";
 import path from 'path';
 import { UploadedFile } from "express-fileupload";
 import { v4 as uuid } from "uuid";
-import { unlink } from 'fs/promises';
-import { promisify } from 'util';
-import { existsSync } from 'fs';
 import { Request, Response } from 'express';
 import { extname } from 'path';
 import { getImageByVacation } from "../services/imagesService";
@@ -55,13 +52,10 @@ export async function writeAccessLog(msg: string) {
 
 // Save image function
 export async function saveImage(image: UploadedFile): Promise<string> {
-    // console.log("+===========",image)
 
     const extension = path.extname(image.name);
     const filename = uuid() + extension;
     const fullPath = path.join(appConfig.vacationsImagesPrefix, filename);
-    // console.log('Base path:', appConfig.vacationsImagesPrefix);
-    // console.log('Saving image to:', fullPath);
 
     // Ensure the directory exists
     await fs.mkdir(appConfig.vacationsImagesPrefix, { recursive: true });
@@ -77,11 +71,7 @@ export async function saveImage(image: UploadedFile): Promise<string> {
  */
 export const deleteImage = async (imageUUID: string): Promise<void> => {
     // Construct the full path for the image
-    // const fullPath = (appConfig.vacationsImagesPrefix, imageUUID);
     const fullPath = path.join(appConfig.vacationsImagesPrefix, imageUUID);
-
-    console.log('Base path:', appConfig.vacationsImagesPrefix);
-    console.log('Deleting image from:', fullPath);
 
     try {
         await fs.unlink(fullPath);

@@ -75,12 +75,10 @@ imagesRoute.delete(appConfig.routePrefix + "/image/:vacationId/:imageName",
   async (req: Request, res: Response, next: NextFunction) => {
       try {
           const { vacationId, imageName } = req.params;
-        //   console.log("Received vacationId:", vacationId);
-        //   console.log("Received imageName: (imageName)", imageName);
+      
           const imageUUID=await getImageByVacation(Number(vacationId));
           // Construct the full path using the imageName
           const imageFullPath = path.join(appConfig.vacationsImagesPrefix, imageUUID);
-        //   console.log("Full image path:", imageFullPath);
           
           // Call deleteImage with the full path
           await deleteImage(imageFullPath);

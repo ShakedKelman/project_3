@@ -26,7 +26,6 @@ const followersSlice = createSlice({
     initialState,
     reducers: {
         clearVacationsState: (state) => {
-            console.log('clearVacationsPerUser reducer')
             state.vacations = [];
             state.status = 'idle';
             state.error = null;
@@ -82,26 +81,7 @@ const followersSlice = createSlice({
             state.status = 'failed';
             state.error = action.payload;
         });
-        
-        // Handle fetch vacations per user
-        /*
-        builder.addCase(clearVacationsPerUser.pending, (state) => {
-            console.log('clear followers reducer requested')
-                state.status = 'loading';
-        });
-        builder.addCase(clearVacationsPerUser.fulfilled, (state, action: PayloadAction<any>) => {
-            state.status = 'succeeded';
-            console.log('clear followers reducer succeeded')
-            console.log('clear followers reducer', action)
-            state.vacations = action.payload; // This expects []
-        });
-        
-        builder.addCase(clearVacationsPerUser.rejected, (state, action: PayloadAction<any>) => {
-            state.status = 'failed';
-            console.log('clear followers reducer failed')
-            state.error = action.payload;
-        });
-        */
+ 
     }
 });
 export const { clearVacationsState } = followersSlice.actions;

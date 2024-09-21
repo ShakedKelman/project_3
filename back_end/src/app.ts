@@ -5,13 +5,10 @@ import { isDbServerUp, serveImage } from "./utils/helpers";
 import catchAll from "./middlewares/catchAll";
 import { logMW } from "./middlewares/logMW";
 import { vacationRoutes } from "./controllers/vacationsController";
-import expressFileUpload from "express-fileupload"
 import fileUpload from "express-fileupload";
-import path from "path";
 import { followerRoutes } from "./controllers/followerController";
 import { imagesRoute } from "./controllers/imagesController";
 import { userRoutes } from "./controllers/userControllers";
-import { verifyToeknMW } from "./middlewares/authMiddlewares";
 import { updateApiCount } from "./middlewares/apiCount";
 
 
@@ -33,10 +30,6 @@ server.use(fileUpload({
 // log
 server.use(logMW);
 server.use(updateApiCount);
-
-
-// authorization middleware
-//server.use(verifyToeknMW)
 
 // load body
 server.use(express.json());

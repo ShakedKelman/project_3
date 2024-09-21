@@ -9,8 +9,6 @@ export const login = async (email: string, password: string): Promise<{ user: Us
     try {
       const response = await axios.post(`${siteConfig.BASE_URL}login`, { email, password });
       const token = response.data.token; // Assuming the token is in the response.data.token
-      console.log(token);
-      
       // Decode the JWT token
       const decodedToken: any = jwtDecode(token);
       console.log('Decoded token:', decodedToken);
@@ -83,9 +81,7 @@ interface CountModel {
 export const getApiCalls = async (): Promise<CountModel> => {
     try {
         const url = `${siteConfig.BASE_URL}apiCall`;
-        console.log(url)
         const response = await axios.get(url);
-        console.log('got apiCalls successful', response.data);
         return response.data;
     } catch (error) {
         console.error("Error fetching apiCalls:", error);

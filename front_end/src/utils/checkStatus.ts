@@ -26,9 +26,6 @@ export const checkAuthStatus = (dispatch: AppDispatch) => {
       return;
     }
 
-    // We're no longer checking the token's expiration
-    // Instead, we assume that if the token and user data exist, the session is valid
-
     // Dispatch loginSuccess to maintain the authenticated state
     dispatch(loginSuccess({ user, token }));
   } catch (error) {

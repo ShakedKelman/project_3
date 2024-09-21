@@ -88,10 +88,10 @@ const AddVacationForm: React.FC<VacationsProps> = (props)  => {
     
     return (
         <div className="container">
-            <h2 className="my-4">Add New Vacation</h2>
+<h2 className="my-4 text-center">Add New Vacation</h2>
             {error && <Alert variant="danger">{error}</Alert>}
             {success && <Alert variant="success">{success}</Alert>}
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto', backgroundColor: '#007B7F', padding: '20px', borderRadius: '5px', color:"white" }}>
                 <Form.Group controlId="formDestination">
                     <Form.Label>Destination</Form.Label>
                     <Form.Control
@@ -166,7 +166,11 @@ const AddVacationForm: React.FC<VacationsProps> = (props)  => {
                     />
                 </Form.Group>
 
-                <Button variant="success" type="submit">
+                <Button 
+                    variant="success" 
+                    type="submit" 
+                    style={{ backgroundColor: '#85f5e9', color: 'black', marginTop: '20px', padding: '10px 20px' }}
+                >
                     Add Vacation
                 </Button>
             </Form>

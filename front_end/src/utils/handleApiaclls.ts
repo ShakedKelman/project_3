@@ -6,7 +6,6 @@ import { checkAuthStatus } from './checkStatus';
 export const handleApiCalls = (dispatch: AppDispatch) => {
   // Dispatch the fetchApiCalls thunk
   dispatch(fetchApiCalls());
-  console.log('Dispatched fetchApiCalls');
 };
 
 export const setupAuthCheck = (dispatch: AppDispatch) => {

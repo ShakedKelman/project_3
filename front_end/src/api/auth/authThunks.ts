@@ -53,28 +53,6 @@ export const logoutUser = () => (dispatch: AppDispatch) => {
     dispatch(logout());
 };
 
-// interface CountModel {
-//     count: number;
-// }
-// export const fetchApiCalls = createAsyncThunk<void, CountModel>(
-//     'auth/fetchApiCalls',
-//     async (count: CountModel, { dispatch }) => {
-//       try {
-//         dispatch(apicallsRequest());
-//         const apiCalls = await getApiCalls();
-//         console.log('apiCalls', apiCalls)
-
-
-//         const countNumber = apiCalls.count;
-//         dispatch(apicallsSuccess(countNumber));
-//         return apiCalls;
-//       } catch (error: any) {
-//         console.error('Fetch API calls error:', error);
-//         dispatch(apicallsFailure(error.message));
-//         throw error;
-//       }
-//     }
-//   );
   interface CountModel {
     count: number;
   }
@@ -85,8 +63,6 @@ export const logoutUser = () => (dispatch: AppDispatch) => {
       try {
         dispatch(apicallsRequest());
         const apiCallCount = await getApiCalls();
-        console.log('apiCallCount', apiCallCount);
-
         dispatch(apicallsSuccess(apiCallCount));
 
         return apiCallCount;

@@ -29,15 +29,6 @@ const formatDate = (isoDate: string): string => {
     return `${day}/${month}/${year}`;
 };
 
-// const getToken = (): string | null => {
-//     return localStorage.getItem('token');
-// };
-const getToken = (reduxToken: string | null, count: number): string | undefined => {
-    if (count === -1 && reduxToken) {
-        return reduxToken;
-    }
-    return localStorage.getItem('token') || undefined;
-};
 
 interface VacationCardProps {
     vacation: VacationModel;
@@ -86,9 +77,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn, token
     
   
     const handleFollowClick = async () => {
-        // const token = getToken(); // Retrieve the token
-        //const token = getToken(reduxToken, count !== null ? count : -1); // Call getToken to retrieve the token
-
+     
         
         if (!user?.id || !vacation.id || !token) {
             setError('User or Vacation ID or token is missing');
@@ -136,7 +125,6 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn, token
         }
 
         if (window.confirm('Are you sure you want to delete this vacation?')) {
-            //const token = getToken(reduxToken, count !== null ? count : -1); // Retrieve the token
             
             if (!token) {
                 setError('Authentication token is missing.');
@@ -173,8 +161,10 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn, token
                                 <p>{vacation.description}</p>
                                 <p>{`Start Date: ${formatDate(vacation.startDate)}`}</p>
                                 <p>{`End Date: ${formatDate(vacation.endDate)}`}</p>
-                                <p>{`Price: $${vacation.price}`}</p>
+                                <div className="vacation-card-price">{`Price: $${vacation.price}`}</div>
+
                                 {!user?.isAdmin ? (
+
                                     <div className="vacation-card-actions">
                                         <div className="vacation-card-favorites">
                                             {isFollowing ? (

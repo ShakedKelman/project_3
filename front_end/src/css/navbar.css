@@ -1,4 +1,21 @@
+.navbar-lilac {
+    background-color: #85f5e9; /* Turquoise color */
+    padding: 20px; /* Adjust based on how much padding you want */
+    margin-bottom: 30px;
+}
+
 .custom-dropdown-menu {
     max-height: 200px; /* Adjust based on your needs */
     overflow-y: auto;
+}
+.dropdown-toggle-white {
+    background-color: white !important;
+    color: #007B7F !important; /* Dark turquoise color */
+    border: 1px solid #007b7f4f; /* Optional: Dark turquoise border */
+}
+
+.dropdown-toggle-white:hover,
+.dropdown-toggle-white:focus {
+    background-color: #f0f0f0 !important; /* Light grey on hover */
+    color: #007B7F !important; /* Dark turquoise on hover */
 }

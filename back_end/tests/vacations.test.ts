@@ -7,11 +7,8 @@ import { closeDB } from "../src/db/dal";
 import UserModel from "../src/models/UsersModel";
 import { createToken } from "../src/utils/authUtils";
 import bcrypt from "bcrypt"; // Ensure bcrypt is installed to hash passwords
-import path from "path";
-import fs from "fs";
 
-// const VALID_TOKEN =
-//   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyV2l0aG91dFBhc3N3b3JkIjp7ImlkIjozLCJmaXJzdE5hbWUiOiJhZG1pbiIsImxhc3ROYW1lIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsImlzQWRtaW4iOnRydWV9LCJpYXQiOjE3MjY3NTY3NDYsImV4cCI6MTcyNjc2NzU0Nn0.Cwmvoh9GRbhe9CtBglLlzierZPpvmOIlR9XQYihNxjY";
+
 let VALID_TOKEN: string; // Declare a token variable that will be assigned in the setup phase
 let USER_ID: number | undefined; // Store the created user ID
 
@@ -81,8 +78,6 @@ describe("vacation Controllers", () => {
         
         expect(vacation).toHaveProperty("price");
         expect(vacation).toHaveProperty("id");
-        // Remove or update this line if 'name' is not part of the response
-        // expect(vacation).toHaveProperty("name");
     })
 
 
@@ -120,16 +115,6 @@ describe("vacation Controllers", () => {
 
 });
 
-
-  
-    // function toBuffer(ab) {
-    //     var buffer = new Buffer(ab.byteLength);
-    //     var view = new Uint8Array(ab);
-    //     for (var i = 0; i < buffer.length; ++i) {
-    //     buffer[i] = view[i];
-    //     }
-    //     return buffer;
-    // }
   
 
   

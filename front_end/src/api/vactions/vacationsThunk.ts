@@ -26,9 +26,6 @@ export const fetchPaginatedVacations = createAsyncThunk(
         const state = thunkAPI.getState() as RootState;
         const { token: reduxToken, count } = state.auth;
 
-        // Use the Redux token if count is -1
-        //const currentToken: string | undefined = count === -1 ? reduxToken || undefined : undefined;
-
         try {
             const vacations = await getPaginatedVacations(page, limit ,token);
             return vacations;

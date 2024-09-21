@@ -25,7 +25,10 @@ userRoutes.post(appConfig.routePrefix + "/register",
             console.error("Error in register route:", error); // Debugging
             const errorMessage = error instanceof Error ? error.message : 'Registration failed. Please try again.';
             res.status(StatusCode.BadRequest).json({ message: errorMessage });
+            next(error);
+
         }
+        
     });
 
 
