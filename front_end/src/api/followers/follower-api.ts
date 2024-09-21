@@ -3,10 +3,6 @@ import { siteConfig } from '../../utils/SiteConfig';
 import { AppDispatch } from '../../store/store';
 import { clearVacationsPerUser } from './followersThunk';
 
-// let token= localStorage.getItem('token') || null;
-//console.log("Token:", token);
-
-// Fetch followers for a specific vacation
 // Fetch followers for a specific vacation
 export const getFollowersForVacation = async (vacationId: number, token?:string): Promise<{ id: number }[]> => {
     if (token === undefined || token === '' || token === null) throw new Error('no token provided');
@@ -65,7 +61,6 @@ export const addFollower = async (userId: number, vacationId: number, token: str
 };
 
 // Remove a follower from a vacation
-// Remove a follower from a vacation
 export const removeFollower = async (userId: number, vacationId: number, token: string): Promise<void> => {
     if (token === undefined || token === '' || token === null) throw new Error('no token provided');
 
@@ -82,15 +77,3 @@ export const removeFollower = async (userId: number, vacationId: number, token: 
         throw error;
     }
 };
-
-/*
-export const clearVacationsFollowed = async (): Promise<void> => {
-    try {
-        console.log('CLEAR VACATIONS FOLLOWED')
-    } catch (error) {
-        console.error("Error removing follower:", error);
-        throw error;
-    }
-};
-*/
-

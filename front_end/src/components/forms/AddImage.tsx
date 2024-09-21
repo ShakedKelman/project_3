@@ -39,7 +39,7 @@ export const AddImage = (props: propsType) => {
     >
       <div style={{ padding: "4%" }}>
         <form onSubmit={handleSubmit}>
-          <p> product-id: {props.pid} </p>
+          <p> image-id: {props.pid} </p>
           <input
             type="file"
             onChange={(e: ChangeEvent<HTMLInputElement>) => {

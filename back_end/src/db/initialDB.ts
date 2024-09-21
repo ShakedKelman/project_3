@@ -65,10 +65,6 @@ const createTables = async () => {
 
 
 
-// createTables().then(() => {
-//     console.log("Done creating tables");
-// });
-
 
 
 const insertData = async () => {

@@ -52,22 +52,6 @@ export async function register(user: UserModel): Promise<string> {
     return user.token;
 }
 
-// export async function login(email: string, password: string) {
-//     let q = `SELECT * FROM users WHERE email=?;`;
-//     const res = await runQuery(q, [email]);
-//     console.log('login user query', res)
-//     if (res.length === 0 || !(await validatePassword(password, res[0].hashedPassword))) {
-//         throw new UnauthorizedError("Wrong credentials");
-//     }
-//     const user = new UserModel(res[0]);
-//     if (!user.token) {
-//         user.token = createToken(user);
-        
-//         q = `UPDATE users SET token=? WHERE id=?;`;
-//         await runQuery(q, [user.token, user.id]);
-//     }
-//     return user.token;
-// }
 
 export async function login(email: string, password: string) {
     let q = `SELECT * FROM users WHERE email=?;`;
@@ -90,51 +74,6 @@ export async function login(email: string, password: string) {
     
     return newToken;
 }
-
-// export async function login(email: string, password: string) {
-//     let q = `SELECT id, firstName, lastName, email, password, isAdmin, token FROM users WHERE email = ? AND password = ?;`;
-//     const result = await runQuery(q, [email, password]);
-//     console.log('Query result:', result);
-
-//     const rows = result; // Use the result directly if it's an array
-    
-//     if (rows.length === 0) {
-//         throw new UnauthorizedError("Wrong credentials");
-//     }
-
-//     const userData = rows[0];
-
-//     console.log('First row:', userData);
-
-//     if (!userData || !userData.id) {
-//         throw new Error("User data is incomplete or missing");
-//     }
-
-//     const user = new UserModel(userData);
-//     console.log('User object:', user);
-
-//     if (!user.token) {
-//         user.token = createToken(user);
-//         q = `UPDATE users SET token = ? WHERE id = ?;`;
-//         await runQuery(q, [user.token, user.id]);
-//     }
-
-//     return user.token;
-// }
-
-
-// export async function getAllUsers() {
-//     const q = `SELECT * FROM users;`;
-//     const res = await runQuery(q);
-//     return res;
-// }
-
-// export async function getAllUsers() {
-//     const q = `SELECT * FROM users;`;
-//     const res = await runQuery(q);    
-//     const users = res.map((u) => new UserModel(u));
-//     return users;
-// }
 
 export async function getAllUsers() {
     const q = `SELECT * FROM users;`;

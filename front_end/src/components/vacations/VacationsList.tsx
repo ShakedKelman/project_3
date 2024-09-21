@@ -9,14 +9,10 @@ import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import { getVacations } from '../../api/vactions/vactions-api';
 import { selectVacations } from '../../store/slices/followersSlice';
-import { getVacationsPerUser } from '../../api/followers/follower-api';
 import { fetchVacationsPerUser } from '../../api/followers/followersThunk';
 import { deleteVacationReducer } from '../../store/slices/vacationslice';
-import { fetchApiCalls } from '../../api/auth/authThunks';
 import "../../css/vactionList.css";
 
-let token:any;
-// let token = localStorage.getItem('token') || null;
 
 const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -33,10 +29,8 @@ const VacationList: React.FC = () => {
     const { token: reduxToken, status, count } = useSelector((state: RootState) => state.auth);
 
     const isAdmin = user?.isAdmin;
-    // Example using Redux (adjust based on your state management)
 
     // Handling token and state logic
-    console.log('status', status, count )
     if (status === 'succeeded' && count === 0) {
         // Token from Redux state is valid, use it
         console.log("Token from Redux:", reduxToken);
@@ -236,14 +230,8 @@ const VacationList: React.FC = () => {
                     />
                 </Form>
             )}
-            {/* <Row>
-                {paginatedVacations.filter( v => !deletedVacations.includes(v.id)).map((vacation: VacationModel) => (
-                    <Col key={vacation.id || "placeholder"} md={4} className="mb-4">
-                        <VacationCard vacation={vacation} onChangeFn={callback} />
-                    </Col>
-                ))}
+         
                 
-            </Row> */}
             <Row>
                 {paginatedVacations.map((vacation: VacationModel) => (
                     <Col key={vacation.id || "placeholder"} md={4} className="mb-4">

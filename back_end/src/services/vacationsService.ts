@@ -29,12 +29,6 @@ export async function getVacations(id?: number): Promise<VacationModel[]> {
 
         return new VacationModel(v);
     });}
-// Define a type for the expected result from the INSERT query
-
-
-
-
-
 
 export async function addVacation(v: VacationModel, image: UploadedFile | undefined): Promise<number> {
     // Validate the VacationModel instance
@@ -119,20 +113,16 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
     let newImagePath; let newImage;
 
     try {
-        // console.log('vacationServices.ts START TRANSACTION, updates.id:', updates.id);
-        // console.log('vacationServices.ts START TRANSACTION, updates:', updates);
+       
         // Fetch the existing vacation to get the old image file name
         const existingImage = await runQuery('SELECT imageFileName, image_path FROM vacations WHERE id = ?', [updates.id]);
         ( { imageFileName: existingImageName, image_path: existingImagePath } = existingImage[0] );
-        //existingImageName= await runQuery(`SELECT imageFileName FROM vacations WHERE id = ${updates.id}`);
-        //console.log('vacationServices.ts START TRANSACTION, here', existingImageName,  existingImagePath )
         
         ( { image_path: newImagePath, image: newImage, imageFileName: newImageName } = updates )
 
         if (newImageName !== existingImageName) { // if image name is identical to the name in database, do not update
             do_update_image = true;
         }
-        // console.log('---------------->', newImage)
         if (!( newImage === 'null' || newImage === null ) ) {
             do_update_image = true;
         }
@@ -140,11 +130,6 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
     } catch (e){
         console.error('couldnt perform SELECT', e.message)
     }
-
-    // console.log('#### newImageName:', newImageName);
-    // console.log('#### existingImageName:', existingImageName);
-    // console.log('#### existingImagePath:', existingImagePath);
-    // console.log('#### do_update_image:', do_update_image);
 
     // B. update the rest of the fields (excluding image fields)
 
@@ -160,7 +145,6 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
             } catch (error) {
                 console.log('couldnt delete file')
             }
-            // console.log(image,"//////////");
             
             // Save the new image and get the new file name
             const newImagePath = await saveImage(image);
@@ -168,7 +152,6 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
         } else {
             updateFields = updateFields.filter(k => !/^image/.test(k));
         }
-        // console.log('#### updateFields:', updateFields);
 
         const subsetFields = updateFields
             .reduce((acc, key) => {
@@ -179,9 +162,7 @@ export async function editVacation(id: number, updates: Partial<VacationModel>, 
         const updateClauses = updateFields.map(field => `${field} = ?`).join(', ');
         const q = `UPDATE vacations SET ${updateClauses} WHERE id = ?`;
         const values = [...Object.values(subsetFields), id];
-        // console.log("logging values",subsetFields);
-        // console.log('update clause', updateClauses)
-        // console.log('update values', values);
+     
         await runQuery(q, values);   
 
         if (0 && image && updates.image_path!=='') {

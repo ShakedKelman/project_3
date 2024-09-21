@@ -42,6 +42,7 @@ export default class UserModel {
 
     validate(): void {
         const res = UserModel.validateSchema.validate(this, { abortEarly: false });
+        
         if (res.error) {
             throw new ValidationError(res.error.details.map(d => d.message).join(", "));
         }

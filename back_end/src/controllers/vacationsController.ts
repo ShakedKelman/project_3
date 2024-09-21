@@ -34,9 +34,7 @@ vacationRoutes.post(
     appConfig.routePrefix + "/vacations", verifyToeknAdminMW,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            // console.log("Received vacation data:", req.body);
-            // console.log("Received files:", req.files);
-
+   
             const vacationData = {
                 destination: req.body.destination,
                 description: req.body.description,
@@ -132,23 +130,13 @@ vacationRoutes.delete(appConfig.routePrefix + "/vacations/:id", verifyToeknAdmin
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const id = parseInt(req.params.id, 10);
-            // console.log("---------reparamsid",id);
 
             const vacationImagePaths = await getImageByVacation(id);
-            console.log(vacationImagePaths,"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             
             if (!vacationImagePaths || vacationImagePaths.length === 0) {
                 console.warn(`No images found for vacation ID ${id}`);
             }
 
-            // for (const image_path of vacationImagePaths) {
-            //     if (image_path) {
-            //         await deleteImage(image_path);
-            //     } else {
-            //         console.warn(`No file name provided for vacation: ${id}`);
-            //     }
-            // }
-            
             await deleteVacation(id);
             res.status(StatusCode.Ok).send(); // No content to return after successful deletion
         } catch (error) {

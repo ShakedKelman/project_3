@@ -6,7 +6,6 @@ import { writeErrorLog } from "../utils/helpers";
 function catchAll(err: any, req: Request, res: Response, next: NextFunction) {
     console.log('Caught error:', err.message);
 
-    // TODO: add to msg more info, as date-time and ip etc...
     writeErrorLog(err.message).then(() => {
         if (err instanceof AppExcption) {
             res.status(err.status).send(err.message);

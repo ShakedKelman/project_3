@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';  // Import Bar chart instead of Line chart
 import { CSVLink } from 'react-csv';
 import * as XLSX from 'xlsx';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store/store';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 import { selectVacations } from '../store/slices/followersSlice';
 import { getFollowersForVacation } from '../api/followers/follower-api';
 

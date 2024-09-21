@@ -16,14 +16,8 @@ const NavbarWeb: React.FC = () => {
 
     useEffect(() => {
         if (user?.isAdmin) {
-            // dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
             if (vacations.length === 0) dispatch(fetchVacations({ token: user.token })); // Fetch all vacations for dropdown
         }
-        console.log('Vacations state after dispatch:', vacations);
-
-        // console.log(user?.firstName);
-        // console.log(user);
-
 
     }, [user, dispatch]);
 
@@ -44,10 +38,7 @@ const NavbarWeb: React.FC = () => {
 
 
     if (user === null || user.email === undefined) return null;
-    console.log('Before rendering string:', 'fhbfhjfbjhfbfj');
-    console.log("User:", user);
-    console.log("Is Logged In:", isLoggedIn);
-
+ 
     return (
         <Navbar className="navbar-lilac" variant="light">
             <Container>

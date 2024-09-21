@@ -63,27 +63,17 @@ const authSlice = createSlice({
     apicallsRequest(state) {
         state.status = 'requesting';
         state.error = null;
-        console.log('apicallsRequest')
     },
     apicallsSuccess(state, action: PayloadAction<{ count: number }>) {
         state.status = 'succeeded';
         state.count = action.payload.count;
         state.error = null;
-        console.log('apicallsSuccess')
     },
     apicallsFailure(state, action: PayloadAction<{ message: string }>) {
         state.status = 'failed';
         state.error = action.payload.message;
-        console.log('apicallsFailure')
     },
-    /*
-    clearAuthState: (state) => {
-        state.user = null;
-        state.token = null;
-        state.status = 'idle';
-        state.error = null;
-      },
-      */
+  
   },
 });
 

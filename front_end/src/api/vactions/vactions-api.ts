@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { VacationModel } from '../../model/VacationModel';
 import { siteConfig } from '../../utils/SiteConfig';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
 
 
 
@@ -35,7 +33,6 @@ let token = localStorage.getItem('token') || null;
                 'Authorization': `Bearer ${token}`,
             },
         });
-        console.log('FormData being sent:', formData);
         console.log('Vacation added successfully', response.data);
         return response.data;
     } catch (error) {
