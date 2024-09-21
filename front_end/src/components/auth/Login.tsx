@@ -8,7 +8,7 @@ import { Form, Button, Alert } from 'react-bootstrap';
 const LoginComponent: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const authStatus = useSelector((state: RootState) => state.auth.status);
+  const { status: authStatus, count: apiCallCount } = useSelector((state: RootState) => state.auth);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +26,7 @@ const LoginComponent: React.FC = () => {
 
   return (
     <div className="container mt-5">
+     
       <h2>Login</h2>
       {error && <Alert variant="danger">{error}</Alert>}
       
@@ -63,7 +64,6 @@ const LoginComponent: React.FC = () => {
         </Button>
       </Form>
       <p>Don't have an account? <Link to="/register">Register</Link></p>
-
     </div>
   );
 };

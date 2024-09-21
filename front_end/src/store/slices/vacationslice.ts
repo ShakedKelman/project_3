@@ -34,6 +34,7 @@ const vacationSlice = createSlice({
         deleteVacationReducer(state, action: PayloadAction<number>) {
             state.vacations = state.vacations.filter(vacation => vacation.id !== action.payload);
         },
+   
     },
     extraReducers: builder => {
         // Handling paginated vacations
@@ -65,6 +66,7 @@ const vacationSlice = createSlice({
             });
     },
 });
+
 
 export const { addVacation, updateVacation, deleteVacationReducer } = vacationSlice.actions;
 

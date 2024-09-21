@@ -57,7 +57,7 @@ const VacationList: React.FC = () => {
 
 
     useEffect(() => {
-        dispatch(fetchApiCalls);
+        //dispatch(fetchApiCalls());
         if (token === '') return
 
         if (loading) return; // Prevent fetching if loading is true

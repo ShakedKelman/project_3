@@ -76,6 +76,14 @@ const authSlice = createSlice({
         state.error = action.payload.message;
         console.log('apicallsFailure')
     },
+    /*
+    clearAuthState: (state) => {
+        state.user = null;
+        state.token = null;
+        state.status = 'idle';
+        state.error = null;
+      },
+      */
   },
 });
 

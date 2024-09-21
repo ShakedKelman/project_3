@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { addFollower, getFollowersForVacation, getVacationsPerUser, removeFollower } from './follower-api';
 import { VacationModel } from '../../model/VacationModel';
+import { AppDispatch } from '../../store/store';
 
 // Fetch followers for a specific vacation
 export const fetchFollowers = createAsyncThunk(
@@ -30,6 +31,19 @@ export const fetchVacationsPerUser = createAsyncThunk(
 );
 
 
+// Clear followed vacations
+export const clearVacationsPerUser = createAsyncThunk(
+    'vacations/clearVacationsPerUser',
+    async (_, thunkAPI) => {
+        try {
+            console.log('clearVacationsPerUser dispatched')
+            return [];
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to clear followers');
+        }
+    }
+
+);
 
 
 
@@ -58,3 +72,11 @@ export const removeVacationFollower = createAsyncThunk(
         }
     }
 );
+
+
+
+// export const clearVacationsFollowed = () => (dispatch: AppDispatch) => {
+//     console.log('CLEAR VACATIONS FOLLOWED')
+//   dispatch(clearVacationsPerUser());
+// };
+

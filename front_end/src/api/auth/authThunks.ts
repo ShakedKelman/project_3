@@ -4,6 +4,7 @@ import { login, register, getApiCalls } from './auth-api';
 import { UserModel } from '../../model/UserModel';
 import { AppDispatch } from '../../store/store';
 import { count } from 'console';
+import { clearVacationsState } from '../../store/slices/followersSlice';
 
 interface LoginUserArgs {
   email: string;
@@ -48,7 +49,8 @@ export const registerUser = createAsyncThunk<UserModel, UserModel>(
 
 export const logoutUser = () => (dispatch: AppDispatch) => {
     console.log('LOGOUT USER')
-  dispatch(logout());
+    dispatch(clearVacationsState());
+    dispatch(logout());
 };
 
 // interface CountModel {
