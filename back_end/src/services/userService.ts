@@ -21,7 +21,7 @@ export async function register(user: UserModel): Promise<string> {
 
     // Insert the new user into the database
     const insertQuery = `
-    INSERT INTO users (FirstName, LastName, hashedPassword, email, isAdmin)
+    INSERT INTO users (firstName, lastName, hashedPassword, email, isAdmin)
     VALUES (?, ?, ?, ?, ?)
 `;
 
@@ -52,25 +52,47 @@ export async function register(user: UserModel): Promise<string> {
     return user.token;
 }
 
+// export async function login(email: string, password: string) {
+//     let q = `SELECT * FROM users WHERE email=?;`;
+//     const res = await runQuery(q, [email]);
+//     console.log('login user query', res)
+//     if (res.length === 0 || !(await validatePassword(password, res[0].hashedPassword))) {
+//         throw new UnauthorizedError("Wrong credentials");
+//     }
+//     const user = new UserModel(res[0]);
+//     if (!user.token) {
+//         user.token = createToken(user);
+        
+//         q = `UPDATE users SET token=? WHERE id=?;`;
+//         await runQuery(q, [user.token, user.id]);
+//     }
+//     return user.token;
+// }
+
 export async function login(email: string, password: string) {
     let q = `SELECT * FROM users WHERE email=?;`;
     const res = await runQuery(q, [email]);
+    console.log('login user query', res);
+    
     if (res.length === 0 || !(await validatePassword(password, res[0].hashedPassword))) {
         throw new UnauthorizedError("Wrong credentials");
     }
+    
     const user = new UserModel(res[0]);
-    if (!user.token) {
-        user.token = createToken(user);
-        q = `UPDATE users SET token=? WHERE id=?;`;
-        await runQuery(q, [user.token, user.id]);
-    }
-    return user.token;
+    
+    // Always generate a new token
+    const newToken = createToken(user);
+    console.log('New token generated:', newToken);
+    
+    // Update the user's token in the database
+    q = `UPDATE users SET token=? WHERE id=?;`;
+    await runQuery(q, [newToken, user.id]);
+    
+    return newToken;
 }
 
-
-
 // export async function login(email: string, password: string) {
-//     let q = `SELECT id, FirstName, LastName, email, password, isAdmin, token FROM users WHERE email = ? AND password = ?;`;
+//     let q = `SELECT id, firstName, lastName, email, password, isAdmin, token FROM users WHERE email = ? AND password = ?;`;
 //     const result = await runQuery(q, [email, password]);
 //     console.log('Query result:', result);
 
@@ -119,12 +141,21 @@ export async function getAllUsers() {
     const res = await runQuery(q);
     const users = res.map((u: any) => new UserModel({
         id: u.id,
-        firstName: u.FirstName,
-        lastName: u.LastName,
+        firstName: u.firstName,
+        lastName: u.lastName,
         password: u.hashedPassword,
         email: u.email,
         isAdmin: u.isAdmin,
         token: u.token
     }));
     return users;
+}
+
+
+
+export async function getApiCount() {
+    let q = `SELECT * FROM counts`;
+    const res = await runQuery(q);
+    const { apicall: currentI } = res[0]
+    return currentI;
 }

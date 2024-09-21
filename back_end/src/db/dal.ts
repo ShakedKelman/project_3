@@ -9,18 +9,6 @@ const connection = mysql.createPool({
     port: appConfig.dbConfig.port
 })
 
-// Function to run an SQL query
-// export default function runQuery(q: string, params: any[] = []): Promise<any[]> {
-//     return new Promise((resolve, reject) => {
-//         connection.query(q, params, (err, res) => {
-//             if (err) {
-//                 reject(err);
-//                 return;
-//             }
-//             resolve(res as any[]);
-//         });
-//     });
-// }
 
 export default function runQuery(q: string, params: any[] = []): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -35,3 +23,7 @@ export default function runQuery(q: string, params: any[] = []): Promise<any> {
 }
 
 // runQuery("select * from product").then(...).catch(...)
+
+export const closeDB = async () =>{
+    connection.end()
+}

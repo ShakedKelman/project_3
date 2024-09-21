@@ -3,14 +3,19 @@ import { NextFunction, Request, Response, Router } from "express";
 import { appConfig } from "../utils/appConfig";
 import { StatusCode } from "../models/statusEnum";
 import VacationModel from "../models/VacationsModel";
-import { addVacation, editVacation, getVacations, getVacationsPaginated } from "../services/vacationsService";
+import { addVacation, deleteVacation, editVacation, getVacations, getVacationsPaginated } from "../services/vacationsService";
 import { UploadedFile } from "express-fileupload";
 import { getFollowersForVacation } from "../services/followersService";
+import runQuery from "../db/dal";
+import { AppExcption, ValidationError } from "../models/exceptions";
+import { deleteImage } from "../utils/helpers";
+import { getImageByVacation } from "../services/imagesService";
+import { verifyToeknAdminMW, verifyToeknMW } from "../middlewares/authMiddlewares";
 
 export const vacationRoutes = Router();
 
 // Route to get all vacations or a specific vacation by ID
-vacationRoutes.get(appConfig.routePrefix + "/vacations/:id?", 
+vacationRoutes.get(appConfig.routePrefix + "/vacations/:id?", verifyToeknMW,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const id = req.params.id ? parseInt(req.params.id, 10) : undefined;
@@ -26,11 +31,11 @@ vacationRoutes.get(appConfig.routePrefix + "/vacations/:id?",
 
 
 vacationRoutes.post(
-    appConfig.routePrefix + "/vacations",
+    appConfig.routePrefix + "/vacations", verifyToeknAdminMW,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
-            console.log("Received vacation data:", req.body);
-            console.log("Received files:", req.files);
+            // console.log("Received vacation data:", req.body);
+            // console.log("Received files:", req.files);
 
             const vacationData = {
                 destination: req.body.destination,
@@ -51,14 +56,22 @@ vacationRoutes.post(
             res.status(StatusCode.Created).json({ message: "Vacation added successfully", vacationId });
         } catch (error) {
             console.error("Detailed error in addVacation route:", error);
+
+            if (error instanceof ValidationError) {
+                // Send the validation error details to the client
+                return res.status(StatusCode.BadRequest).json({
+                    message: error.message,
+                });
+            }
+
             if (error instanceof Error) {
-                res.status(StatusCode.ServerError).json({ 
-                    message: "Error adding vacation", 
+                return res.status(StatusCode.ServerError).json({
+                    message: "Error adding vacation",
                     error: error.message,
                     stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
                 });
             } else {
-                res.status(StatusCode.ServerError).json({ 
+                return res.status(StatusCode.ServerError).json({
                     message: "Unknown error occurred while adding vacation"
                 });
             }
@@ -67,36 +80,41 @@ vacationRoutes.post(
 );
 
 
-vacationRoutes.put(appConfig.routePrefix + "/vacation/:id", 
+
+vacationRoutes.put(appConfig.routePrefix + "/vacation/:id", verifyToeknAdminMW,
 async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const id = parseInt(req.params.id);
-        const updates = Array.isArray(req.body) ? req.body : [req.body];
-        await editVacation(id, updates);
-        res.sendStatus(200);
+        const id = parseInt(req.params.id, 10);
+        
+        // Handle file upload if present
+        let image = req.files?.image as UploadedFile;
+
+        // Assuming req.body contains the update fields
+        const updates: Partial<VacationModel> = req.body;
+ 
+        const vacationUpdated= await editVacation(id, updates, image);
+
+        res.status(StatusCode.Ok).json(vacationUpdated);
     } catch (error) {
+        
         console.error("Error in editVacationController:", error);
-        next(error);
-    }
-}
-);
-
-
-
-vacationRoutes.get(appConfig.routePrefix + "/vacation-pg",  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { page = 1, limit = 10 } = req.query;
-        const vacations = await getVacationsPaginated(Number(page), Number(limit));
-        res.status(StatusCode.Ok).json(vacations);
-    } catch (error) {
-        next(error)
-    }
+        if (error instanceof ValidationError) {
+            res.status(StatusCode.BadRequest).json({
+                error: "Validation Error",
+                message: error.message
+            });
+        } else {
+            next(error); // Pass the error to the next middleware (for other error types)
+        }    }
 });
 
 
 
+
+
+
 // Route to get followers for a specific vacation
-vacationRoutes.get(appConfig.routePrefix + "/vacations/:id/followers", 
+vacationRoutes.get(appConfig.routePrefix + "/vacations/:id/followers", verifyToeknMW,
     async (req: Request, res: Response, next: NextFunction) => {
         try {
             const vacationId = parseInt(req.params.id, 10);
@@ -108,3 +126,48 @@ vacationRoutes.get(appConfig.routePrefix + "/vacations/:id/followers",
         }
     }
 );
+
+
+vacationRoutes.delete(appConfig.routePrefix + "/vacations/:id", verifyToeknAdminMW,
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const id = parseInt(req.params.id, 10);
+            // console.log("---------reparamsid",id);
+
+            const vacationImagePaths = await getImageByVacation(id);
+            console.log(vacationImagePaths,"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            
+            if (!vacationImagePaths || vacationImagePaths.length === 0) {
+                console.warn(`No images found for vacation ID ${id}`);
+            }
+
+            // for (const image_path of vacationImagePaths) {
+            //     if (image_path) {
+            //         await deleteImage(image_path);
+            //     } else {
+            //         console.warn(`No file name provided for vacation: ${id}`);
+            //     }
+            // }
+            
+            await deleteVacation(id);
+            res.status(StatusCode.Ok).send(); // No content to return after successful deletion
+        } catch (error) {
+            console.error("Error in deleteVacation route:", error);
+            next(error);
+        }
+    }
+);
+
+// routes/vacationRoutes.ts
+
+vacationRoutes.get(appConfig.routePrefix + "/vacations-pg",verifyToeknMW, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { page = 1, limit = 10 } = req.query;
+        const vacations = await getVacationsPaginated(Number(page), Number(limit));
+        res.status(StatusCode.Ok).json(vacations);
+    } catch (error) {
+        next(error)
+    }
+});
+
+

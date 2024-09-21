@@ -16,6 +16,12 @@ export class ValidationError extends AppExcption {
     }
 }
 
+export class NotDeletedError extends AppExcption {
+    constructor(message: string) {
+        super(message, StatusCode.IOerror);
+    }
+}
+
 export class NotFoundError extends AppExcption {
     constructor(message: string) {
         super(message, StatusCode.NotFound);

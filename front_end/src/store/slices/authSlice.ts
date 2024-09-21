@@ -1,58 +1,94 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { UserModel } from '../../model/UserModel';
+import { RootState } from '../store';
 
 interface AuthState {
   user: UserModel | null;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  token: string | null;
+  status: 'idle' | 'loading' | 'succeeded' | 'failed' | 'requesting';
+  count: number | null;
   error: string | null;
-  loginTimestamp: number | null;
 }
 
 const initialState: AuthState = {
   user: null,
+  token: localStorage.getItem('token') || null,
   status: 'idle',
+  count: -1,
   error: null,
-  loginTimestamp: null,
 };
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    loginSuccess(state, action: PayloadAction<{ user: UserModel; timestamp: number }>) {
+    loginSuccess(state, action: PayloadAction<{ user: UserModel; token: string }>) {
       state.user = action.payload.user;
+      state.token = action.payload.token;
       state.status = 'succeeded';
       state.error = null;
-      state.loginTimestamp = action.payload.timestamp;
       localStorage.setItem('user', JSON.stringify(action.payload.user));
-      localStorage.setItem('loginTimestamp', action.payload.timestamp.toString());
+      localStorage.setItem('token', action.payload.token);
     },
     loginFailure(state, action: PayloadAction<string>) {
       state.error = action.payload;
       state.status = 'failed';
+      state.token = null;
+      localStorage.removeItem('token');
     },
     logout(state) {
       state.user = null;
+      state.token = null;
       state.status = 'idle';
-      state.loginTimestamp = null;
       localStorage.removeItem('user');
-      localStorage.removeItem('loginTimestamp');
+      localStorage.removeItem('token');
     },
     registerRequest(state) {
       state.status = 'loading';
       state.error = null;
     },
-    registerSuccess(state, action: PayloadAction<UserModel>) {
-      state.user = action.payload;
+    registerSuccess(state, action: PayloadAction<{ user: UserModel; token: string }>) {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
       state.status = 'succeeded';
       state.error = null;
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
+      localStorage.setItem('token', action.payload.token);
     },
     registerFailure(state, action: PayloadAction<string>) {
       state.error = action.payload;
       state.status = 'failed';
+      state.token = null;
     },
+    apicallsRequest(state) {
+        state.status = 'requesting';
+        state.error = null;
+        console.log('apicallsRequest')
+    },
+    apicallsSuccess(state, action: PayloadAction<{ count: number }>) {
+        state.status = 'succeeded';
+        state.count = action.payload.count;
+        state.error = null;
+        console.log('apicallsSuccess')
+    },
+    apicallsFailure(state, action: PayloadAction<{ message: string }>) {
+        state.status = 'failed';
+        state.error = action.payload.message;
+        console.log('apicallsFailure')
+    },
+    /*
+    clearAuthState: (state) => {
+        state.user = null;
+        state.token = null;
+        state.status = 'idle';
+        state.error = null;
+      },
+      */
   },
 });
+
+export const selectUser = (state: RootState) => state.auth.user;
+export const selectToken = (state: RootState) => state.auth.token;
 
 export const {
   loginSuccess,
@@ -61,76 +97,9 @@ export const {
   registerRequest,
   registerSuccess,
   registerFailure,
+  apicallsRequest,
+  apicallsSuccess,
+  apicallsFailure
 } = authSlice.actions;
 
 export default authSlice.reducer;
-
-
-// import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-// import { UserModel } from '../../model/UserModel';
-
-// interface AuthState {
-//   user: UserModel | null;
-//   status: 'idle' | 'loading' | 'succeeded' | 'failed';
-//   error: string | null;
-//   loginTimestamp: number | null; // Add timestamp to track login
-
-// }
-
-// const initialState: AuthState = {
-//   user: null,
-//   status: 'idle',
-//   error: null,
-//   loginTimestamp: null,
-
-// };
-// const authSlice = createSlice({
-//     name: 'auth',
-//     initialState,
-//     reducers: {
-//       loginSuccess(state, action: PayloadAction<{ user: UserModel, timestamp: number }>) {
-//           state.user = action.payload.user;
-//           state.status = 'succeeded';
-//           state.error = null;
-//           state.loginTimestamp = action.payload.timestamp;
-//           localStorage.setItem('user', JSON.stringify(action.payload.user));
-//           localStorage.setItem('loginTimestamp', action.payload.timestamp.toString());
-//       },
-//       loginFailure(state, action: PayloadAction<string>) {
-//           state.error = action.payload;
-//           state.status = 'failed';
-//       },
-//       logout(state) {
-//           state.user = null;
-//           state.status = 'idle';
-//           state.loginTimestamp = null;
-//           localStorage.removeItem('user');
-//           localStorage.removeItem('loginTimestamp');
-//       },
-//       registerRequest(state) {
-//           state.status = 'loading';
-//           state.error = null;
-//       },
-//       registerSuccess(state, action: PayloadAction<UserModel>) {
-//           state.user = action.payload;
-//           state.status = 'succeeded';
-//           state.error = null;
-//       },
-//       registerFailure(state, action: PayloadAction<string>) {
-//           state.error = action.payload;
-//           state.status = 'failed';
-//       },
-//     },
-//   });
-  
-
-//   export const {
-//     loginSuccess,
-//     loginFailure,
-//     logout,
-//     registerRequest,
-//     registerSuccess,
-//     registerFailure,
-//   } = authSlice.actions;
-  
-//   export default authSlice.reducer;

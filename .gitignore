@@ -2,3 +2,12 @@
 _git
 node_modules
 package-lock.json
+
+error.log
+access.log
+
+back_end/**/*.jpeg
+back_end/src/assets/images/*.jpeg
+back_end/src/assets/images/*.jpg
+back_end/src/assets/images/*.avif
+back_end/src/assets/images/*.webp
