@@ -173,8 +173,10 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn, token
                                 <p>{vacation.description}</p>
                                 <p>{`Start Date: ${formatDate(vacation.startDate)}`}</p>
                                 <p>{`End Date: ${formatDate(vacation.endDate)}`}</p>
-                                <p>{`Price: $${vacation.price}`}</p>
+                                <div className="vacation-card-price">{`Price: $${vacation.price}`}</div>
+
                                 {!user?.isAdmin ? (
+
                                     <div className="vacation-card-actions">
                                         <div className="vacation-card-favorites">
                                             {isFollowing ? (

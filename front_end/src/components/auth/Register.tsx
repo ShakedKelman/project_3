@@ -73,9 +73,10 @@ const RegisterComponent: React.FC = () => {
 
   return (
     <Container className="mt-4">
+        
       <h2>Register</h2>
       {error && <Alert variant="danger">{error}</Alert>}
-      <Form>
+      <Form  style={{ maxWidth: '600px', margin: '0 auto', backgroundColor: '#007B7F', padding: '20px', borderRadius: '5px', color:"white" }}>
         <Form.Group className="mb-3" controlId="formFirstName">
           <Form.Label>First Name</Form.Label>
           <Form.Control
@@ -120,7 +121,7 @@ const RegisterComponent: React.FC = () => {
             label="Admin"
           />
         </Form.Group>
-        <Button variant="primary" onClick={handleRegister}>
+        <Button variant="primary" onClick={handleRegister} style={{ backgroundColor: '#85f5e9', color: 'black', marginTop: '20px', padding: '10px 20px' }}>
           Register
         </Button>
       </Form>

@@ -13,6 +13,7 @@ import { getVacationsPerUser } from '../../api/followers/follower-api';
 import { fetchVacationsPerUser } from '../../api/followers/followersThunk';
 import { deleteVacationReducer } from '../../store/slices/vacationslice';
 import { fetchApiCalls } from '../../api/auth/authThunks';
+import "../../css/vactionList.css";
 
 let token:any;
 // let token = localStorage.getItem('token') || null;
@@ -204,6 +205,7 @@ const VacationList: React.FC = () => {
                         value="all"
                         checked={filter === 'all'}
                         onChange={handleFilterChange}
+                        className="custom-radio"
                     />
                     <Form.Check
                         type="radio"
@@ -212,6 +214,7 @@ const VacationList: React.FC = () => {
                         value="following"
                         checked={filter === 'following'}
                         onChange={handleFilterChange}
+                        className="custom-radio"
                     />
                     <Form.Check
                         type="radio"
@@ -220,6 +223,7 @@ const VacationList: React.FC = () => {
                         value="notStarted"
                         checked={filter === 'notStarted'}
                         onChange={handleFilterChange}
+                        className="custom-radio"
                     />
                     <Form.Check
                         type="radio"
@@ -228,6 +232,7 @@ const VacationList: React.FC = () => {
                         value="happeningNow"
                         checked={filter === 'happeningNow'}
                         onChange={handleFilterChange}
+                        className="custom-radio"
                     />
                 </Form>
             )}
@@ -252,7 +257,6 @@ const VacationList: React.FC = () => {
                     count={totalPages}
                     page={page}
                     onChange={handlePageChange}
-                    color="primary"
                 />
             </Stack>
         </div>

@@ -17,7 +17,7 @@ const NavbarWeb: React.FC = () => {
     useEffect(() => {
         if (user?.isAdmin) {
             // dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
-            if (vacations.length === 0) dispatch(fetchVacations({token: user.token})); // Fetch all vacations for dropdown
+            if (vacations.length === 0) dispatch(fetchVacations({ token: user.token })); // Fetch all vacations for dropdown
         }
         console.log('Vacations state after dispatch:', vacations);
 
@@ -47,7 +47,7 @@ const NavbarWeb: React.FC = () => {
     console.log('Before rendering string:', 'fhbfhjfbjhfbfj');
     console.log("User:", user);
     console.log("Is Logged In:", isLoggedIn);
-    
+
     return (
         <Navbar className="navbar-lilac" variant="light">
             <Container>
@@ -55,16 +55,17 @@ const NavbarWeb: React.FC = () => {
                     {isLoggedIn ? 'Vacations' : 'Login'}
                 </Navbar.Brand>
                 <Nav className="me-auto">
-                                    {isLoggedIn && (
+                    {isLoggedIn && (
                         <>
                             {isAdmin && (
                                 <>
                                     <Nav.Link as={Link} to="/add-vacation">Add Vacation</Nav.Link>
                                     <Nav.Link as={Link} to="/report">Report</Nav.Link>
-                                    <Dropdown>
-                                        <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                            Edit Vacation
-                                        </Dropdown.Toggle>
+                                    <Dropdown>     <Dropdown.Toggle className="dropdown-toggle-white" id="dropdown-basic">
+                                        Edit Vacation
+                                    </Dropdown.Toggle>
+
+
                                         <Dropdown.Menu className="custom-dropdown-menu">
                                             {vacations.map(vacation => (
                                                 <Dropdown.Item
@@ -92,7 +93,7 @@ const NavbarWeb: React.FC = () => {
                 {isLoggedIn && user && (
                     <Nav className="ms-auto">
                         <Nav.Item>
-                        <span className="navbar-text">Hello, {`${user.firstName} ${user.lastName}`}!</span>
+                            <span className="navbar-text">Hello, {`${user.firstName} ${user.lastName}`}!</span>
                         </Nav.Item>
                     </Nav>
                 )}
