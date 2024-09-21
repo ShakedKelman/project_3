@@ -8,13 +8,19 @@ import { apiAddVacation } from '../../api/vactions/vactions-api';
 import { addVacation } from '../../store/slices/vacationslice';
 import { fetchPaginatedVacations, fetchVacations } from '../../api/vactions/vacationsThunk';
 
-const AddVacationForm: React.FC = () => {
+interface VacationsProps {
+    token?: string;
+ }
+
+const AddVacationForm: React.FC<VacationsProps> = (props)  => {
     const [newVacation, setNewVacation] = useState<VacationModel>(new VacationModel({}));
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+
+    const { token } = props;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -65,8 +71,8 @@ const AddVacationForm: React.FC = () => {
 
             const addedVacation = await apiAddVacation(formData);
             dispatch(addVacation(addedVacation)); // Dispatch action to add vacation to Redux store
-            dispatch(fetchVacations()); // Fetch all vacations to update the dropdown
-            dispatch(fetchPaginatedVacations({ page: 1, limit: 10 })); // Fetch paginated vacations
+            dispatch(fetchVacations({token})); // Fetch all vacations to update the dropdown
+            dispatch(fetchPaginatedVacations({ page: 1, limit: 10, token })); // Fetch paginated vacations
             setSuccess("Vacation added successfully");
             navigate('/vacations');
         } catch (error: any) {

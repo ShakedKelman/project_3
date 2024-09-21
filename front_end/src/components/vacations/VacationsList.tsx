@@ -12,9 +12,10 @@ import { selectVacations } from '../../store/slices/followersSlice';
 import { getVacationsPerUser } from '../../api/followers/follower-api';
 import { fetchVacationsPerUser } from '../../api/followers/followersThunk';
 import { deleteVacationReducer } from '../../store/slices/vacationslice';
+import { fetchApiCalls } from '../../api/auth/authThunks';
 
-
-let token = localStorage.getItem('token') || null;
+let token:any;
+// let token = localStorage.getItem('token') || null;
 
 const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -22,6 +23,7 @@ const VacationList: React.FC = () => {
     const { user } = useSelector((state: RootState) => state.auth);
     const [filter, setFilter] = useState<string>('all');
     const [page, setPage] = useState<number>(1);
+    const [token, setToken] = useState<string>('');
     const [totalPages, setTotalPages] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
     const [allVacations, setAllVacations] = useState<VacationModel[]>([]);
@@ -33,31 +35,40 @@ const VacationList: React.FC = () => {
     // Example using Redux (adjust based on your state management)
 
     // Handling token and state logic
-    if (status === 'succeeded' && count === -1) {
+    console.log('status', status, count )
+    if (status === 'succeeded' && count === 0) {
         // Token from Redux state is valid, use it
         console.log("Token from Redux:", reduxToken);
 
         // Update token in localStorage if necessary
         if (reduxToken && reduxToken !== token) {
             localStorage.setItem('token', reduxToken);
-            token = reduxToken; // Update the token reference
+            setToken(reduxToken); // Update the token reference
         }
     } else {
-        console.error("Unable to fetch the token or invalid state");
+        console.log("either reducer already worked or the count is greater than zero", status, count);
     }
 
     useEffect(() => {
+        const currentToken = reduxToken || localStorage.getItem('token') || undefined;
+        if (currentToken !== undefined) setToken(currentToken)
+    }, [dispatch]);
+
+
+
+    useEffect(() => {
+        dispatch(fetchApiCalls);
+        if (token === '') return
+
         if (loading) return; // Prevent fetching if loading is true
 
         const fetchData = async () => {
             setLoading(true);
             try {
-                // const currentToken = status === 'succeeded' && count === -1 ? reduxToken : token;
-                const currentToken = reduxToken || localStorage.getItem('token') || undefined;
 
                 // Fetch all vacations
-                const vacations = await getVacations(undefined, currentToken);
-                console.log('Current token:', currentToken); // Check what token is being used
+                const vacations = await getVacations(undefined, token);
+                console.log('Current token:', token); // Check what token is being used
 
                 setAllVacations(vacations);
 
@@ -67,12 +78,12 @@ const VacationList: React.FC = () => {
                 setTotalPages(calculatedTotalPages);
 
                 // Fetch paginated vacations for the first page
-                dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
+                dispatch(fetchPaginatedVacations({ page: 1, limit: 10, token }));
 
-                // Check if user.id is defined before dispatching
-                if (user?.id !== undefined && followedVacations.length === 0) {
-                    dispatch(fetchVacationsPerUser(user.id));
-                }
+                    // Check if user.id is defined before dispatching
+                    if (user?.id !== undefined && followedVacations.length === 0) {
+                        dispatch(fetchVacationsPerUser({ userId: user.id, token }));
+                    }
 
             } catch (error) {
                 console.error('Error fetching vacations:', error);
@@ -82,7 +93,7 @@ const VacationList: React.FC = () => {
         };
 
         fetchData();
-    }, [dispatch]);
+    }, [dispatch, token]);
 
     useEffect(() => {
         // When filter changes, reset to the first page
@@ -90,6 +101,8 @@ const VacationList: React.FC = () => {
     }, [filter]);
 
     useEffect(() => {
+        if (token === '') return
+
         const fetchFilteredData = async () => {
             setLoading(true);
             try {
@@ -98,8 +111,10 @@ const VacationList: React.FC = () => {
                 const calculatedTotalPages = Math.ceil(totalVacations / 10);
                 setTotalPages(calculatedTotalPages);
 
-                // Fetch paginated filtered vacations
-                dispatch(fetchPaginatedVacations({ page, limit: 10 }));
+                if (token !== undefined && token !== null) {
+                    // Fetch paginated filtered vacations
+                    dispatch(fetchPaginatedVacations({ page, limit: 10, token }));
+                }
             } catch (error) {
                 console.error('Error fetching filtered vacations:', error);
             } finally {
@@ -113,7 +128,12 @@ const VacationList: React.FC = () => {
     const callback = (vacationId: number, whatChanged: string) => {
         switch (whatChanged) {
             case 'follow':
-                if (user?.id !== undefined) dispatch(fetchVacationsPerUser(user.id));
+                const tokenToUse = token !== null ? token : undefined;
+
+                if (user?.id !== undefined) {
+                    dispatch(fetchVacationsPerUser({ userId: user.id, token: tokenToUse }));
+                }
+                
                 break;
             case 'delete':
                 dispatch(deleteVacationReducer(vacationId));
@@ -222,7 +242,7 @@ const VacationList: React.FC = () => {
             <Row>
                 {paginatedVacations.map((vacation: VacationModel) => (
                     <Col key={vacation.id || "placeholder"} md={4} className="mb-4">
-                        <VacationCard vacation={vacation} onChangeFn={callback} />
+                        <VacationCard token={token} vacation={vacation} onChangeFn={callback} />
                     </Col>
                 ))}
             </Row>

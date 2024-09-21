@@ -10,7 +10,11 @@ import { siteConfig } from '../../utils/SiteConfig';
 import { getImageForVacation } from '../../api/images/images-api';
 import axios from 'axios';
 
-const EditVacationForm: React.FC = () => {
+interface VacationsProps {
+   token?: string;
+}
+
+const EditVacationForm: React.FC<VacationsProps> = (props) => {
     const dispatch = useDispatch();
     const { id } = useParams<{ id: string }>();
     const [vacation, setVacation] = useState<VacationModel | null>(null);
@@ -22,11 +26,14 @@ const EditVacationForm: React.FC = () => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [images, setImages] = useState<string[]>([]);
 
+    const { token } = props;
+
+
     useEffect(() => {
         const fetchVacationDetails = async () => {
             if (id) {
                 try {
-                    const vacationData = await getVacations(Number(id));
+                    const vacationData = await getVacations(Number(id), token);
                     if (vacationData.length > 0) {
                         setVacation(vacationData[0]);
                         const vacationImages = await getImageForVacation(Number(id));

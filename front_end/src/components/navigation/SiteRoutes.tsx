@@ -30,7 +30,7 @@ const SiteRoutes: React.FC = () => {
       {/* Protected Routes */}
       <Route
   path="/report"
-  element={isAuthenticated && isAdmin ? <Report /> : <Navigate to="/vacations" />}
+  element={isAuthenticated && isAdmin ? <Report token={user.token} /> : <Navigate to="/vacations" />}
 />
 
       <Route
@@ -39,11 +39,11 @@ const SiteRoutes: React.FC = () => {
       />
       <Route
         path="/add-vacation"
-        element={isAuthenticated && isAdmin ? <AddVacationForm /> : <Navigate to="/vacations" />} // Only admins can access
+        element={isAuthenticated && isAdmin ? <AddVacationForm token={user.token}/> : <Navigate to="/vacations" />} // Only admins can access
       />
       <Route
         path="/edit-vacation/:id"
-        element={isAuthenticated && isAdmin ? <EditVacationForm /> : <Navigate to="/vacations" />}
+        element={isAuthenticated && isAdmin ? <EditVacationForm token={user.token} /> : <Navigate to="/vacations" />}
       />
 
       <Route

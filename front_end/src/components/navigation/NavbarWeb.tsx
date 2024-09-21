@@ -7,6 +7,7 @@ import { logoutUser } from '../../api/auth/authThunks';
 import { fetchPaginatedVacations, fetchVacations } from '../../api/vactions/vacationsThunk';
 import "../../css/navbar.css";
 
+
 const NavbarWeb: React.FC = () => {
     const { status, user } = useSelector((state: RootState) => state.auth);
     const { vacations } = useSelector((state: RootState) => state.vacation);
@@ -16,10 +17,12 @@ const NavbarWeb: React.FC = () => {
     useEffect(() => {
         if (user?.isAdmin) {
             // dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
-            if (vacations.length === 0) dispatch(fetchVacations()); // Fetch all vacations for dropdown
+            if (vacations.length === 0) dispatch(fetchVacations({token: user.token})); // Fetch all vacations for dropdown
         }
-        console.log(user?.firstName);
-        console.log(user);
+        console.log('Vacations state after dispatch:', vacations);
+
+        // console.log(user?.firstName);
+        // console.log(user);
 
 
     }, [user, dispatch]);

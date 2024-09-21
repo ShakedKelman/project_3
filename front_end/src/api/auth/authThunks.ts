@@ -1,8 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { apicallsFailure, apicallsRequest, loginFailure, loginSuccess, logout, registerFailure, registerSuccess } from '../../store/slices/authSlice';
+import { apicallsFailure, apicallsRequest, apicallsSuccess, loginFailure, loginSuccess, logout, registerFailure, registerSuccess } from '../../store/slices/authSlice';
 import { login, register, getApiCalls } from './auth-api';
 import { UserModel } from '../../model/UserModel';
 import { AppDispatch } from '../../store/store';
+import { count } from 'console';
 
 interface LoginUserArgs {
   email: string;
@@ -46,34 +47,51 @@ export const registerUser = createAsyncThunk<UserModel, UserModel>(
 );
 
 export const logoutUser = () => (dispatch: AppDispatch) => {
+    console.log('LOGOUT USER')
   dispatch(logout());
 };
 
+// interface CountModel {
+//     count: number;
+// }
+// export const fetchApiCalls = createAsyncThunk<void, CountModel>(
+//     'auth/fetchApiCalls',
+//     async (count: CountModel, { dispatch }) => {
+//       try {
+//         dispatch(apicallsRequest());
+//         const apiCalls = await getApiCalls();
+//         console.log('apiCalls', apiCalls)
 
-// export const fetchApiCalls = createAsyncThunk(
-//     'auth/fetchApiCallStatus',
-//     async (_, { dispatch }) => {
-//         console.log('jjjjjJJJJJJJJjjjjjjjJJJJJJ')
-//         try {
-//             dispatch(apicallsRequest)
-//             const apicalls = await getApiCalls();
-//             return apicalls;
-//         } catch (error) {
-//             return dispatch(apicallsFailure);
-//         }
+
+//         const countNumber = apiCalls.count;
+//         dispatch(apicallsSuccess(countNumber));
+//         return apiCalls;
+//       } catch (error: any) {
+//         console.error('Fetch API calls error:', error);
+//         dispatch(apicallsFailure(error.message));
+//         throw error;
+//       }
 //     }
-// );
-export const fetchApiCalls = createAsyncThunk<number, void>(
-    'auth/fetchApiCallStatus',
+//   );
+  interface CountModel {
+    count: number;
+  }
+  
+  export const fetchApiCalls = createAsyncThunk<CountModel, void>(
+    'auth/fetchApiCalls',
     async (_, { dispatch }) => {
       try {
-        dispatch(apicallsRequest()); // Dispatch the request action
-        const apiCalls = await getApiCalls();
-        return apiCalls; // Return the fetched data to be handled by extra reducers
+        dispatch(apicallsRequest());
+        const apiCallCount = await getApiCalls();
+        console.log('apiCallCount', apiCallCount);
+
+        dispatch(apicallsSuccess(apiCallCount));
+
+        return apiCallCount;
       } catch (error: any) {
-        dispatch(apicallsFailure(error.message || 'Failed to fetch API calls')); // Dispatch the failure action with the error message
-        throw error; // Ensure the error is rethrown to be handled elsewhere
+        console.error('Fetch API calls error:', error);
+        dispatch(apicallsFailure(error.message));
+        throw error;
       }
     }
   );
-  

@@ -30,18 +30,24 @@ ChartJS.register(
     BarElement
 );
 
-const Report: React.FC = () => {
+interface VacationsProps {
+    token?: string;
+ }
+
+
+const Report: React.FC<VacationsProps> = (props) => {
     const { user } = useSelector((state: RootState) => state.auth);
     const vacations = useSelector(selectVacations);
     const [data, setData] = useState<{ destination: string; followers: number }[]>([]);
     const [allVacations, setAllVacations] = useState<VacationModel[]>([]);
 
     const isAdmin = user?.isAdmin;
+    const { token } = props;
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const vacations = await getVacations();
+                const vacations = await getVacations(undefined, token);
                 setAllVacations(vacations);
 
                 const reportData = await Promise.all(vacations.map(async (vacation) => {
@@ -52,7 +58,7 @@ const Report: React.FC = () => {
                         };
                     }
 
-                    const vacationFollowers = await getFollowersForVacation(vacation.id);
+                    const vacationFollowers = await getFollowersForVacation(vacation.id, token);
                     return {
                         destination: vacation.destination,
                         followers: vacationFollowers.length,

@@ -29,22 +29,23 @@ const formatDate = (isoDate: string): string => {
     return `${day}/${month}/${year}`;
 };
 
-    // const getToken = (): string | null => {
-    //     return localStorage.getItem('token');
-    // };
-    const getToken = (reduxToken: string | null, count: number): string | undefined => {
-        if (count === -1 && reduxToken) {
-            return reduxToken;
-        }
-        return localStorage.getItem('token') || undefined;
-    };
+// const getToken = (): string | null => {
+//     return localStorage.getItem('token');
+// };
+const getToken = (reduxToken: string | null, count: number): string | undefined => {
+    if (count === -1 && reduxToken) {
+        return reduxToken;
+    }
+    return localStorage.getItem('token') || undefined;
+};
 
 interface VacationCardProps {
     vacation: VacationModel;
     onChangeFn: Function;
+    token: string;
 }
 
-const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => {
+const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn, token }) => {
     const [images, setImages] = useState<string[]>([]);
     const [isFollowing, setIsFollowing] = useState<boolean>(false);
     const navigate = useNavigate();
@@ -53,12 +54,12 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => 
     const [error, setError] = useState<string | null>(null);
     const dispatch = useDispatch<AppDispatch>();
     const [totalFollowers, setTotalFollowers] = useState<number>(0); // Added state for total followers
-    const { token: reduxToken, status, count } = useSelector((state: RootState) => state.auth);
+    //const { token: reduxToken, status, count } = useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
         const fetchAdditionalData = async () => {
             if (vacation.id === undefined || isNaN(vacation.id)) return;
-            const token = getToken(reduxToken, count !== null ? count : -1); // Replace 0 with whatever default makes sense
+            //const token = getToken(reduxToken, count !== null ? count : -1); // Replace 0 with whatever default makes sense
 
             try {
                 // Fetch vacation followers and images
@@ -86,7 +87,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => 
   
     const handleFollowClick = async () => {
         // const token = getToken(); // Retrieve the token
-        const token = getToken(reduxToken, count !== null ? count : -1); // Call getToken to retrieve the token
+        //const token = getToken(reduxToken, count !== null ? count : -1); // Call getToken to retrieve the token
 
         
         if (!user?.id || !vacation.id || !token) {
@@ -108,7 +109,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => 
             onChangeFn(user?.id, 'follow');
 
             // Re-fetch vacations to get the correct total followers
-            const vacationFollowers = await getFollowersForVacation(vacation.id);
+            const vacationFollowers = await getFollowersForVacation(vacation.id,token);
             setTotalFollowers(vacationFollowers.length); // Update total followers count
 
             // Update the following status based on the new list of followers
@@ -135,7 +136,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => 
         }
 
         if (window.confirm('Are you sure you want to delete this vacation?')) {
-            const token = getToken(reduxToken, count !== null ? count : -1); // Retrieve the token
+            //const token = getToken(reduxToken, count !== null ? count : -1); // Retrieve the token
             
             if (!token) {
                 setError('Authentication token is missing.');

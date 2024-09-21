@@ -18,9 +18,9 @@ export const fetchFollowers = createAsyncThunk(
 // Fetch vacations for a specific user
 export const fetchVacationsPerUser = createAsyncThunk(
     'vacations/fetchVacationsPerUser',
-    async (userId: number, thunkAPI) => {
+    async ({ userId, token }: { userId: number; token?: string }, thunkAPI) => {
         try {
-            const vacations = await getVacationsPerUser(userId);
+            const vacations = await getVacationsPerUser(userId, token);
             return vacations as VacationModel[]; // Ensure this is typed correctly
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to fetch vacations');

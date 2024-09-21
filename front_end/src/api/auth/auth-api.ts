@@ -75,11 +75,14 @@ export const register = async (user: UserModel): Promise<{ user: UserModel, toke
 };
 
 
+interface CountModel {
+    count: number;
+  }
+
 // Fetch all vacations or a specific vacation by ID
-export const getApiCalls = async (): Promise<number> => {
-    console.log('HERE')
+export const getApiCalls = async (): Promise<CountModel> => {
     try {
-        const url = `${siteConfig.BASE_URL}apiCalls`;
+        const url = `${siteConfig.BASE_URL}apiCall`;
         console.log(url)
         const response = await axios.get(url);
         console.log('got apiCalls successful', response.data);

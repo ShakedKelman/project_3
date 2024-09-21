@@ -8,8 +8,10 @@ import { RootState } from '../../store/store';
 
 
 // Fetch all vacations or a specific vacation by ID
-export const getVacations = async (id?: number,token?:string): Promise<VacationModel[]> => {
+export const getVacations = async (id?: number, token?:string): Promise<VacationModel[]> => {
     try {
+        if (token === undefined || token === '' || token === null) throw new Error('no token provided');
+
         const url = id ? `${siteConfig.BASE_URL}vacations/${id}?token=${token}` : `${siteConfig.BASE_URL}vacations?token=${token}`;
         const response = await axios.get(url);
         console.log('got vacations successfully', response.data);

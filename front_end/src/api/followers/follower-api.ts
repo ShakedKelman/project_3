@@ -7,6 +7,7 @@ console.log("Token:", token);
 // Fetch followers for a specific vacation
 // Fetch followers for a specific vacation
 export const getFollowersForVacation = async (vacationId: number, token?:string): Promise<{ id: number }[]> => {
+    if (token === undefined || token === '' || token === null) throw new Error('no token provided');
 
     try {
         const response = await axios.get(`${siteConfig.BASE_URL}vacations/${vacationId}/followers?token=${token}`, {
@@ -29,7 +30,9 @@ export const getFollowersForVacation = async (vacationId: number, token?:string)
 
 
 // Fetch vactions per user
-export const getVacationsPerUser = async (userId: number): Promise<{ id: number }[]> => {
+export const getVacationsPerUser = async (userId: number,token?:string): Promise<{ id: number }[]> => {
+    if (token === undefined || token === '' || token === null) throw new Error('no token provided');
+
     try {
         const response = await axios.get(`${siteConfig.BASE_URL}followers/${userId}/vacations?token=${token}`);
          // Log the number of followers received
@@ -44,6 +47,8 @@ export const getVacationsPerUser = async (userId: number): Promise<{ id: number 
 
 // Add a follower to a vacation
 export const addFollower = async (userId: number, vacationId: number, token: string): Promise<void> => {
+    if (token === undefined || token === '' || token === null) throw new Error('no token provided');
+
     try {
         await axios.post(`${siteConfig.BASE_URL}vacations/${vacationId}/followers`, { userId }, {
             headers: {
@@ -60,6 +65,8 @@ export const addFollower = async (userId: number, vacationId: number, token: str
 // Remove a follower from a vacation
 // Remove a follower from a vacation
 export const removeFollower = async (userId: number, vacationId: number, token: string): Promise<void> => {
+    if (token === undefined || token === '' || token === null) throw new Error('no token provided');
+
     try {
         await axios.delete(`${siteConfig.BASE_URL}vacations/${vacationId}/followers`, {
             headers: {
