@@ -6,7 +6,8 @@ console.log("Token:", token);
 
 // Fetch followers for a specific vacation
 // Fetch followers for a specific vacation
-export const getFollowersForVacation = async (vacationId: number): Promise<{ id: number }[]> => {
+export const getFollowersForVacation = async (vacationId: number, token?:string): Promise<{ id: number }[]> => {
+
     try {
         const response = await axios.get(`${siteConfig.BASE_URL}vacations/${vacationId}/followers?token=${token}`, {
             headers: {

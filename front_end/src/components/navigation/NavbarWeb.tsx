@@ -89,7 +89,7 @@ const NavbarWeb: React.FC = () => {
                 {isLoggedIn && user && (
                     <Nav className="ms-auto">
                         <Nav.Item>
-                            <span className="navbar-text">Hello, {user.firstName}!</span>
+                        <span className="navbar-text">Hello, {`${user.firstName} ${user.lastName}`}!</span>
                         </Nav.Item>
                     </Nav>
                 )}

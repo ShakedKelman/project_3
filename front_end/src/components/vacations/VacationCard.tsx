@@ -19,7 +19,7 @@ import { addVacationFollower, removeVacationFollower } from '../../api/followers
 import { getFollowersForVacation } from '../../api/followers/follower-api';
 import { getImageForVacation } from '../../api/images/images-api';
 import { selectFollowers } from '../../store/slices/followersSlice';
-import { AppDispatch } from '../../store/store';
+import { AppDispatch, RootState } from '../../store/store';
 
 const formatDate = (isoDate: string): string => {
     const date = new Date(isoDate);
@@ -29,10 +29,15 @@ const formatDate = (isoDate: string): string => {
     return `${day}/${month}/${year}`;
 };
 
-    const getToken = (): string | null => {
-        return localStorage.getItem('token');
+    // const getToken = (): string | null => {
+    //     return localStorage.getItem('token');
+    // };
+    const getToken = (reduxToken: string | null, count: number): string | undefined => {
+        if (count === -1 && reduxToken) {
+            return reduxToken;
+        }
+        return localStorage.getItem('token') || undefined;
     };
-
 
 interface VacationCardProps {
     vacation: VacationModel;
@@ -48,13 +53,16 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => 
     const [error, setError] = useState<string | null>(null);
     const dispatch = useDispatch<AppDispatch>();
     const [totalFollowers, setTotalFollowers] = useState<number>(0); // Added state for total followers
+    const { token: reduxToken, status, count } = useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
         const fetchAdditionalData = async () => {
             if (vacation.id === undefined || isNaN(vacation.id)) return;
+            const token = getToken(reduxToken, count !== null ? count : -1); // Replace 0 with whatever default makes sense
+
             try {
                 // Fetch vacation followers and images
-                const vacationFollowers = await getFollowersForVacation(vacation.id);
+                const vacationFollowers = await getFollowersForVacation(vacation.id,token);
                 setTotalFollowers(vacationFollowers.length);
 
                 const vacationImages = await getImageForVacation(vacation.id);
@@ -77,8 +85,10 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => 
     
   
     const handleFollowClick = async () => {
-        const token = getToken(); // Retrieve the token
-    
+        // const token = getToken(); // Retrieve the token
+        const token = getToken(reduxToken, count !== null ? count : -1); // Call getToken to retrieve the token
+
+        
         if (!user?.id || !vacation.id || !token) {
             setError('User or Vacation ID or token is missing');
             return;
@@ -125,7 +135,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => 
         }
 
         if (window.confirm('Are you sure you want to delete this vacation?')) {
-            const token = getToken(); // Retrieve the token
+            const token = getToken(reduxToken, count !== null ? count : -1); // Retrieve the token
             
             if (!token) {
                 setError('Authentication token is missing.');

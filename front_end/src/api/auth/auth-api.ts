@@ -73,3 +73,22 @@ export const register = async (user: UserModel): Promise<{ user: UserModel, toke
     throw error;
   }
 };
+
+
+// Fetch all vacations or a specific vacation by ID
+export const getApiCalls = async (): Promise<number> => {
+    console.log('HERE')
+    try {
+        const url = `${siteConfig.BASE_URL}apiCalls`;
+        console.log(url)
+        const response = await axios.get(url);
+        console.log('got apiCalls successful', response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching apiCalls:", error);
+        throw error;
+    }
+};
+
+
+

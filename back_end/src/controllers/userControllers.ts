@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { StatusCode } from "../models/statusEnum";
-import { register, login, getAllUsers } from "../services/userService";
+import { register, login, getAllUsers, getApiCount } from "../services/userService";
 import UserModel from "../models/UsersModel";
 import { appConfig } from "../utils/appConfig";
+import { updateApiCount } from "../middlewares/apiCount";
 
 export const userRoutes = Router();
 
@@ -47,9 +48,7 @@ userRoutes.post(appConfig.routePrefix + "/register",
                 }
     
                 console.log(`Successful login for email: ${email}`); // Log successful login
-                
-                console.log(token,"tokennnn");
-                
+                                
                 res.status(StatusCode.Ok).json({ token });
             } catch (error) {
                 console.error('Error in login route:', error);
@@ -70,3 +69,14 @@ userRoutes.post(appConfig.routePrefix + "/register",
             next(error);
         }
     })
+
+
+    userRoutes.get(appConfig.routePrefix + "/apiCall", 
+    async (req: Request, res: Response, next: NextFunction)=>{
+          try {
+              const count = await getApiCount();
+              res.status(StatusCode.Ok).json({ count });
+          } catch (error) {
+              next(error);
+          }
+      })

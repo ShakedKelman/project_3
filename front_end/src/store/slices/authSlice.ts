@@ -5,7 +5,8 @@ import { RootState } from '../store';
 interface AuthState {
   user: UserModel | null;
   token: string | null;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  status: 'idle' | 'loading' | 'succeeded' | 'failed' | 'requesting';
+  count: number | null;
   error: string | null;
 }
 
@@ -13,6 +14,7 @@ const initialState: AuthState = {
   user: null,
   token: localStorage.getItem('token') || null,
   status: 'idle',
+  count: -1,
   error: null,
 };
 
@@ -58,6 +60,19 @@ const authSlice = createSlice({
       state.status = 'failed';
       state.token = null;
     },
+    apicallsRequest(state) {
+        state.status = 'requesting';
+        state.error = null;
+    },
+    apicallsSuccess(state, action: PayloadAction<{ count: number }>) {
+        state.status = 'succeeded';
+        state.count = action.payload.count;
+        state.error = null;
+    },
+    apicallsFailure(state, action: PayloadAction<{ message: string }>) {
+        state.status = 'failed';
+        state.error = action.payload.message;
+    },
   },
 });
 
@@ -71,6 +86,9 @@ export const {
   registerRequest,
   registerSuccess,
   registerFailure,
+  apicallsRequest,
+  apicallsSuccess,
+  apicallsFailure
 } = authSlice.actions;
 
 export default authSlice.reducer;

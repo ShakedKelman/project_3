@@ -32,10 +32,7 @@ describe("User Login", () => {
             });
     });
 
-    afterAll(async () => {
-        console.log("afterAll: Closing DB");
-        await closeDB();
-    });
+
 //Should login a registered user
     it("Should login a registered user", async () => {
         const response = await request(app)
@@ -99,4 +96,8 @@ describe("User Login", () => {
         expect(Array.isArray(response.body)).toBe(true);        
     })
 
+});
+afterAll(async () => {
+    console.log("afterAll: Closing DB");
+    await closeDB();
 });

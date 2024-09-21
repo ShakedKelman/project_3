@@ -26,7 +26,10 @@ export const fetchVacationsPerUser = createAsyncThunk(
             return thunkAPI.rejectWithValue('Failed to fetch vacations');
         }
     }
+
 );
+
+
 
 
 

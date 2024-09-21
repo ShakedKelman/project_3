@@ -1,11 +1,14 @@
 import axios from 'axios';
 import { VacationModel } from '../../model/VacationModel';
 import { siteConfig } from '../../utils/SiteConfig';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
-let token= localStorage.getItem('token') || null;
+
+
 
 // Fetch all vacations or a specific vacation by ID
-export const getVacations = async (id?: number): Promise<VacationModel[]> => {
+export const getVacations = async (id?: number,token?:string): Promise<VacationModel[]> => {
     try {
         const url = id ? `${siteConfig.BASE_URL}vacations/${id}?token=${token}` : `${siteConfig.BASE_URL}vacations?token=${token}`;
         const response = await axios.get(url);
@@ -21,6 +24,8 @@ export const getVacations = async (id?: number): Promise<VacationModel[]> => {
   
 // function to add vacation
 export const apiAddVacation = async (formData: FormData): Promise<VacationModel> => {
+let token = localStorage.getItem('token') || null;
+
     try {
         const response = await axios.post(`${siteConfig.BASE_URL}vacations`, formData, {
             headers: {
@@ -39,6 +44,7 @@ export const apiAddVacation = async (formData: FormData): Promise<VacationModel>
 
 // Edit an existing vacation and replace the old image with a new one
 export const editVacation = async (id: number, formData: FormData, token: string): Promise<void> => {
+
     try {
         const entries = Array.from(formData.entries());
         console.log(entries); // Should log array of key-value pairs           
@@ -66,6 +72,7 @@ export const editVacation = async (id: number, formData: FormData, token: string
 
 // api/vactions-api.ts
 export const uploadVacationImage = async (vacationId: number, image: File, token: string): Promise<void> => {
+    
     const formData = new FormData();
     formData.append('image', image);
 

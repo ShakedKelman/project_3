@@ -150,3 +150,12 @@ export async function getAllUsers() {
     }));
     return users;
 }
+
+
+
+export async function getApiCount() {
+    let q = `SELECT * FROM counts`;
+    const res = await runQuery(q);
+    const { apicall: currentI } = res[0]
+    return currentI;
+}

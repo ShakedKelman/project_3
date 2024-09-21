@@ -12,6 +12,7 @@ import { followerRoutes } from "./controllers/followerController";
 import { imagesRoute } from "./controllers/imagesController";
 import { userRoutes } from "./controllers/userControllers";
 import { verifyToeknMW } from "./middlewares/authMiddlewares";
+import { updateApiCount } from "./middlewares/apiCount";
 
 
 // create server
@@ -31,6 +32,8 @@ server.use(fileUpload({
 
 // log
 server.use(logMW);
+server.use(updateApiCount);
+
 
 // authorization middleware
 //server.use(verifyToeknMW)

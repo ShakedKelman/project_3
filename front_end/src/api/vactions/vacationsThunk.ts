@@ -3,6 +3,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { VacationModel } from '../../model/VacationModel';
 import { getVacations } from './vactions-api';
 import { getPaginatedVacations } from './paginated-vacations-api';
+import { RootState } from '../../store/store';
 
 
 export const fetchVacations = createAsyncThunk(
@@ -20,8 +21,14 @@ export const fetchVacations = createAsyncThunk(
 export const fetchPaginatedVacations = createAsyncThunk(
     'vacation/fetchPaginatedVacations',
     async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
+        const state = thunkAPI.getState() as RootState;
+        const { token: reduxToken, count } = state.auth;
+
+        // Use the Redux token if count is -1
+        const currentToken: string | undefined = count === -1 ? reduxToken || undefined : undefined;
+
         try {
-            const vacations = await getPaginatedVacations(page, limit);
+            const vacations = await getPaginatedVacations(page, limit ,currentToken);
             return vacations;
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to fetch vacations');

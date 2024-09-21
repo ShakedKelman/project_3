@@ -4,7 +4,7 @@ import { siteConfig } from '../../utils/SiteConfig';
 
 let token= localStorage.getItem('token') || null;
 
-export const getPaginatedVacations = async (page: number, limit: number = 10): Promise<VacationModel[]> => {
+export const getPaginatedVacations = async (page: number, limit: number = 10,token?:string): Promise<VacationModel[]> => {
     try {
         const url = `${siteConfig.BASE_URL}vacations-pg?page=${page}&limit=${limit}&token=${token}`;
         const response = await axios.get(url);

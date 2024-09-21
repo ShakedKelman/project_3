@@ -13,9 +13,12 @@ import { getVacationsPerUser } from '../../api/followers/follower-api';
 import { fetchVacationsPerUser } from '../../api/followers/followersThunk';
 import { deleteVacationReducer } from '../../store/slices/vacationslice';
 
+
+let token = localStorage.getItem('token') || null;
+
 const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const { vacations, status, error } = useSelector((state: RootState) => state.vacation);
+    const { vacations, error } = useSelector((state: RootState) => state.vacation);
     const { user } = useSelector((state: RootState) => state.auth);
     const [filter, setFilter] = useState<string>('all');
     const [page, setPage] = useState<number>(1);
@@ -23,9 +26,25 @@ const VacationList: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [allVacations, setAllVacations] = useState<VacationModel[]>([]);
     const followedVacations = useSelector(selectVacations);
-    const deletedVacations : any[] = [];
+    const deletedVacations: any[] = [];
+    const { token: reduxToken, status, count } = useSelector((state: RootState) => state.auth);
 
     const isAdmin = user?.isAdmin;
+    // Example using Redux (adjust based on your state management)
+
+    // Handling token and state logic
+    if (status === 'succeeded' && count === -1) {
+        // Token from Redux state is valid, use it
+        console.log("Token from Redux:", reduxToken);
+
+        // Update token in localStorage if necessary
+        if (reduxToken && reduxToken !== token) {
+            localStorage.setItem('token', reduxToken);
+            token = reduxToken; // Update the token reference
+        }
+    } else {
+        console.error("Unable to fetch the token or invalid state");
+    }
 
     useEffect(() => {
         if (loading) return; // Prevent fetching if loading is true
@@ -33,8 +52,13 @@ const VacationList: React.FC = () => {
         const fetchData = async () => {
             setLoading(true);
             try {
+                // const currentToken = status === 'succeeded' && count === -1 ? reduxToken : token;
+                const currentToken = reduxToken || localStorage.getItem('token') || undefined;
+
                 // Fetch all vacations
-                const vacations = await getVacations();
+                const vacations = await getVacations(undefined, currentToken);
+                console.log('Current token:', currentToken); // Check what token is being used
+
                 setAllVacations(vacations);
 
                 // Update pagination count
@@ -44,7 +68,7 @@ const VacationList: React.FC = () => {
 
                 // Fetch paginated vacations for the first page
                 dispatch(fetchPaginatedVacations({ page: 1, limit: 10 }));
-            
+
                 // Check if user.id is defined before dispatching
                 if (user?.id !== undefined && followedVacations.length === 0) {
                     dispatch(fetchVacationsPerUser(user.id));
@@ -98,7 +122,7 @@ const VacationList: React.FC = () => {
                 break;
         }
     };
-    
+
     const applyFilter = (vacations: VacationModel[], filter: string) => {
         const now = new Date();
         return vacations.filter((vacation: VacationModel) => {
@@ -106,7 +130,7 @@ const VacationList: React.FC = () => {
             const endDate = new Date(vacation.endDate);
             let isFollowing = false; // Replace with actual following check logic
 
-            if ( followedVacations.map( vac => vac.id ).includes( vacation.id )) isFollowing = true;
+            if (followedVacations.map(vac => vac.id).includes(vacation.id)) isFollowing = true;
 
             switch (filter) {
                 case 'following':
@@ -149,7 +173,6 @@ const VacationList: React.FC = () => {
     const startIndex = (page - 1) * 10;
     const paginatedVacations = sortedVacations.slice(startIndex, startIndex + 10);
 
-    
     return (
         <div className="container">
             {!isAdmin && (
@@ -197,12 +220,12 @@ const VacationList: React.FC = () => {
                 
             </Row> */}
             <Row>
-    {paginatedVacations.map((vacation: VacationModel) => (
-        <Col key={vacation.id || "placeholder"} md={4} className="mb-4">
-            <VacationCard vacation={vacation} onChangeFn={callback} />
-        </Col>
-    ))}
-</Row>
+                {paginatedVacations.map((vacation: VacationModel) => (
+                    <Col key={vacation.id || "placeholder"} md={4} className="mb-4">
+                        <VacationCard vacation={vacation} onChangeFn={callback} />
+                    </Col>
+                ))}
+            </Row>
 
             <Stack spacing={2} className="mt-4">
                 <Pagination

@@ -1,5 +1,5 @@
 import { encryptPassword } from "../utils/authUtils";
-import runQuery from "./dal";
+import runQuery, { closeDB } from "./dal";
 const fs = require('fs');
 const path = require('path');
 
@@ -32,7 +32,9 @@ const createTables = async () => {
             endDate DATE NOT NULL,
             price DECIMAL(10, 2) NOT NULL,
             imageFileName VARCHAR(255) NULL,
-        image_path VARCHAR(255) NULL
+        image_path VARCHAR(255) NULL,
+        CONSTRAINT image_path_uuid UNIQUE (image_path)
+
 
         );
     `;
@@ -47,6 +49,15 @@ const createTables = async () => {
             FOREIGN KEY (userId) REFERENCES users(id),
             FOREIGN KEY (vacationId) REFERENCES vacations(id),
             PRIMARY KEY (userId, vacationId)
+        );
+    `;
+    await runQuery(Q);
+    // create the count table for counting the number of api calls 
+    Q = `
+    CREATE TABLE IF NOT EXISTS counts (
+        apicall INT NOT NULL DEFAULT 0,
+        CONSTRAINT noZeroTwice UNIQUE (apicall)
+
         );
     `;
     await runQuery(Q);
@@ -116,6 +127,17 @@ const insertData = async () => {
 
     await runQuery(Q);
 
+    // Insert number 0 count into counts
+
+    Q = `
+    INSERT IGNORE INTO counts (apicall)
+    VALUES 
+        (-1)
+        
+    `;
+
+    await runQuery(Q);
+
 }
 
 
@@ -160,7 +182,7 @@ const copyImages = async () => {
                 }
             });
         }
-    });
+        return 0   });
 };
 
 deleteFiles(targetDir);
@@ -182,7 +204,7 @@ deleteFiles(targetDir);
                 console.error(`Error copying file ${sourcePath} to ${targetPath}:`, err);
             } else {
                 console.log(`Copied ${sourcePath} to ${targetPath}`);
-            }
+            }return 0
         });
     }
 };
@@ -195,7 +217,7 @@ const runSetup = async () => {
     await createTables();
     await insertData();
     await copyImages();
-
+await closeDB();
     console.log("Done creating tables, inserting data, and copying images");
 };
 
