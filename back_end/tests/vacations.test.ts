@@ -131,32 +131,7 @@ describe("vacation Controllers", () => {
     //     return buffer;
     // }
   
-    // it("Should add a vacation successfully", async () => {
-    //     let response;
-    //     try{
-    //         const formData = new FormData();
-    //         formData.append('image', toBuffer(fs.createReadStream( path.resolve(__dirname, "vacation.avif")) ));
 
-    //         response = await request(app)
-    //         .post(appConfig.routePrefix + "/vacations")
-    //         .set("Authorization", `Bearer ${VALID_TOKEN}`)
-    //         .field("destination", "Hawaii-test") // Using field() to send form-data text
-    //         .field("description", "A relaxing vacation in Hawaii")
-    //         .field("startDate", "2024-12-01")
-    //         .field("endDate", "2024-12-15")
-    //         .field("price", "2000")
-    //         .attach("image", fs.createReadStream( path.resolve(__dirname, "vacation.avif") )); // Attach an image file
-    
-    //         console.log('response.body', response.body)
-    //     } catch (error) {
-    //         console.log('response.status', response.status)
-    //         console.log(error.message)
-    //     }
-    //   expect(response.status).toBe(StatusCode.Created);
-    //   expect(response.body).toHaveProperty("vacationId");
-    //   expect(response.body.message).toBe("Vacation added successfully");
-      
-    // });
   
     it("Should return a 400 error if no image is provided", async () => {
       const response = await request(app)
