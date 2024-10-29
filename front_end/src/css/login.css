@@ -1,12 +1,11 @@
 .login-button {
-    background-color: #85f5e9; /* Turquoise color */
-    color: white; /* Text color */
+    background-color: #A7D8FF; /* Updated to match navbar */
+    color: #4B95D1; /* Darker shade for contrast */
     border: 1px solid transparent; /* No border */
 }
-
 .login-button:hover,
 .login-button:focus {
-    background-color: #007B7F; /* Dark turquoise on hover */
-    color: white; /* Maintain white text */
-    border: 1px solid #007B7F; /* Optional: Dark turquoise border on hover */
+    background-color: #4B95D1; /* Darker shade of #A7D8FF */
+    color: white;
+    border: 1px solid #4B95D1;
 }

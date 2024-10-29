@@ -65,10 +65,10 @@
     margin-right: 0.5rem;
 }
 .vacation-card-price {
-    background-color: #91faef; /* Turquoise color */
+    background-color: #A7D8FF; /* Updated to match navbar */
+    color: #01203a; 
     padding: 5px; /* Add some padding for aesthetics */
     border-radius: 0.25rem; /* Optional: Make the corners rounded */
-    color: #212529; /* Dark text color */
     text-align: center;
 
 }

@@ -9,6 +9,8 @@ import { Form, Button, Alert, Spinner, Image } from 'react-bootstrap';
 import { siteConfig } from '../../utils/SiteConfig';
 import { getImageForVacation } from '../../api/images/images-api';
 import axios from 'axios';
+import '../../css/editForm.css';
+
 
 interface VacationsProps {
    token?: string;
@@ -151,6 +153,8 @@ const EditVacationForm: React.FC<VacationsProps> = (props) => {
     }
 
     return (
+        <div className="edit-vacation-form">
+        <h2 className="form-title">Edit Vacation</h2>
         <Form onSubmit={handleSubmit}>
             {error && <Alert variant="danger">{error}</Alert>}
             {successMessage && <Alert variant="success">{successMessage}</Alert>}
@@ -211,14 +215,16 @@ const EditVacationForm: React.FC<VacationsProps> = (props) => {
                     onChange={handleImageChange}
                 />
             </Form.Group>
-            <Button variant="primary" type="submit">
+            <Button variant="outline-primary" type="submit" style={{ margin: '10px' }}>
                 Update Vacation
             </Button>
-            <Button variant="secondary" onClick={handleCancel}>
+            <Button variant="outline-primary" onClick={handleCancel}>
                 Cancel
             </Button>
         </Form>
+    </div>
     );
+
 };
 
 export default EditVacationForm;
