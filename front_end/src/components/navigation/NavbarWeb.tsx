@@ -19,7 +19,7 @@ const NavbarWeb: React.FC = () => {
             if (vacations.length === 0) dispatch(fetchVacations({ token: user.token })); // Fetch all vacations for dropdown
         }
 
-    }, [user, dispatch]);
+    }, [user, dispatch, vacations.length]);
 
     const handleLogout = () => {
         if (window.confirm('Are you sure you want to logout?')) {
@@ -32,12 +32,12 @@ const NavbarWeb: React.FC = () => {
         navigate(`/edit-vacation/${vacationId}`);
     };
 
-    const isLoggedIn = status === 'succeeded';
+    const isLoggedIn = status === 'succeeded' && user !== null;
     // const isAdmin = user?.isAdmin;
     const isAdmin = Boolean(user?.isAdmin); // Converts 0 to false, 1 to true
 
 
-    if (user === null || user.email === undefined) return null;
+    if (!isLoggedIn || !user) return null;
  
     return (
         <Navbar className="navbar-lilac" variant="light">

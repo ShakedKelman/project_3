@@ -11,42 +11,67 @@ interface LoginUserArgs {
   password: string;
 }
 
-export const loginUser = createAsyncThunk<UserModel, LoginUserArgs>(
-  'auth/loginUser',
-  async ({ email, password }: LoginUserArgs, { dispatch }) => {
-    try {
-      const { user, token } = await login(email, password);
-      dispatch(loginSuccess({ user, token }));
-      return user;
-    } catch (error: any) {
-      console.error('Login error in thunk:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Login failed';
-      dispatch(loginFailure(errorMessage));
-      throw new Error(errorMessage);
-    }
-  }
-);
-
-export const registerUser = createAsyncThunk<UserModel, UserModel>(
-  'auth/registerUser',
-  async (user: UserModel, { dispatch }) => {
-    try {
-      const { user: registeredUser, token } = await register(user);
-
-      if (!registeredUser.id) {
-        throw new Error('Registered user is missing ID');
+// export const loginUser = createAsyncThunk<UserModel, LoginUserArgs>(
+//   'auth/loginUser',
+//   async ({ email, password }: LoginUserArgs, { dispatch }) => {
+//     try {
+//       const { user, token } = await login(email, password);
+//       dispatch(loginSuccess({ user, token }));
+//       return user;
+//     } catch (error: any) {
+//       console.error('Login error in thunk:', error);
+//       const errorMessage = error.response?.data?.message || error.message || 'Login failed';
+//       dispatch(loginFailure(errorMessage));
+//       throw new Error(errorMessage);
+//     }
+//   }
+// );
+export const loginUser = createAsyncThunk<void, LoginUserArgs>(
+    'auth/loginUser',
+    async ({ email, password }: LoginUserArgs, { dispatch }) => {
+      try {
+        const token = await login(email, password);
+        dispatch(loginSuccess({ token }));
+      } catch (error: any) {
+        console.error('Login error in thunk:', error);
+        const errorMessage = error.response?.data?.message || error.message || 'Login failed';
+        dispatch(loginFailure(errorMessage));
+        throw new Error(errorMessage);
       }
-
-      dispatch(registerSuccess({ user: registeredUser, token }));
-      return registeredUser;
-    } catch (error: any) {
-      console.error('Registration error in thunk:', error);
-      dispatch(registerFailure(error.message));
-      throw error;
     }
-  }
-);
+  );
+// export const registerUser = createAsyncThunk<UserModel, UserModel>(
+//   'auth/registerUser',
+//   async (user: UserModel, { dispatch }) => {
+//     try {
+//       const { user: registeredUser, token } = await register(user);
 
+//       if (!registeredUser.id) {
+//         throw new Error('Registered user is missing ID');
+//       }
+
+//       dispatch(registerSuccess({ user: registeredUser, token }));
+//       return registeredUser;
+//     } catch (error: any) {
+//       console.error('Registration error in thunk:', error);
+//       dispatch(registerFailure(error.message));
+//       throw error;
+//     }
+//   }
+// );
+export const registerUser = createAsyncThunk<void, UserModel>(
+    'auth/registerUser',
+    async (user: UserModel, { dispatch }) => {
+      try {
+        const token = await register(user);
+        dispatch(registerSuccess({ token }));
+      } catch (error: any) {
+        console.error('Registration error in thunk:', error);
+        dispatch(registerFailure(error.message));
+        throw error;
+      }
+    }
+  );
 export const logoutUser = () => (dispatch: AppDispatch) => {
     console.log('LOGOUT USER')
     dispatch(clearVacationsState());

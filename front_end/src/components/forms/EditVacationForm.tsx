@@ -12,12 +12,11 @@ import axios from 'axios';
 import '../../css/editForm.css';
 
 
-interface VacationsProps {
-   token?: string;
-}
 
-const EditVacationForm: React.FC<VacationsProps> = (props) => {
+
+const EditVacationForm: React.FC = () => {
     const dispatch = useDispatch();
+    const { token } = useSelector((state: RootState) => state.auth);
     const { id } = useParams<{ id: string }>();
     const [vacation, setVacation] = useState<VacationModel | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -28,10 +27,11 @@ const EditVacationForm: React.FC<VacationsProps> = (props) => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [images, setImages] = useState<string[]>([]);
 
-    const { token } = props;
 
 
     useEffect(() => {
+        if (!token) return; // Add early return if no token
+
         const fetchVacationDetails = async () => {
             if (id) {
                 try {

@@ -33,14 +33,15 @@ const formatDate = (isoDate: string): string => {
 interface VacationCardProps {
     vacation: VacationModel;
     onChangeFn: Function;
-    token: string;
+   // token: string;
 }
 
-const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn, token }) => {
+const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => {
+    const { user, token } = useSelector((state: RootState) => state.auth);
     const [images, setImages] = useState<string[]>([]);
     const [isFollowing, setIsFollowing] = useState<boolean>(false);
     const navigate = useNavigate();
-    const user = useSelector(selectUser);
+    // const user = useSelector(selectUser);
     const followers = useSelector(selectFollowers);
     const [error, setError] = useState<string | null>(null);
     const dispatch = useDispatch<AppDispatch>();
@@ -50,6 +51,8 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn, token
     useEffect(() => {
         const fetchAdditionalData = async () => {
             if (vacation.id === undefined || isNaN(vacation.id)) return;
+            if (!token) return; // Add early return if no token
+
             //const token = getToken(reduxToken, count !== null ? count : -1); // Replace 0 with whatever default makes sense
 
             try {

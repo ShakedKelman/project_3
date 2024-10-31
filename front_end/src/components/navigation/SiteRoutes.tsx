@@ -11,7 +11,8 @@ import VacationList from '../vacations/VacationsList';
 import Report from '../vacationReport';
 
 const SiteRoutes: React.FC = () => {
-  const { status, user, count: apiCallCount } = useSelector((state: RootState) => state.auth);
+//   const { status, user, count: apiCallCount } = useSelector((state: RootState) => state.auth);
+  const { status, user } = useSelector((state: RootState) => state.auth);
   const isAuthenticated = status === 'succeeded' && user !== null;// && apiCallCount && apiCallCount > 0;
   const isAdmin = user?.isAdmin;
 
@@ -40,17 +41,17 @@ const SiteRoutes: React.FC = () => {
       {/* Protected Routes */}
       <Route
   path="/report"
-  element={isAuthenticated && isAdmin ? <Report token={user.token} /> : <Navigate to="/vacations" />}
+  element={isAuthenticated && isAdmin ? <Report/> : <Navigate to="/vacations" />}
 />
 
      
       <Route
         path="/add-vacation"
-        element={isAuthenticated && isAdmin ? <AddVacationForm token={user.token}/> : <Navigate to="/vacations" />} // Only admins can access
+        element={isAuthenticated && isAdmin ? <AddVacationForm /> : <Navigate to="/vacations" />} // Only admins can access
       />
       <Route
         path="/edit-vacation/:id"
-        element={isAuthenticated && isAdmin ? <EditVacationForm token={user.token} /> : <Navigate to="/vacations" />}
+        element={isAuthenticated && isAdmin ? <EditVacationForm/> : <Navigate to="/vacations" />}
       />
 
       

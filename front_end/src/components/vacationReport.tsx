@@ -30,21 +30,22 @@ ChartJS.register(
     BarElement
 );
 
-interface VacationsProps {
-    token?: string;
- }
+// interface VacationsProps {
+//     token?: string;
+//  }
 
 
-const Report: React.FC<VacationsProps> = (props) => {
-    const { user } = useSelector((state: RootState) => state.auth);
+const Report: React.FC = () => {
+    const { token, user } = useSelector((state: RootState) => state.auth);
     const vacations = useSelector(selectVacations);
     const [data, setData] = useState<{ destination: string; followers: number }[]>([]);
     const [allVacations, setAllVacations] = useState<VacationModel[]>([]);
 
     const isAdmin = user?.isAdmin;
-    const { token } = props;
 
     useEffect(() => {
+        if (!token) return; // Early return if no token
+
         const fetchData = async () => {
             try {
                 const vacations = await getVacations(undefined, token);
@@ -71,8 +72,8 @@ const Report: React.FC<VacationsProps> = (props) => {
         };
 
         fetchData();
-    }, [vacations]);
-
+    }, [vacations, token]); // Add token to dependencies
+    
     const chartData = {
         labels: data.map(item => item.destination),
         datasets: [

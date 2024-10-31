@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import { VacationModel } from '../../model/VacationModel';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Alert, InputGroup } from 'react-bootstrap';
-import { useAppDispatch } from '../../store/store';
+import { RootState, useAppDispatch } from '../../store/store';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { apiAddVacation } from '../../api/vactions/vactions-api';
 import { addVacation } from '../../store/slices/vacationslice';
 import { fetchPaginatedVacations, fetchVacations } from '../../api/vactions/vacationsThunk';
 import '../../css/addVacationForm.css';  // Add this import at the top
+import { useSelector } from 'react-redux';
 
-interface VacationsProps {
-    token?: string;
-}
 
-const AddVacationForm: React.FC<VacationsProps> = (props) => {
+
+const AddVacationForm: React.FC = () => {
+    const { token } = useSelector((state: RootState) => state.auth);
     const [newVacation, setNewVacation] = useState<VacationModel>(new VacationModel({}));
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -21,7 +21,6 @@ const AddVacationForm: React.FC<VacationsProps> = (props) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const { token } = props;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -49,6 +48,10 @@ const AddVacationForm: React.FC<VacationsProps> = (props) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!token) {
+            setError("Authentication required");
+            return;
+        }
         if (isDateInThePast(newVacation.startDate) || isDateInThePast(newVacation.endDate)) {
             setError("Start Date and End Date must be in the future.");
             return;
@@ -72,8 +75,12 @@ const AddVacationForm: React.FC<VacationsProps> = (props) => {
 
             const addedVacation = await apiAddVacation(formData);
             dispatch(addVacation(addedVacation)); // Dispatch action to add vacation to Redux store
-            dispatch(fetchVacations({ token })); // Fetch all vacations to update the dropdown
-            dispatch(fetchPaginatedVacations({ page: 1, limit: 10, token })); // Fetch paginated vacations
+            dispatch(fetchVacations({ token: token || undefined }));
+            dispatch(fetchPaginatedVacations({
+                page: 1,
+                limit: 10,
+                token: token || undefined
+            }));
             setSuccess("Vacation added successfully");
             navigate('/vacations');
         } catch (error: any) {
