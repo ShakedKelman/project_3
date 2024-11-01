@@ -160,15 +160,37 @@ const VacationList: React.FC = () => {
 
 
 
+    // const applyFilter = (vacations: VacationModel[], filter: string) => {
+    //     const now = new Date();
+    //     return vacations.filter((vacation: VacationModel) => {
+    //         const startDate = new Date(vacation.startDate);
+    //         const endDate = new Date(vacation.endDate);
+
+    //         switch (filter) {
+    //             case 'following':
+    //                 return vacation.isFollowing;
+    //             case 'notStarted':
+    //                 return startDate > now;
+    //             case 'happeningNow':
+    //                 return startDate <= now && endDate >= now;
+    //             default:
+    //                 return true;
+    //         }
+    //     });
+    // };
     const applyFilter = (vacations: VacationModel[], filter: string) => {
         const now = new Date();
         return vacations.filter((vacation: VacationModel) => {
             const startDate = new Date(vacation.startDate);
             const endDate = new Date(vacation.endDate);
-
+    
+            // Return all vacations if filter is 'all'
+            if (filter === 'all') return true;
+    
+            // For other filters, check the specific conditions
             switch (filter) {
                 case 'following':
-                    return vacation.isFollowing;
+                    return vacation.isFollowing === true;
                 case 'notStarted':
                     return startDate > now;
                 case 'happeningNow':
