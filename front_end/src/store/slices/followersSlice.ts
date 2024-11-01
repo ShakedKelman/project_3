@@ -10,7 +10,7 @@ interface Follower {
 interface FollowersState {
     followers: Follower[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
-    vacations: VacationModel[];  // Add this
+    vacations: VacationModel[];  
     error: string | null;
 }
 
@@ -20,73 +20,117 @@ const initialState: FollowersState = {
     status: 'idle',
     error: null,
 };
-
+// ... existing imports ...
 const followersSlice = createSlice({
     name: 'followers',
     initialState,
     reducers: {
+        // State management
         clearVacationsState: (state) => {
             state.vacations = [];
+            state.followers = [];
             state.status = 'idle';
             state.error = null;
-          },
-    },
-    extraReducers: (builder) => {
-        builder.addCase(fetchFollowers.pending, (state) => {
+        },
+
+        // Status updates
+        setLoadingStatus: (state) => {
             state.status = 'loading';
             state.error = null;
-        });
-        builder.addCase(fetchFollowers.fulfilled, (state, action: PayloadAction<Follower[]>) => {
+        },
+        setErrorStatus: (state, action: PayloadAction<string>) => {
+            state.status = 'failed';
+            state.error = action.payload;
+        },
+        setSuccessStatus: (state) => {
             state.status = 'succeeded';
+            state.error = null;
+        },
+
+        // Follower management
+        setFollowers: (state, action: PayloadAction<Follower[]>) => {
             state.followers = action.payload;
-        });
-        builder.addCase(fetchFollowers.rejected, (state, action: PayloadAction<any>) => {
-            state.status = 'failed';
-            state.error = action.payload;
-        });
-
-        builder.addCase(addVacationFollower.pending, (state) => {
-            state.status = 'loading';
-        });
-        builder.addCase(addVacationFollower.fulfilled, (state, action: PayloadAction<{ userId: number }>) => {
             state.status = 'succeeded';
+        },
+        addFollower: (state, action: PayloadAction<{ userId: number, vacationId: number }>) => {
             state.followers.push({ id: action.payload.userId });
-        });
-        builder.addCase(addVacationFollower.rejected, (state, action: PayloadAction<any>) => {
-            state.status = 'failed';
-            state.error = action.payload;
-        });
+            const vacation = state.vacations.find(v => v.id === action.payload.vacationId);
+            if (vacation) {
+                vacation.followerCount = (vacation.followerCount || 0) + 1;
+                vacation.isFollowing = true;
+            }
+        },
+        removeFollower: (state, action: PayloadAction<{ userId: number, vacationId: number }>) => {
+            state.followers = state.followers.filter(f => f.id !== action.payload.userId);
+            const vacation = state.vacations.find(v => v.id === action.payload.vacationId);
+            if (vacation) {
+                vacation.followerCount = Math.max((vacation.followerCount || 0) - 1, 0);
+                vacation.isFollowing = false;
+            }
+        },
 
-        builder.addCase(removeVacationFollower.pending, (state) => {
-            state.status = 'loading';
-        });
-        builder.addCase(removeVacationFollower.fulfilled, (state, action: PayloadAction<{ userId: number }>) => {
+        // Vacation updates
+        setVacations: (state, action: PayloadAction<VacationModel[]>) => {
+            state.vacations = action.payload;
             state.status = 'succeeded';
-            state.followers = state.followers.filter(follower => follower.id !== action.payload.userId);
-        });
-        builder.addCase(removeVacationFollower.rejected, (state, action: PayloadAction<any>) => {
-            state.status = 'failed';
-            state.error = action.payload;
-        });
-             // Handle fetch vacations per user
-        builder.addCase(fetchVacationsPerUser.pending, (state) => {
-            state.status = 'loading';
-        });
-        builder.addCase(fetchVacationsPerUser.fulfilled, (state, action: PayloadAction<VacationModel[]>) => {
-            state.status = 'succeeded';
-            state.vacations = action.payload; // This expects VacationModel[]
-        });
-        
-        builder.addCase(fetchVacationsPerUser.rejected, (state, action: PayloadAction<any>) => {
-            state.status = 'failed';
-            state.error = action.payload;
-        });
+        },
+        updateVacation: (state, action: PayloadAction<VacationModel>) => {
+            const index = state.vacations.findIndex(v => v.id === action.payload.id);
+            if (index !== -1) {
+                state.vacations[index] = action.payload;
+            }
+        },
+
+        // Follower info updates
+        updateFollowerInfo: (state, action: PayloadAction<{ 
+            vacationId: number, 
+            isFollowing: boolean,
+            followerCount: number 
+        }>) => {
+            const vacation = state.vacations.find(v => v.id === action.payload.vacationId);
+            if (vacation) {
+                vacation.isFollowing = action.payload.isFollowing;
+                vacation.followerCount = action.payload.followerCount;
+            }
+        },
+
  
+        // Batch updates
+        updateBatchFollowerInfo: (state, action: PayloadAction<{
+            vacationId: number,
+            isFollowing: boolean,
+            followerCount: number
+        }[]>) => {
+            action.payload.forEach(update => {
+                const vacation = state.vacations.find(v => v.id === update.vacationId);
+                if (vacation) {
+                    vacation.isFollowing = update.isFollowing;
+                    vacation.followerCount = update.followerCount;
+                }
+            });
+        }
     }
 });
-export const { clearVacationsState } = followersSlice.actions;
+
+
+
+export const {
+    clearVacationsState,
+    setLoadingStatus,
+    setErrorStatus,
+    setSuccessStatus,
+    setFollowers,
+    addFollower,
+    removeFollower,
+    setVacations,
+    updateVacation,
+    updateFollowerInfo,
+    updateBatchFollowerInfo
+} = followersSlice.actions;
 
 export const selectFollowers = (state: RootState) => state.followers.followers;
 export const selectVacations = (state: RootState) => state.followers.vacations;
+export const selectFollowersStatus = (state: RootState) => state.followers.status;
+export const selectFollowersError = (state: RootState) => state.followers.error;
 
 export default followersSlice.reducer;

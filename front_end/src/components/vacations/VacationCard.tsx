@@ -12,14 +12,14 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { selectUser } from '../../store/slices/authSlice';
-import { deleteVacation } from '../../api/vactions/vactions-api';
-import { deleteVacationReducer } from '../../store/slices/vacationslice';
+import { deleteVacationAPI } from '../../api/vactions/vactions-api';
 import '../../css/vacationCard.css';
 import { addVacationFollower, removeVacationFollower } from '../../api/followers/followersThunk';
 import { getFollowersForVacation } from '../../api/followers/follower-api';
 import { getImageForVacation } from '../../api/images/images-api';
 import { selectFollowers } from '../../store/slices/followersSlice';
 import { AppDispatch, RootState } from '../../store/store';
+import { deleteVacationAction, updateVacationFollowerInfo } from '../../store/slices/vacationslice';
 
 const formatDate = (isoDate: string): string => {
     const date = new Date(isoDate);
@@ -32,119 +32,101 @@ const formatDate = (isoDate: string): string => {
 
 interface VacationCardProps {
     vacation: VacationModel;
-    onChangeFn: Function;
-   // token: string;
+    // onChangeFn: Function;
+    // token: string;
 }
 
-const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => {
+const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
     const { user, token } = useSelector((state: RootState) => state.auth);
     const [images, setImages] = useState<string[]>([]);
-    const [isFollowing, setIsFollowing] = useState<boolean>(false);
-    const navigate = useNavigate();
-    // const user = useSelector(selectUser);
-    const followers = useSelector(selectFollowers);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
-    const [totalFollowers, setTotalFollowers] = useState<number>(0); // Added state for total followers
-    //const { token: reduxToken, status, count } = useSelector((state: RootState) => state.auth);
 
-    useEffect(() => {
-        const fetchAdditionalData = async () => {
-            if (vacation.id === undefined || isNaN(vacation.id)) return;
-            if (!token) return; // Add early return if no token
 
-            //const token = getToken(reduxToken, count !== null ? count : -1); // Replace 0 with whatever default makes sense
-
-            try {
-                // Fetch vacation followers and images
-                const vacationFollowers = await getFollowersForVacation(vacation.id,token);
-                setTotalFollowers(vacationFollowers.length);
-
-                const vacationImages = await getImageForVacation(vacation.id);
-                setImages(vacationImages);
+        useEffect(() => {
+            const fetchImages = async () => {
+                if (!vacation.id || !token) return;
     
-                // Check if the user is following
-                if (user && user.id !== undefined) {
-                    const followerIds = vacationFollowers.map(follower => follower.id);
-                    setIsFollowing(followerIds.includes(user.id));
-                } else {
-                    setIsFollowing(false);
+                try {
+                    const vacationImages = await getImageForVacation(vacation.id);
+                    setImages(vacationImages);
+                } catch (error) {
+                    console.error('Error fetching images:', error);
                 }
-            } catch (error) {
-                console.error('Error fetching additional data:', error);
-            }
-        };
+            };
     
-        fetchAdditionalData();
-    }, [vacation.id, user]);
-    
-  
+            fetchImages();
+        }, [vacation.id, token]);
+
+
     const handleFollowClick = async () => {
-     
-        
         if (!user?.id || !vacation.id || !token) {
             setError('User or Vacation ID or token is missing');
             return;
         }
-    
+
         try {
-            if (isFollowing) {
-                // Remove follower
-                await dispatch(removeVacationFollower({ userId: user.id, vacationId: vacation.id, token }) as any);
-                setIsFollowing(false);
+            const currentFollowerCount = vacation.followerCount || 0; // Provide default value
+
+            if (vacation.isFollowing) {
+                await dispatch(removeVacationFollower({
+                    userId: user.id,
+                    vacationId: vacation.id,
+                    token
+                })).unwrap();
+                
+                // Update both slices with a single action
+                dispatch(updateVacationFollowerInfo({
+                    vacationId: vacation.id,
+                    followerCount: Math.max(currentFollowerCount - 1, 0), // Ensure non-negative
+                    isFollowing: false
+                }));
             } else {
-                // Add follower
-                await dispatch(addVacationFollower({ userId: user.id, vacationId: vacation.id, token }) as any);
-                setIsFollowing(true);
+                await dispatch(addVacationFollower({
+                    userId: user.id,
+                    vacationId: vacation.id,
+                    token
+                })).unwrap();
+                
+                // Update both slices with a single action
+            dispatch(updateVacationFollowerInfo({
+                vacationId: vacation.id,
+                followerCount: currentFollowerCount + 1,
+                isFollowing: true
+                }));
             }
-    
-            onChangeFn(user?.id, 'follow');
-
-            // Re-fetch vacations to get the correct total followers
-            const vacationFollowers = await getFollowersForVacation(vacation.id,token);
-            setTotalFollowers(vacationFollowers.length); // Update total followers count
-
-            // Update the following status based on the new list of followers
-            const followerIds = vacationFollowers.map(follower => follower.id);
-            setIsFollowing(followerIds.includes(user.id));
-    
             setError(null);
         } catch (error) {
-            setError('Failed to update follower status. Please try again later.');
+            setError('Failed to update follower status');
             console.error('Error updating follower:', error);
         }
-
     };
-    
-    
+
     const handleEditVacation = () => {
         navigate(`/edit-vacation/${vacation.id}`);
     };
 
     const handleDeleteVacation = async () => {
-        if (!vacation.id) {
-            setError('Vacation ID is missing.');
+        if (!vacation.id || !token) {
+            setError('Vacation ID or token is missing');
             return;
         }
 
-        if (window.confirm('Are you sure you want to delete this vacation?')) {
-            
-            if (!token) {
-                setError('Authentication token is missing.');
-                return;
-            }
+  
 
+        if (window.confirm('Are you sure you want to delete this vacation?')) {
             try {
-                await deleteVacation(vacation.id, token);
-                dispatch(deleteVacationReducer(vacation.id));
-                onChangeFn(vacation?.id, 'delete')
+                // First make the API call
+                await deleteVacationAPI(vacation.id, token);
+                // Then update Redux state
+                dispatch(deleteVacationAction(vacation.id));
             } catch (error) {
-                setError('Failed to delete vacation. Please try again later.');
+                setError('Failed to delete vacation');
                 console.error('Error deleting vacation:', error);
             }
         }
     };
-
     return (
         <div>
             <Row>
@@ -167,47 +149,44 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation, onChangeFn }) => 
                                 <div className="vacation-card-price">{`Price: $${vacation.price}`}</div>
 
                                 {!user?.isAdmin ? (
-
-                                    <div className="vacation-card-actions">
-                                        <div className="vacation-card-favorites">
-                                            {isFollowing ? (
-                                                <FavoriteIcon
-                                                    style={{ marginRight: '5px', cursor: 'pointer', color: 'red' }}
-                                                    onClick={handleFollowClick}
-                                                />
-                                            ) : (
-                                                <FavoriteBorderIcon
-                                                    style={{ marginRight: '5px', cursor: 'pointer', color: 'gray' }}
-                                                    onClick={handleFollowClick}
-                                                />
-                                            )}
-                                              <span>{totalFollowers}</span> {/* Display total followers */}
-                                            {user && isFollowing && (
-                                                <span className="following" style={{ marginLeft: '10px' }}>
-                                                    You follow this vacation
-                                                </span>
-                                            )}
-                                        </div>
+                                    <div className="vacation-card-favorites">
+                                        {vacation.isFollowing ? (
+                                            <FavoriteIcon
+                                                style={{ marginRight: '5px', cursor: 'pointer', color: 'red' }}
+                                                onClick={handleFollowClick}
+                                            />
+                                        ) : (
+                                            <FavoriteBorderIcon
+                                                style={{ marginRight: '5px', cursor: 'pointer', color: 'gray' }}
+                                                onClick={handleFollowClick}
+                                            />
+                                        )}
+                                        <span>{vacation.followerCount}</span>
+                                        {user && vacation.isFollowing && (
+                                            <span className="following" style={{ marginLeft: '10px' }}>
+                                                You follow this vacation
+                                            </span>
+                                        )}
                                     </div>
-                                ) : (
-                                    <div className="vacation-card-buttons">
-                                        <DeleteIcon
-                                            style={{ marginRight: '10px', cursor: 'pointer', color: 'red' }}
-                                            onClick={handleDeleteVacation}
-                                        />
-                                        <EditIcon
-                                            style={{ cursor: 'pointer', color: 'orange' }}
-                                            onClick={handleEditVacation}
-                                        />
-                                    </div>
-                                )}
-                                {error && <div style={{ color: 'red' }}>{error}</div>}
+                            ) : (
+                            <div className="vacation-card-buttons">
+                                <DeleteIcon
+                                    style={{ marginRight: '10px', cursor: 'pointer', color: 'red' }}
+                                    onClick={handleDeleteVacation}
+                                />
+                                <EditIcon
+                                    style={{ cursor: 'pointer', color: 'orange' }}
+                                    onClick={handleEditVacation}
+                                />
                             </div>
-                        </Card.Body>
-                    </Card>
-                </Col>
-            </Row>
-        </div>
+                                )}
+                            {error && <div style={{ color: 'red' }}>{error}</div>}
+                        </div>
+                    </Card.Body>
+                </Card>
+            </Col>
+        </Row>
+        </div >
     );
 };
 

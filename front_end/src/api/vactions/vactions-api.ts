@@ -93,7 +93,7 @@ export const uploadVacationImage = async (vacationId: number, image: File, token
 // api/vacations-api.ts
 
 // Delete a vacation by ID
-export const deleteVacation = async (id: number, token: string): Promise<void> => {
+export const deleteVacationAPI = async (id: number, token: string): Promise<void> => {
     try {
         await axios.delete(`${siteConfig.BASE_URL}vacations/${id}`, {
             headers: {

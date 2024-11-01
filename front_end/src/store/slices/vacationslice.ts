@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { VacationModel } from '../../model/VacationModel';
-import { fetchPaginatedVacations, fetchVacations } from '../../api/vactions/vacationsThunk';
+import { RootState } from '../store';
 
 interface VacationState {
     vacations: VacationModel[];
@@ -20,54 +20,101 @@ const vacationSlice = createSlice({
     name: 'vacation',
     initialState,
     reducers: {
+        // Core vacation CRUD operations
         addVacation(state, action: PayloadAction<VacationModel>) {
             state.vacations.push(action.payload);
+            state.paginatedVacations.push(action.payload);
+            state.status = 'succeeded';
         },
         updateVacation(state, action: PayloadAction<VacationModel>) {
-
-            const index = state.vacations.findIndex(vacation => vacation.id === action.payload.id);
+            const index = state.vacations.findIndex(v => v.id === action.payload.id);
             if (index !== -1) {
-
                 state.vacations[index] = action.payload;
             }
+            const paginatedIndex = state.paginatedVacations.findIndex(v => v.id === action.payload.id);
+            if (paginatedIndex !== -1) {
+                state.paginatedVacations[paginatedIndex] = action.payload;
+            }
         },
-        deleteVacationReducer(state, action: PayloadAction<number>) {
-            state.vacations = state.vacations.filter(vacation => vacation.id !== action.payload);
+        deleteVacationAction(state, action: PayloadAction<number>) {
+            state.vacations = state.vacations.filter(v => v.id !== action.payload);
+            state.paginatedVacations = state.paginatedVacations.filter(v => v.id !== action.payload);
         },
-   
-    },
-    extraReducers: builder => {
-        // Handling paginated vacations
-        builder
-            .addCase(fetchPaginatedVacations.pending, state => {
-                state.status = 'loading';
-                state.error = null;
-            })
-            .addCase(fetchPaginatedVacations.fulfilled, (state, action: PayloadAction<VacationModel[]>) => {
-                state.status = 'succeeded';
-                state.paginatedVacations = action.payload; // Update paginated vacations
-            })
-            .addCase(fetchPaginatedVacations.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload as string;
-            })
-            // Handling all vacations
-            .addCase(fetchVacations.pending, state => {
-                state.status = 'loading';
-                state.error = null;
-            })
-            .addCase(fetchVacations.fulfilled, (state, action: PayloadAction<VacationModel[]>) => {
-                state.status = 'succeeded';
-                state.vacations = action.payload; // Update all vacations
-            })
-            .addCase(fetchVacations.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload as string;
-            });
-    },
+
+        // Status management
+        setLoadingStatus: (state) => {
+            state.status = 'loading';
+            state.error = null;
+        },
+        setErrorStatus: (state, action: PayloadAction<string>) => {
+            state.status = 'failed';
+            state.error = action.payload;
+        },
+        setSuccessStatus: (state) => {
+            state.status = 'succeeded';
+            state.error = null;
+        },
+
+        // Pagination handlers
+        setPaginatedVacations(state, action: PayloadAction<VacationModel[]>) {
+            state.paginatedVacations = action.payload;
+        },
+        setAllVacations(state, action: PayloadAction<VacationModel[]>) {
+            state.vacations = action.payload;
+            state.status = 'succeeded';
+        },
+  // Follower-related updates
+  updateVacationFollowerInfo(state, action: PayloadAction<{ 
+    vacationId: number, 
+    followerCount: number,
+    isFollowing: boolean 
+}>) {
+    const vacation = state.vacations.find(v => v.id === action.payload.vacationId);
+    if (vacation) {
+        vacation.followerCount = action.payload.followerCount;
+        vacation.isFollowing = action.payload.isFollowing;
+    }
+    
+    const paginatedVacation = state.paginatedVacations.find(v => v.id === action.payload.vacationId);
+    if (paginatedVacation) {
+        paginatedVacation.followerCount = action.payload.followerCount;
+        paginatedVacation.isFollowing = action.payload.isFollowing;
+    }
+},
+
+// Batch updates
+updateMultipleVacations(state, action: PayloadAction<VacationModel[]>) {
+    action.payload.forEach(updatedVacation => {
+        const index = state.vacations.findIndex(v => v.id === updatedVacation.id);
+        if (index !== -1) {
+            state.vacations[index] = updatedVacation;
+        }
+        
+        const paginatedIndex = state.paginatedVacations.findIndex(v => v.id === updatedVacation.id);
+        if (paginatedIndex !== -1) {
+            state.paginatedVacations[paginatedIndex] = updatedVacation;
+        }
+    });
+}
+}
 });
 
+export const {
+    addVacation,
+    updateVacation,
+    deleteVacationAction,
+    setLoadingStatus,
+    setErrorStatus,
+    setSuccessStatus,
+    setPaginatedVacations,
+    setAllVacations,
+    updateVacationFollowerInfo,
+    updateMultipleVacations
+} = vacationSlice.actions;
 
-export const { addVacation, updateVacation, deleteVacationReducer } = vacationSlice.actions;
+export const selectAllVacations = (state: RootState) => state.vacation.vacations;
+export const selectPaginatedVacations = (state: RootState) => state.vacation.paginatedVacations;
+export const selectVacationStatus = (state: RootState) => state.vacation.status;
+export const selectVacationError = (state: RootState) => state.vacation.error;
 
 export default vacationSlice.reducer;

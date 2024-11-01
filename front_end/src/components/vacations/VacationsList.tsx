@@ -8,23 +8,25 @@ import { fetchPaginatedVacations } from '../../api/vactions/vacationsThunk';
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import { getVacations } from '../../api/vactions/vactions-api';
-import { selectVacations } from '../../store/slices/followersSlice';
-import { fetchVacationsPerUser } from '../../api/followers/followersThunk';
-import { deleteVacationReducer } from '../../store/slices/vacationslice';
+import { getFollowersForVacation } from '../../api/followers/follower-api';
+import { setAllVacations, updateMultipleVacations, setLoadingStatus, setSuccessStatus, setPaginatedVacations } from '../../store/slices/vacationslice';
 import "../../css/vactionList.css";
 
 
 const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const { vacations, error } = useSelector((state: RootState) => state.vacation);
-    const { user, token, status } = useSelector((state: RootState) => state.auth);
-    const followedVacations = useSelector(selectVacations);
+    const { vacations, paginatedVacations, status: vacationStatus } = useSelector((state: RootState) => state.vacation);
+    const { user, token } = useSelector((state: RootState) => state.auth);
+
+    // const { vacations, error } = useSelector((state: RootState) => state.vacation);
+    // const { user, token, status } = useSelector((state: RootState) => state.auth);
+    // const followedVacations = useSelector(selectVacations);
 
     const [filter, setFilter] = useState<string>('all');
     const [page, setPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(0);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [allVacations, setAllVacations] = useState<VacationModel[]>([]);
+    // const [loading, setLoading] = useState<boolean>(false);
+    // const [allVacations, setAllVacations] = useState<VacationModel[]>([]);
     // const deletedVacations: any[] = [];
     // const { token: reduxToken, status, count } = useSelector((state: RootState) => state.auth);
 
@@ -56,100 +58,117 @@ const VacationList: React.FC = () => {
         // if (token === '') return
 
         // if (loading) return; // Prevent fetching if loading is true
-        if (!token || loading) return;
+        if (!token) return;
 
         const fetchData = async () => {
-            setLoading(true);
+            dispatch(setLoadingStatus());
             try {
 
-                // Fetch all vacations
-                const vacations = await getVacations(undefined, token);
-                // console.log('Current token:', token); // Check what token is being used
-                setAllVacations(vacations);
+            // Fetch all vacations
+            const allVacations = await getVacations(undefined, token);
+            dispatch(setAllVacations(allVacations));
 
                 // Update pagination count
-                const totalVacations = vacations.length;
-                const calculatedTotalPages = Math.ceil(totalVacations / 10);
-                setTotalPages(calculatedTotalPages);
+                // const totalVacations = vacations.length;
+                // const calculatedTotalPages = Math.ceil(totalVacations / 10);
+                // setTotalPages(calculatedTotalPages);
+                 // Update pagination count based on filtered results if not admin
+                //  const filteredVacations = isAdmin ? allVacations : applyFilter(allVacations, filter);
+                //  const totalVacations = filteredVacations.length;
+                //  setTotalPages(Math.ceil(totalVacations / 10));
 
-                // Fetch paginated vacations for the first page
-                dispatch(fetchPaginatedVacations({ page: 1, limit: 10, token }));
+                // Fetch follower info for all vacations
+                const followerUpdates = await Promise.all(
+                    allVacations.map(async (vacation) => {
+                        if (!vacation.id) return null;
+                        const followers = await getFollowersForVacation(vacation.id, token);
+                        return {
+                            ...vacation,
+                            followerCount: followers.length,
+                            isFollowing: user?.id ? followers.some(f => f.id === user.id) : false
+                        } as VacationModel; // Explicitly type as VacationModel
+                    })
+                );
 
-                // Check if user.id is defined before dispatching
-                if (user?.id !== undefined && followedVacations.length === 0) {
-                    dispatch(fetchVacationsPerUser({ userId: user.id, token }));
-                }
+                      // Update vacations with follower info
+                      const validUpdates = followerUpdates.filter((update): update is VacationModel => update !== null);
+                      dispatch(updateMultipleVacations(validUpdates));
 
+                                    // Fetch initial paginated data
+                dispatch(fetchPaginatedVacations({ 
+                    page: 1, 
+                    limit: 10, 
+                    token 
+                }));
+
+                dispatch(setSuccessStatus());
             } catch (error) {
                 console.error('Error fetching vacations:', error);
-            } finally {
-                setLoading(false);
             }
         };
 
         fetchData();
-    }, [dispatch, token, user?.id, followedVacations.length, loading]);
+    }, [dispatch, token, user?.id]);
 
-    useEffect(() => {
-        // When filter changes, reset to the first page
-        setPage(1);
-    }, [filter]);
+    //             // Batch update follower info through Redux
+    //             dispatch(updateVacationsWithFollowers(
+    //                 followerUpdates.filter((update): update is NonNullable<typeof update> => update !== null)
+    //             ));
 
-    useEffect(() => {
-        if (!token || loading) return;
+    //             // Fetch paginated vacations for the first page
+    //             dispatch(fetchPaginatedVacations({ page: 1, limit: 10, token }));
 
-        const fetchFilteredData = async () => {
-            setLoading(true);
-            try {
-                const filteredVacations = applyFilter(allVacations, filter);
-                const totalVacations = filteredVacations.length;
-                const calculatedTotalPages = Math.ceil(totalVacations / 10);
-                setTotalPages(calculatedTotalPages);
+    //             // Fetch user's followed vacations if not admin
+    //             if (!isAdmin && user?.id && followedVacations.length === 0) {
+    //                 dispatch(fetchVacationsPerUser({ userId: user.id, token }));
+    //             }
 
-                if (token !== undefined && token !== null) {
-                    // Fetch paginated filtered vacations
-                    dispatch(fetchPaginatedVacations({ page, limit: 10, token }));
-                }
-            } catch (error) {
-                console.error('Error fetching filtered vacations:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    //         } catch (error) {
+    //             console.error('Error fetching vacations:', error);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
 
-        fetchFilteredData();
-    }, [filter, page, token, loading]);
+    //     fetchData();
+    // }, [dispatch, token, user?.id, filter, isAdmin]); 
 
-    const callback = (vacationId: number, whatChanged: string) => {
-        switch (whatChanged) {
-            case 'follow':
-                const tokenToUse = token !== null ? token : undefined;
 
-                if (user?.id !== undefined) {
-                    dispatch(fetchVacationsPerUser({ userId: user.id, token: tokenToUse }));
-                }
+    // useEffect(() => {
+    //     // When filter changes, reset to the first page
+    //     setPage(1);
+    // }, [filter]);
 
-                break;
-            case 'delete':
-                dispatch(deleteVacationReducer(vacationId));
-                // Remove vacation from the state
-                setAllVacations(prevVacations => prevVacations.filter(vac => vac.id !== vacationId));
-                break;
+     // Update total pages and handle pagination when filter or vacations change
+     useEffect(() => {
+        const filteredVacations = isAdmin ? vacations : applyFilter(vacations, filter);
+        const total = Math.ceil(filteredVacations.length / 10);
+        setTotalPages(total);
+        
+        // If current page is beyond new total, reset to page 1
+        if (page > total) {
+            setPage(1);
         }
-    };
+
+     // Create a new array before sorting and slicing
+     const paginatedData = [...filteredVacations]
+     .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+     .slice((page - 1) * 10, page * 10);
+ 
+ dispatch(setPaginatedVacations(paginatedData));
+}, [filter, vacations, isAdmin, page]);
+
+
 
     const applyFilter = (vacations: VacationModel[], filter: string) => {
         const now = new Date();
         return vacations.filter((vacation: VacationModel) => {
             const startDate = new Date(vacation.startDate);
             const endDate = new Date(vacation.endDate);
-            let isFollowing = false; // Replace with actual following check logic
-
-            if (followedVacations.map(vac => vac.id).includes(vacation.id)) isFollowing = true;
 
             switch (filter) {
                 case 'following':
-                    return isFollowing;
+                    return vacation.isFollowing;
                 case 'notStarted':
                     return startDate > now;
                 case 'happeningNow':
@@ -159,34 +178,44 @@ const VacationList: React.FC = () => {
             }
         });
     };
-
     const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     };
 
+    // const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    //     setPage(value);
+    // };
+
     const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFilter(e.target.value);
+        setPage(1); // Reset to first page when filter changes
     };
 
-    if (status === 'loading' || loading) return <div>Loading...</div>;
-    if (status === 'failed') return <div>{error}</div>;
+    if (vacationStatus === 'loading') return <div>Loading...</div>;
 
-    let filteredVacations = allVacations;
-    if (!isAdmin) {
-        // Filter vacations
-        filteredVacations = applyFilter(allVacations, filter);
-    }
+    // if (status === 'loading' || loading) return <div>Loading...</div>;
+    // // Get displayed vacations based on filters and pagination
+    // const filteredVacations = isAdmin ? paginatedVacations : applyFilter(paginatedVacations, filter);
+    // const sortedVacations = [...filteredVacations].sort((a, b) => {
+    //     return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+    // });
 
-    // sort vacations
-    const sortedVacations = [...filteredVacations].sort((a, b) => {
-        const dateA = new Date(a.startDate);
-        const dateB = new Date(b.startDate);
-        return dateA.getTime() - dateB.getTime();
-    });
+    // let filteredVacations = allVacations;
+    // if (!isAdmin) {
+    //     // Filter vacations
+    //     filteredVacations = applyFilter(allVacations, filter);
+    // }
 
-    // Apply pagination to sorted vacations
-    const startIndex = (page - 1) * 10;
-    const paginatedVacations = sortedVacations.slice(startIndex, startIndex + 10);
+    // // sort vacations
+    // const sortedVacations = [...filteredVacations].sort((a, b) => {
+    //     const dateA = new Date(a.startDate);
+    //     const dateB = new Date(b.startDate);
+    //     return dateA.getTime() - dateB.getTime();
+    // });
+
+    // // Apply pagination to sorted vacations
+    // const startIndex = (page - 1) * 10;
+    // const paginatedVacations = sortedVacations.slice(startIndex, startIndex + 10);
 
     return (
         <div className="container">
@@ -235,9 +264,7 @@ const VacationList: React.FC = () => {
             <Row>
                 {paginatedVacations.map((vacation: VacationModel) => (
                     <Col key={vacation.id || "placeholder"} md={4} className="mb-4">
-                        <VacationCard vacation={vacation} onChangeFn={callback} />
-
-                        {/* <VacationCard token={token} vacation={vacation} onChangeFn={callback} /> */}
+                        <VacationCard vacation={vacation} />
                     </Col>
                 ))}
             </Row>
