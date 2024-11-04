@@ -13,7 +13,51 @@ import { getImageByVacation } from "../services/imagesService";
 import { verifyToeknAdminMW, verifyToeknMW } from "../middlewares/authMiddlewares";
 
 export const vacationRoutes = Router();
+// Add new combined endpoint
+// Add new combined endpoint
+vacationRoutes.get(appConfig.routePrefix + "/vacations-with-data", verifyToeknMW,
+    async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { page = 1, limit = 10 } = req.query;
+            
+            // Get all vacations
+            const vacations = await getVacations();
+            
+            // Get all followers for all vacations in a single query
+            const followersPromise = Promise.all(
+                vacations.map(vacation => 
+                    getFollowersForVacation(vacation.id)
+                )
+            );
 
+            // Get all images in a single query
+            const imagesPromise = Promise.all(
+                vacations.map(vacation => 
+                    getImageByVacation(vacation.id)
+                )
+            );
+
+            // Wait for both promises to resolve
+            const [allFollowers, allImages] = await Promise.all([
+                followersPromise,
+                imagesPromise
+            ]);
+
+            // Combine the data
+            const vacationsWithData = vacations.map((vacation, index) => ({
+                ...vacation,
+                followers: allFollowers[index],
+                imagePath: allImages[index]
+            }));
+
+            // Return just the array to match existing frontend structure
+            res.status(StatusCode.Ok).json(vacationsWithData);
+            
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 // Route to get all vacations or a specific vacation by ID
 vacationRoutes.get(appConfig.routePrefix + "/vacations/:id?", verifyToeknMW,
     async (req: Request, res: Response, next: NextFunction) => {

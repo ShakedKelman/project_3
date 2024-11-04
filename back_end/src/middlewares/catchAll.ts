@@ -12,7 +12,7 @@ function catchAll(err: any, req: Request, res: Response, next: NextFunction) {
         } else {
             res.status(StatusCode.ServerError).send("Internal Server Error");
         }
-    }).catch(next); // Handle logging error   
+    })
 }
 
 export default catchAll;
