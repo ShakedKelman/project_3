@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { VacationModel } from '../../model/VacationModel';
-import { fetchPaginatedVacations, fetchVacations } from '../../api/vactions/vacationsThunk';
 
 interface VacationState {
     vacations: VacationModel[];
@@ -34,40 +33,48 @@ const vacationSlice = createSlice({
         deleteVacationReducer(state, action: PayloadAction<number>) {
             state.vacations = state.vacations.filter(vacation => vacation.id !== action.payload);
         },
-   
-    },
-    extraReducers: builder => {
-        // Handling paginated vacations
-        builder
-            .addCase(fetchPaginatedVacations.pending, state => {
-                state.status = 'loading';
-                state.error = null;
-            })
-            .addCase(fetchPaginatedVacations.fulfilled, (state, action: PayloadAction<VacationModel[]>) => {
-                state.status = 'succeeded';
-                state.paginatedVacations = action.payload; // Update paginated vacations
-            })
-            .addCase(fetchPaginatedVacations.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload as string;
-            })
-            // Handling all vacations
-            .addCase(fetchVacations.pending, state => {
-                state.status = 'loading';
-                state.error = null;
-            })
-            .addCase(fetchVacations.fulfilled, (state, action: PayloadAction<VacationModel[]>) => {
-                state.status = 'succeeded';
-                state.vacations = action.payload; // Update all vacations
-            })
-            .addCase(fetchVacations.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload as string;
-            });
-    },
+
+        fetchPaginatedVacationsPending(state) {
+            state.status = 'loading';
+            state.error = null;
+        },
+        fetchPaginatedVacationsFulfilled(state, action: PayloadAction<VacationModel[]>) {
+            state.status = 'succeeded';
+            state.paginatedVacations = action.payload;
+        },
+        fetchPaginatedVacationsRejected(state, action: PayloadAction<string>) {
+            state.status = 'failed';
+            state.error = action.payload;
+        },
+        // New reducers for all vacations
+        fetchVacationsPending(state) {
+            state.status = 'loading';
+            state.error = null;
+        },
+        fetchVacationsFulfilled(state, action: PayloadAction<VacationModel[]>) {
+            state.status = 'succeeded';
+            state.vacations = action.payload;
+        },
+        fetchVacationsRejected(state, action: PayloadAction<string>) {
+            state.status = 'failed';
+            state.error = action.payload;
+        }
+    }
 });
 
 
-export const { addVacation, updateVacation, deleteVacationReducer } = vacationSlice.actions;
+// ... slice definition ...
+
+export const {
+    addVacation,
+    updateVacation,
+    deleteVacationReducer,
+    fetchPaginatedVacationsPending,
+    fetchPaginatedVacationsFulfilled,
+    fetchPaginatedVacationsRejected,
+    fetchVacationsPending,
+    fetchVacationsFulfilled,
+    fetchVacationsRejected
+} = vacationSlice.actions;
 
 export default vacationSlice.reducer;

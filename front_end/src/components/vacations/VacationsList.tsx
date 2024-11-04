@@ -168,8 +168,9 @@ const VacationList: React.FC = () => {
         setFilter(e.target.value);
     };
 
-    if (status === 'loading' || loading) return <div>Loading...</div>;
-    if (status === 'failed') return <div>{error}</div>;
+ // Update this line
+if (status === 'loading' || loading) return <div>Loading...</div>;
+if (status === 'failed' && error) return <div>{error}</div>;
 
     let filteredVacations = allVacations;
     if (!isAdmin) {
