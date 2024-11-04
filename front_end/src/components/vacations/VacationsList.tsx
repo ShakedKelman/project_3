@@ -75,10 +75,10 @@ const VacationList: React.FC = () => {
                 // Fetch paginated vacations for the first page
                 dispatch(fetchPaginatedVacations({ page: 1, limit: 10, token }));
 
-                    // Check if user.id is defined before dispatching
-                    if (user?.id !== undefined && followedVacations.length === 0) {
-                        dispatch(fetchVacationsPerUser({ userId: user.id, token }));
-                    }
+                // Check if user.id is defined before dispatching
+                if (user?.id !== undefined && followedVacations.length === 0) {
+                    dispatch(fetchVacationsPerUser({ userId: user.id, token }));
+                }
 
             } catch (error) {
                 console.error('Error fetching vacations:', error);
@@ -119,6 +119,12 @@ const VacationList: React.FC = () => {
 
         fetchFilteredData();
     }, [filter, page]);
+    // New useEffect for pagination handling
+    useEffect(() => {
+        if (page > totalPages && totalPages > 0) {
+            setPage(totalPages);
+        }
+    }, [totalPages, page]);
 
     const callback = (vacationId: number, whatChanged: string) => {
         switch (whatChanged) {
@@ -128,12 +134,26 @@ const VacationList: React.FC = () => {
                 if (user?.id !== undefined) {
                     dispatch(fetchVacationsPerUser({ userId: user.id, token: tokenToUse }));
                 }
-                
+
                 break;
             case 'delete':
                 dispatch(deleteVacationReducer(vacationId));
                 // Remove vacation from the state
-                setAllVacations(prevVacations => prevVacations.filter(vac => vac.id !== vacationId));
+                setAllVacations(prevVacations => {
+                    const updatedVacations = prevVacations.filter(vac => vac.id !== vacationId);
+
+                    // Recalculate total pages
+                    const newTotalPages = Math.ceil(updatedVacations.length / 10);
+                    setTotalPages(newTotalPages);
+
+                    // If current page is now empty or greater than total pages, go to last page
+                    const currentPageItemCount = updatedVacations.slice((page - 1) * 10, page * 10).length;
+                    if (currentPageItemCount === 0 && page > 1) {
+                        setPage(newTotalPages);
+                    }
+
+                    return updatedVacations;
+                });
                 break;
         }
     };
@@ -168,9 +188,9 @@ const VacationList: React.FC = () => {
         setFilter(e.target.value);
     };
 
- // Update this line
-if (status === 'loading' || loading) return <div>Loading...</div>;
-if (status === 'failed' && error) return <div>{error}</div>;
+    // Update this line
+    if (status === 'loading' || loading) return <div>Loading...</div>;
+    if (status === 'failed' && error) return <div>{error}</div>;
 
     let filteredVacations = allVacations;
     if (!isAdmin) {
@@ -231,8 +251,8 @@ if (status === 'failed' && error) return <div>{error}</div>;
                     />
                 </Form>
             )}
-         
-                
+
+
             <Row>
                 {paginatedVacations.map((vacation: VacationModel) => (
                     <Col key={vacation.id || "placeholder"} md={4} className="mb-4">
@@ -242,11 +262,13 @@ if (status === 'failed' && error) return <div>{error}</div>;
             </Row>
 
             <Stack spacing={2} className="mt-4">
-                <Pagination
-                    count={totalPages}
-                    page={page}
-                    onChange={handlePageChange}
-                />
+                {totalPages > 0 && (
+                    <Pagination
+                        count={totalPages}
+                        page={Math.min(page, totalPages)}
+                        onChange={handlePageChange}
+                    />
+                )}
             </Stack>
         </div>
     );
