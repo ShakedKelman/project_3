@@ -77,3 +77,30 @@ export const removeFollower = async (userId: number, vacationId: number, token: 
         throw error;
     }
 };
+
+// ... existing imports ...
+
+// New function to fetch followers for multiple vacations
+export const getFollowersForVacations = async (vacationIds: number[], token?: string): Promise<Map<number, number[]>> => {
+    if (token === undefined || token === '' || token === null) throw new Error('no token provided');
+
+    try {
+        // Use Promise.all to fetch followers for all vacations in parallel
+        const followersPromises = vacationIds.map(id => 
+            getFollowersForVacation(id, token)
+        );
+        
+        const followersResults = await Promise.all(followersPromises);
+        
+        // Create a map of vacationId -> followers
+        const followersMap = new Map();
+        vacationIds.forEach((id, index) => {
+            followersMap.set(id, followersResults[index]);
+        });
+        
+        return followersMap;
+    } catch (error) {
+        console.error("Error fetching followers for vacations:", error);
+        throw error;
+    }
+};

@@ -7,6 +7,8 @@ interface VacationState {
     paginatedVacations: VacationModel[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
+    initialized: boolean; // Add this
+
 }
 
 const initialState: VacationState = {
@@ -14,6 +16,8 @@ const initialState: VacationState = {
     paginatedVacations: [],
     status: 'idle',
     error: null,
+    initialized: false // Add this
+
 };
 
 const vacationSlice = createSlice({
@@ -54,6 +58,9 @@ const vacationSlice = createSlice({
             state.status = 'succeeded';
             state.error = null;
         },
+        setInitialized: (state) => {
+            state.initialized = true;
+        },
 
         // Pagination handlers
         setPaginatedVacations(state, action: PayloadAction<VacationModel[]>) {
@@ -61,7 +68,7 @@ const vacationSlice = createSlice({
         },
         setAllVacations(state, action: PayloadAction<VacationModel[]>) {
             state.vacations = action.payload;
-            state.status = 'succeeded';
+            // state.status = 'succeeded';
         },
   // Follower-related updates
   updateVacationFollowerInfo(state, action: PayloadAction<{ 
@@ -106,6 +113,7 @@ export const {
     setLoadingStatus,
     setErrorStatus,
     setSuccessStatus,
+    setInitialized,
     setPaginatedVacations,
     setAllVacations,
     updateVacationFollowerInfo,

@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { addFollower, getFollowersForVacation, getVacationsPerUser, removeFollower } from './follower-api';
+import { addFollower, getFollowersForVacation, getFollowersForVacations, getVacationsPerUser, removeFollower } from './follower-api';
 import { VacationModel } from '../../model/VacationModel';
 import { AppDispatch } from '../../store/store';
 
@@ -72,4 +72,20 @@ export const removeVacationFollower = createAsyncThunk(
     }
 );
 
+
+// Add new thunk for batch fetching
+export const fetchFollowersForVacations = createAsyncThunk(
+    'followers/fetchFollowersForVacations',
+    async ({ vacationIds, token }: { vacationIds: number[], token?: string }, thunkAPI) => {
+        try {
+            const followersMap = await getFollowersForVacations(vacationIds, token);
+            return Array.from(followersMap.entries()).map(([vacationId, followers]) => ({
+                vacationId,
+                followers: followers.map(id => ({ id }))
+            }));
+        } catch (error) {
+            return thunkAPI.rejectWithValue('Failed to fetch followers');
+        }
+    }
+);
 

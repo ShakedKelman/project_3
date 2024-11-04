@@ -9,15 +9,20 @@ import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import { getVacations } from '../../api/vactions/vactions-api';
 import { getFollowersForVacation } from '../../api/followers/follower-api';
-import { setAllVacations, updateMultipleVacations, setLoadingStatus, setSuccessStatus, setPaginatedVacations } from '../../store/slices/vacationslice';
+import { setAllVacations, updateMultipleVacations, setLoadingStatus, setSuccessStatus, setPaginatedVacations, setErrorStatus, setInitialized } from '../../store/slices/vacationslice';
 import "../../css/vactionList.css";
+import { fetchFollowersForVacations } from '../../api/followers/followersThunk';
 
 
 const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const { vacations, paginatedVacations, status: vacationStatus } = useSelector((state: RootState) => state.vacation);
     const { user, token } = useSelector((state: RootState) => state.auth);
-
+    const { 
+        vacations, 
+        paginatedVacations, 
+        status: vacationStatus,
+        initialized 
+    } = useSelector((state: RootState) => state.vacation);
     // const { vacations, error } = useSelector((state: RootState) => state.vacation);
     // const { user, token, status } = useSelector((state: RootState) => state.auth);
     // const followedVacations = useSelector(selectVacations);
@@ -58,57 +63,92 @@ const VacationList: React.FC = () => {
         // if (token === '') return
 
         // if (loading) return; // Prevent fetching if loading is true
-        if (!token) return;
-
-        const fetchData = async () => {
+        if (!token || initialized) return; // Skip if already initialized
+        const initializeData = async () => {
             dispatch(setLoadingStatus());
             try {
+                // Fetch all vacations only once
+                const allVacations = await getVacations(undefined, token);
+                dispatch(setAllVacations(allVacations));
 
-            // Fetch all vacations
-            const allVacations = await getVacations(undefined, token);
-            dispatch(setAllVacations(allVacations));
-
-                // Update pagination count
-                // const totalVacations = vacations.length;
-                // const calculatedTotalPages = Math.ceil(totalVacations / 10);
-                // setTotalPages(calculatedTotalPages);
-                 // Update pagination count based on filtered results if not admin
-                //  const filteredVacations = isAdmin ? allVacations : applyFilter(allVacations, filter);
-                //  const totalVacations = filteredVacations.length;
-                //  setTotalPages(Math.ceil(totalVacations / 10));
-
-                // Fetch follower info for all vacations
-                const followerUpdates = await Promise.all(
-                    allVacations.map(async (vacation) => {
-                        if (!vacation.id) return null;
-                        const followers = await getFollowersForVacation(vacation.id, token);
-                        return {
-                            ...vacation,
-                            followerCount: followers.length,
-                            isFollowing: user?.id ? followers.some(f => f.id === user.id) : false
-                        } as VacationModel; // Explicitly type as VacationModel
-                    })
-                );
-
-                      // Update vacations with follower info
-                      const validUpdates = followerUpdates.filter((update): update is VacationModel => update !== null);
-                      dispatch(updateMultipleVacations(validUpdates));
-
-                                    // Fetch initial paginated data
-                dispatch(fetchPaginatedVacations({ 
-                    page: 1, 
-                    limit: 10, 
+                // Get all vacation IDs and fetch followers in one batch
+                const vacationIds = allVacations.map(v => v.id!).filter(id => id !== undefined);
+                const followersData = await dispatch(fetchFollowersForVacations({ 
+                    vacationIds, 
                     token 
-                }));
+                })).unwrap();
 
+                // Update vacations with follower info
+                const updatedVacations = allVacations.map(vacation => {
+                    const followerInfo = followersData.find(f => f.vacationId === vacation.id);
+                    return {
+                        ...vacation,
+                        followerCount: followerInfo?.followers.length || 0,
+                        isFollowing: user?.id ? followerInfo?.followers.some(f => f.id === user.id) || false : false
+                    };
+                });
+
+                dispatch(updateMultipleVacations(updatedVacations));
+                dispatch(setInitialized()); // Mark as initialized
                 dispatch(setSuccessStatus());
             } catch (error) {
-                console.error('Error fetching vacations:', error);
+                console.error('Error initializing data:', error);
+                dispatch(setErrorStatus('An unknown error occurred'));
             }
         };
 
-        fetchData();
-    }, [dispatch, token, user?.id]);
+        initializeData();
+    }, [dispatch, token, initialized, user?.id]);
+    //     const fetchData = async () => {
+    //         dispatch(setLoadingStatus());
+    //         try {
+
+    //         // Fetch all vacations
+    //         const allVacations = await getVacations(undefined, token);
+    //         dispatch(setAllVacations(allVacations));
+
+    //             // Update pagination count
+    //             // const totalVacations = vacations.length;
+    //             // const calculatedTotalPages = Math.ceil(totalVacations / 10);
+    //             // setTotalPages(calculatedTotalPages);
+    //              // Update pagination count based on filtered results if not admin
+    //             //  const filteredVacations = isAdmin ? allVacations : applyFilter(allVacations, filter);
+    //             //  const totalVacations = filteredVacations.length;
+    //             //  setTotalPages(Math.ceil(totalVacations / 10));
+
+    //         // Get all vacation IDs and fetch followers for all vacations at once
+    //         const vacationIds = allVacations.map(v => v.id!).filter(id => id !== undefined);
+    //         const followersData = await dispatch(fetchFollowersForVacations({ 
+    //             vacationIds, 
+    //             token 
+    //         })).unwrap();
+
+    //         // Update vacations with follower info
+    //         const updatedVacations = allVacations.map(vacation => {
+    //             const followerInfo = followersData.find(f => f.vacationId === vacation.id);
+    //             return {
+    //                 ...vacation,
+    //                 followerCount: followerInfo?.followers.length || 0,
+    //                 isFollowing: user?.id ? followerInfo?.followers.some(f => f.id === user.id) || false : false
+    //             };
+    //         });
+
+    //         dispatch(updateMultipleVacations(updatedVacations));
+    //                                 // Fetch initial paginated data
+    //             dispatch(fetchPaginatedVacations({ 
+    //                 page: 1, 
+    //                 limit: 10, 
+    //                 token 
+    //             }));
+
+    //             dispatch(setSuccessStatus());
+    //         } catch (error) {
+    //             console.error('Error fetching vacations:', error);
+    //         }
+    //     };
+
+    //     fetchData();
+    // }, [dispatch, token, user?.id]);
 
     //             // Batch update follower info through Redux
     //             dispatch(updateVacationsWithFollowers(

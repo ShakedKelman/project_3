@@ -12,6 +12,8 @@ interface FollowersState {
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     vacations: VacationModel[];  
     error: string | null;
+    currentUserId?: number; // Add this property
+
 }
 
 const initialState: FollowersState = {
@@ -19,6 +21,8 @@ const initialState: FollowersState = {
     vacations: [],  // Initialize this
     status: 'idle',
     error: null,
+    currentUserId: undefined, // Initialize it
+
 };
 // ... existing imports ...
 const followersSlice = createSlice({
@@ -67,6 +71,20 @@ const followersSlice = createSlice({
                 vacation.followerCount = Math.max((vacation.followerCount || 0) - 1, 0);
                 vacation.isFollowing = false;
             }
+        },
+        setFollowersForVacations: (state, action: PayloadAction<{
+            vacationId: number,
+            followers: { id: number }[]
+        }[]>) => {
+            action.payload.forEach(({ vacationId, followers }) => {
+                const vacation = state.vacations.find(v => v.id === vacationId);
+                if (vacation) {
+                    vacation.followerCount = followers.length;
+                    // Assuming we have the current user's ID available
+                    vacation.isFollowing = followers.some(f => f.id === state.currentUserId);
+                }
+            });
+            state.status = 'succeeded';
         },
 
         // Vacation updates
@@ -122,6 +140,7 @@ export const {
     setFollowers,
     addFollower,
     removeFollower,
+    setFollowersForVacations,
     setVacations,
     updateVacation,
     updateFollowerInfo,
