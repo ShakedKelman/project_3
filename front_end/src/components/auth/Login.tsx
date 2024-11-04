@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '../../store/store';
-import { loginUser } from '../../api/auth/authThunks';
+import { loginUser, logoutUser } from '../../api/auth/authThunks';
 import { Form, Button, Alert } from 'react-bootstrap';
 import '../../css/login.css';
 
@@ -18,6 +18,8 @@ const LoginComponent: React.FC = () => {
         e.preventDefault();
         setError(null);
         try {
+            await dispatch(logoutUser());
+
             await dispatch(loginUser({ email, password })).unwrap();
             navigate('/vacations');
         } catch (err: any) {

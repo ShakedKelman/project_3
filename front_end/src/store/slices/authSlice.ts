@@ -63,11 +63,37 @@ const authSlice = createSlice({
         //   localStorage.setItem('token', action.payload.token);
         // },
         loginSuccess(state, action: PayloadAction<{ token: string }>) {
+            console.log('New login token received:', action.payload.token);
+            console.log('Previous token was:', state.token);
+            
+            // Clear everything first
+            localStorage.clear();
+            state.user = null;
+            state.token = null;
+            state.status = 'idle';
+            state.error = null;
+            state.count = -1;
+        
+            // Set new state
             state.token = action.payload.token;
             state.user = decodeTokenAndGetUser(action.payload.token);
             state.status = 'succeeded';
-            state.error = null;
+            
+            // Set localStorage
             localStorage.setItem('token', action.payload.token);
+            // Verify the token was stored correctly
+            // const storedToken = localStorage.getItem('token');
+            // console.log('Token stored in localStorage:', storedToken);
+            
+            // Log decoded user info
+            if (state.user) {
+                console.log('Decoded user info:', {
+                    id: state.user.id,
+                    email: state.user.email,
+                    firstName: state.user.firstName,
+                    lastName: state.user.lastName
+                });
+            }
         },
         // loginFailure(state, action: PayloadAction<string>) {
         //   state.error = action.payload;
@@ -93,7 +119,10 @@ const authSlice = createSlice({
             state.user = null;
             state.token = null;
             state.status = 'idle';
-            localStorage.removeItem('token');
+            console.log('Logout reducer: Clearing localStorage');
+            localStorage.clear();
+            // Verify localStorage is empty
+            console.log('localStorage after clear:', localStorage.getItem('token'));
 
         },
         registerRequest(state) {

@@ -37,7 +37,11 @@ import { siteConfig } from '../../utils/SiteConfig';
   
 export const login = async (email: string, password: string): Promise<string> => {
     try {
+        // console.log('Attempting login for email:', email);
+
       const response = await axios.post(`${siteConfig.BASE_URL}login`, { email, password });
+    //   console.log('Login response:', response.data);
+
       return response.data.token;
     } catch (error) {
       console.error('Login error:', error);
