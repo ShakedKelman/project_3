@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Card from 'react-bootstrap/Card';
@@ -39,69 +39,76 @@ interface VacationCardProps {
 const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
     const { user, token } = useSelector((state: RootState) => state.auth);
     const [images, setImages] = useState<string[]>([]);
+    const imageCache = useRef<Record<number, string[]>>({});
+
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
 
 
-        useEffect(() => {
-            const fetchImages = async () => {
-                if (!vacation.id || !token) return;
-    
-                try {
-                    const vacationImages = await getImageForVacation(vacation.id);
-                    setImages(vacationImages);
-                } catch (error) {
-                    console.error('Error fetching images:', error);
-                }
-            };
-    
-            fetchImages();
-        }, [vacation.id, token]);
 
-
-    const handleFollowClick = async () => {
-        if (!user?.id || !vacation.id || !token) {
-            setError('User or Vacation ID or token is missing');
-            return;
-        }
-
-        try {
-            const currentFollowerCount = vacation.followerCount || 0; // Provide default value
-
-            if (vacation.isFollowing) {
-                await dispatch(removeVacationFollower({
-                    userId: user.id,
-                    vacationId: vacation.id,
-                    token
-                })).unwrap();
-                
-                // Update both slices with a single action
-                dispatch(updateVacationFollowerInfo({
-                    vacationId: vacation.id,
-                    followerCount: Math.max(currentFollowerCount - 1, 0), // Ensure non-negative
-                    isFollowing: false
-                }));
-            } else {
-                await dispatch(addVacationFollower({
-                    userId: user.id,
-                    vacationId: vacation.id,
-                    token
-                })).unwrap();
-                
-                // Update both slices with a single action
-            dispatch(updateVacationFollowerInfo({
-                vacationId: vacation.id,
-                followerCount: currentFollowerCount + 1,
-                isFollowing: true
-                }));
+    useEffect(() => {
+        const fetchImages = async () => {
+            if (!vacation.id) return;
+            
+            // Check cache first
+            if (imageCache.current[vacation.id]) {
+                setImages(imageCache.current[vacation.id]);
+                return;
             }
-            setError(null);
-        } catch (error) {
-            setError('Failed to update follower status');
-            console.error('Error updating follower:', error);
-        }
-    };
+
+            try {
+                const vacationImages = await getImageForVacation(vacation.id);
+                // Store in cache
+                imageCache.current[vacation.id] = vacationImages;
+                setImages(vacationImages);
+            } catch (error) {
+                console.error('Error fetching images:', error);
+            }
+        };
+
+        fetchImages();
+    }, [vacation.id]);
+        const handleFollowClick = async () => {
+            if (!user?.id || !vacation.id || !token) {
+                setError('User or Vacation ID or token is missing');
+                return;
+            }
+    
+            try {
+                if (vacation.isFollowing) {
+                    await dispatch(removeVacationFollower({
+                        userId: user.id,
+                        vacationId: vacation.id,
+                        token
+                    })).unwrap();
+    
+                    // Dispatch follower update after removing
+                    dispatch(updateVacationFollowerInfo({
+                        vacationId: vacation.id,
+                        followerCount: (vacation.followerCount || 0) - 1,
+                        isFollowing: false
+                    }));
+                } else {
+                    await dispatch(addVacationFollower({
+                        userId: user.id,
+                        vacationId: vacation.id,
+                        token
+                    })).unwrap();
+    
+                    // Dispatch follower update after adding
+                    dispatch(updateVacationFollowerInfo({
+                        vacationId: vacation.id,
+                        followerCount: (vacation.followerCount || 0) + 1,
+                        isFollowing: true
+                    }));
+                }
+            } catch (error) {
+                setError('Failed to update follower status');
+                console.error('Error updating follower:', error);
+            }
+        };
+    
 
     const handleEditVacation = () => {
         navigate(`/edit-vacation/${vacation.id}`);

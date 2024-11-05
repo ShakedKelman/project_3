@@ -37,42 +37,27 @@ ChartJS.register(
 
 const Report: React.FC = () => {
     const { token, user } = useSelector((state: RootState) => state.auth);
-    const vacations = useSelector(selectVacations);
+    const { vacations, isInitialized } = useSelector((state: RootState) => state.vacation);
     const [data, setData] = useState<{ destination: string; followers: number }[]>([]);
     const [allVacations, setAllVacations] = useState<VacationModel[]>([]);
 
     const isAdmin = user?.isAdmin;
 
     useEffect(() => {
-        if (!token) return; // Early return if no token
+        // Early return if not admin or no vacations
+        if (!isAdmin || vacations.length === 0) return;
 
-        const fetchData = async () => {
-            try {
-                const vacations = await getVacations(undefined, token);
-                setAllVacations(vacations);
-
-                const reportData = await Promise.all(vacations.map(async (vacation) => {
-                    if (vacation.id === undefined) {
-                        return {
-                            destination: vacation.destination,
-                            followers: 0,
-                        };
-                    }
-
-                    const vacationFollowers = await getFollowersForVacation(vacation.id, token);
-                    return {
-                        destination: vacation.destination,
-                        followers: vacationFollowers.length,
-                    };
-                }));
-                setData(reportData);
-            } catch (error) {
-                console.error('Error fetching vacation followers:', error);
-            }
-        };
-
-        fetchData();
-    }, [vacations, token]); // Add token to dependencies
+        // Use the data from Redux store instead of making API calls
+        const reportData = vacations.map(vacation => ({
+            destination: vacation.destination,
+            followers: vacation.followerCount || 0
+        }));
+        
+        // Sort data by number of followers (optional)
+        reportData.sort((a, b) => b.followers - a.followers);
+        
+        setData(reportData);
+    }, [vacations, isAdmin]);
     
     const chartData = {
         labels: data.map(item => item.destination),

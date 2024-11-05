@@ -7,6 +7,8 @@ interface VacationState {
     paginatedVacations: VacationModel[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
+    isInitialized: boolean;
+
 }
 
 const initialState: VacationState = {
@@ -14,6 +16,7 @@ const initialState: VacationState = {
     paginatedVacations: [],
     status: 'idle',
     error: null,
+    isInitialized: false,
 };
 
 const vacationSlice = createSlice({
@@ -25,6 +28,9 @@ const vacationSlice = createSlice({
             state.vacations.push(action.payload);
             state.paginatedVacations.push(action.payload);
             state.status = 'succeeded';
+        },
+        setInitialized(state) {
+            state.isInitialized = true;
         },
         updateVacation(state, action: PayloadAction<VacationModel>) {
             const index = state.vacations.findIndex(v => v.id === action.payload.id);
@@ -101,6 +107,7 @@ updateMultipleVacations(state, action: PayloadAction<VacationModel[]>) {
 
 export const {
     addVacation,
+    setInitialized,
     updateVacation,
     deleteVacationAction,
     setLoadingStatus,
