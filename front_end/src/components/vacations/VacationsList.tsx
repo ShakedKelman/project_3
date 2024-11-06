@@ -9,7 +9,7 @@ import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import { getVacations } from '../../api/vactions/vactions-api';
 import { getFollowersForVacation } from '../../api/followers/follower-api';
-import { setAllVacations, updateMultipleVacations, setLoadingStatus, setSuccessStatus, setPaginatedVacations, setInitialized, setErrorStatus, setCurrentPage } from '../../store/slices/vacationslice';
+import { setAllVacations, updateMultipleVacations, setLoadingStatus, setSuccessStatus, setPaginatedVacations, setInitialized, setErrorStatus, setCurrentPage, setVacationImages } from '../../store/slices/vacationslice';
 import "../../css/vactionList.css";
 import { getImageForVacation } from '../../api/images/images-api';
 
@@ -46,6 +46,20 @@ const VacationList: React.FC = () => {
                 const batchSize = 5;
                 const followerResults: { id: number }[][] = [];
                 
+                const imagePromises = vacationIds.map(id => 
+                    getImageForVacation(id)
+                        .then(images => ({ id, images }))
+                        .catch(error => {
+                            console.error(`Error fetching images for vacation ${id}:`, error);
+                            return { id, images: [] };
+                        })
+                );
+                
+                const imageResults = await Promise.all(imagePromises);
+                imageResults.forEach(({ id, images }) => {
+                    dispatch(setVacationImages({ vacationId: id, images }));
+                });
+
                 for (let i = 0; i < vacationIds.length; i += batchSize) {
                     const batch = vacationIds.slice(i, i + batchSize);
                     const batchPromises = batch.map(id => 

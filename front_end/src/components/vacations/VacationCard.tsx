@@ -20,6 +20,7 @@ import { getImageForVacation } from '../../api/images/images-api';
 import { selectFollowers } from '../../store/slices/followersSlice';
 import { AppDispatch, RootState } from '../../store/store';
 import { deleteVacationAction, updateVacationFollowerInfo } from '../../store/slices/vacationslice';
+import { selectVacationImages } from '../../store/slices/vacationslice';
 
 const formatDate = (isoDate: string): string => {
     const date = new Date(isoDate);
@@ -38,8 +39,8 @@ interface VacationCardProps {
 
 const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
     const { user, token } = useSelector((state: RootState) => state.auth);
-    const [images, setImages] = useState<string[]>([]);
-    const imageCache = useRef<Record<number, string[]>>({});
+    const images = useSelector((state: RootState) => selectVacationImages(state, vacation.id || 0));
+    // const imageCache = useRef<Record<number, string[]>>({});
 
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
@@ -47,28 +48,28 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
 
 
 
-    useEffect(() => {
-        const fetchImages = async () => {
-            if (!vacation.id) return;
+    // useEffect(() => {
+    //     const fetchImages = async () => {
+    //         if (!vacation.id) return;
             
-            // Check cache first
-            if (imageCache.current[vacation.id]) {
-                setImages(imageCache.current[vacation.id]);
-                return;
-            }
+    //         // Check cache first
+    //         if (imageCache.current[vacation.id]) {
+    //             setImages(imageCache.current[vacation.id]);
+    //             return;
+    //         }
 
-            try {
-                const vacationImages = await getImageForVacation(vacation.id);
-                // Store in cache
-                imageCache.current[vacation.id] = vacationImages;
-                setImages(vacationImages);
-            } catch (error) {
-                console.error('Error fetching images:', error);
-            }
-        };
+    //         try {
+    //             const vacationImages = await getImageForVacation(vacation.id);
+    //             // Store in cache
+    //             imageCache.current[vacation.id] = vacationImages;
+    //             setImages(vacationImages);
+    //         } catch (error) {
+    //             console.error('Error fetching images:', error);
+    //         }
+    //     };
 
-        fetchImages();
-    }, [vacation.id]);
+    //     fetchImages();
+    // }, [vacation.id]);
         const handleFollowClick = async () => {
             if (!user?.id || !vacation.id || !token) {
                 setError('User or Vacation ID or token is missing');

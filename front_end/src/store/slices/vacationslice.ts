@@ -10,6 +10,8 @@ interface VacationState {
     isInitialized: boolean;
     currentPage: number;
     itemsPerPage: number;
+    imageUrls: Record<number, string[]>;
+
 
 }
 
@@ -20,7 +22,8 @@ const initialState: VacationState = {
     error: null,
     isInitialized: false,
     currentPage: 1,
-    itemsPerPage: 10
+    itemsPerPage: 10,
+    imageUrls: {}
 };
 
 const vacationSlice = createSlice({
@@ -50,6 +53,10 @@ const vacationSlice = createSlice({
             // Update paginated vacations for current page
             state.paginatedVacations = sortedVacations.slice(startIndex, endIndex);
             state.status = 'succeeded';
+        },
+           // Add new reducer for storing image URLs
+           setVacationImages(state, action: PayloadAction<{ vacationId: number, images: string[] }>) {
+            state.imageUrls[action.payload.vacationId] = action.payload.images;
         },
         setCurrentPage(state, action: PayloadAction<number>) {
             state.currentPage = action.payload;
@@ -150,6 +157,7 @@ export const {
     setSuccessStatus,
     setPaginatedVacations,
     setAllVacations,
+    setVacationImages,
     updateVacationFollowerInfo,
     updateMultipleVacations
 } = vacationSlice.actions;
@@ -158,5 +166,7 @@ export const selectAllVacations = (state: RootState) => state.vacation.vacations
 export const selectPaginatedVacations = (state: RootState) => state.vacation.paginatedVacations;
 export const selectVacationStatus = (state: RootState) => state.vacation.status;
 export const selectVacationError = (state: RootState) => state.vacation.error;
-
+// Add selector for images
+export const selectVacationImages = (state: RootState, vacationId: number) => 
+    state.vacation.imageUrls[vacationId] || [];
 export default vacationSlice.reducer;

@@ -10,16 +10,16 @@ import "../../css/navbar.css";
 
 const NavbarWeb: React.FC = () => {
     const { status, user } = useSelector((state: RootState) => state.auth);
-    const { vacations } = useSelector((state: RootState) => state.vacation);
+    const { vacations, isInitialized } = useSelector((state: RootState) => state.vacation);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (user?.isAdmin) {
-            if (vacations.length === 0) dispatch(fetchVacations({ token: user.token })); // Fetch all vacations for dropdown
-        }
+    // useEffect(() => {
+    //     if (user?.isAdmin) {
+    //         if (vacations.length === 0) dispatch(fetchVacations({ token: user.token })); // Fetch all vacations for dropdown
+    //     }
 
-    }, [user, dispatch, vacations.length]);
+    // }, [user, dispatch, vacations.length]);
 
     const handleLogout = () => {
         if (window.confirm('Are you sure you want to logout?')) {
