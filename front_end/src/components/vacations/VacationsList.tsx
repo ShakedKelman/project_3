@@ -9,14 +9,13 @@ import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import { getVacations } from '../../api/vactions/vactions-api';
 import { getFollowersForVacation } from '../../api/followers/follower-api';
-import { setAllVacations, updateMultipleVacations, setLoadingStatus, setSuccessStatus, setPaginatedVacations, setInitialized, setErrorStatus } from '../../store/slices/vacationslice';
+import { setAllVacations, updateMultipleVacations, setLoadingStatus, setSuccessStatus, setPaginatedVacations, setInitialized, setErrorStatus, setCurrentPage } from '../../store/slices/vacationslice';
 import "../../css/vactionList.css";
 import { getImageForVacation } from '../../api/images/images-api';
 
 
 const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const { vacations, paginatedVacations, status: vacationStatus } = useSelector((state: RootState) => state.vacation);
     const { user, token } = useSelector((state: RootState) => state.auth);
 
     // const { vacations, error } = useSelector((state: RootState) => state.vacation);
@@ -30,7 +29,14 @@ const VacationList: React.FC = () => {
     // const [allVacations, setAllVacations] = useState<VacationModel[]>([]);
     // const deletedVacations: any[] = [];
     // const { token: reduxToken, status, count } = useSelector((state: RootState) => state.auth);
-
+    const { 
+        vacations, 
+        paginatedVacations, 
+        status: vacationStatus,
+        currentPage,
+        itemsPerPage 
+    } = useSelector((state: RootState) => state.vacation);
+ 
     const isAdmin = user?.isAdmin;
 
     // // Handling token and state logic
@@ -132,24 +138,44 @@ const VacationList: React.FC = () => {
     // }, [filter]);
 
     // Update total pages and handle pagination when filter or vacations change
+    // useEffect(() => {
+    //     const filteredVacations = isAdmin ? vacations : applyFilter(vacations, filter);
+    //     const total = Math.ceil(filteredVacations.length / 10);
+    //     setTotalPages(total);
+
+    //     // If current page is beyond new total, reset to page 1
+    //     if (page > total) {
+    //         setPage(1);
+    //     }
+
+    //     // Create a new array before sorting and slicing
+    //     const paginatedData = [...filteredVacations]
+    //         .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+    //         .slice((page - 1) * 10, page * 10);
+
+    //     dispatch(setPaginatedVacations(paginatedData));
+    // }, [filter, vacations, isAdmin, page]);
     useEffect(() => {
         const filteredVacations = isAdmin ? vacations : applyFilter(vacations, filter);
-        const total = Math.ceil(filteredVacations.length / 10);
+        const total = Math.ceil(filteredVacations.length / itemsPerPage);
         setTotalPages(total);
 
-        // If current page is beyond new total, reset to page 1
-        if (page > total) {
-            setPage(1);
+        if (currentPage > total && total > 0) {
+            dispatch(setCurrentPage(1));
         }
 
-        // Create a new array before sorting and slicing
-        const paginatedData = [...filteredVacations]
-            .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
-            .slice((page - 1) * 10, page * 10);
+        const sortedVacations = [...filteredVacations].sort((a, b) => 
+            new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+        );
 
-        dispatch(setPaginatedVacations(paginatedData));
-    }, [filter, vacations, isAdmin, page]);
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        dispatch(setPaginatedVacations(sortedVacations.slice(startIndex, endIndex)));
+    }, [filter, vacations, isAdmin, currentPage, itemsPerPage]);
 
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        dispatch(setCurrentPage(value));
+    };
 
 
     // const applyFilter = (vacations: VacationModel[], filter: string) => {
@@ -192,9 +218,9 @@ const VacationList: React.FC = () => {
             }
         });
     };
-    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
-        setPage(value);
-    };
+    // const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    //     setPage(value);
+    // };
 
     // const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     //     setPage(value);

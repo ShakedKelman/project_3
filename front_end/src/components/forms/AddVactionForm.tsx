@@ -5,7 +5,7 @@ import { Form, Button, Alert, InputGroup } from 'react-bootstrap';
 import { RootState, useAppDispatch } from '../../store/store';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { apiAddVacation } from '../../api/vactions/vactions-api';
-import { addVacation } from '../../store/slices/vacationslice';
+import { addVacation, setPaginatedVacations } from '../../store/slices/vacationslice';
 import { fetchPaginatedVacations, fetchVacations } from '../../api/vactions/vacationsThunk';
 import '../../css/addVacationForm.css';  // Add this import at the top
 import { useSelector } from 'react-redux';
@@ -20,6 +20,7 @@ const AddVacationForm: React.FC = () => {
     const [success, setSuccess] = useState<string | null>(null);
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const { vacations } = useSelector((state: RootState) => state.vacation);
 
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -73,16 +74,22 @@ const AddVacationForm: React.FC = () => {
                 formData.append('image', imageFile);
             }
 
-            const addedVacation = await apiAddVacation(formData);
-            dispatch(addVacation(addedVacation)); // Dispatch action to add vacation to Redux store
-            dispatch(fetchVacations({ token: token || undefined }));
-            dispatch(fetchPaginatedVacations({
-                page: 1,
-                limit: 10,
-                token: token || undefined
-            }));
-            setSuccess("Vacation added successfully");
+
+            const response = await apiAddVacation(formData);
+        
+            // Create vacation object with the form data and returned vacationId
+            const addedVacation = {
+                ...newVacation,
+                id: response.id,
+                followerCount: 0,
+                isFollowing: false,
+                imageFileName: imageFile?.name
+            };
+                
+            dispatch(addVacation(addedVacation));
+            setSuccess("added");
             navigate('/vacations');
+            
         } catch (error: any) {
             if (error.response && error.response.data) {
                 const backendMessage = error.response.data.message;
@@ -93,7 +100,7 @@ const AddVacationForm: React.FC = () => {
             console.error("Error adding vacation:", error);
         }
     };
-
+    
     return (
         <div className="add-vacation-container">
             <h2 className="add-vacation-title">Add New Vacation</h2>

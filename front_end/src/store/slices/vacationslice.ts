@@ -8,6 +8,8 @@ interface VacationState {
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
     isInitialized: boolean;
+    currentPage: number;
+    itemsPerPage: number;
 
 }
 
@@ -17,6 +19,8 @@ const initialState: VacationState = {
     status: 'idle',
     error: null,
     isInitialized: false,
+    currentPage: 1,
+    itemsPerPage: 10
 };
 
 const vacationSlice = createSlice({
@@ -24,10 +28,40 @@ const vacationSlice = createSlice({
     initialState,
     reducers: {
         // Core vacation CRUD operations
+        // addVacation(state, action: PayloadAction<VacationModel>) {
+        //     state.vacations.push(action.payload);
+        //     state.paginatedVacations.push(action.payload);
+        //     state.status = 'succeeded';
+            
+        // },
         addVacation(state, action: PayloadAction<VacationModel>) {
-            state.vacations.push(action.payload);
-            state.paginatedVacations.push(action.payload);
+            // Add to main vacations array
+            state.vacations.unshift(action.payload);
+            
+            // Always update paginated vacations immediately with the new sort order
+            const sortedVacations = [...state.vacations].sort((a, b) => 
+                new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+            );
+            
+            // Get current page start and end indexes
+            const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+            const endIndex = startIndex + state.itemsPerPage;
+            
+            // Update paginated vacations for current page
+            state.paginatedVacations = sortedVacations.slice(startIndex, endIndex);
             state.status = 'succeeded';
+        },
+        setCurrentPage(state, action: PayloadAction<number>) {
+            state.currentPage = action.payload;
+            
+            // Recalculate paginated vacations
+            const sortedVacations = [...state.vacations].sort((a, b) => 
+                new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+            );
+            
+            const startIndex = (action.payload - 1) * state.itemsPerPage;
+            const endIndex = startIndex + state.itemsPerPage;
+            state.paginatedVacations = sortedVacations.slice(startIndex, endIndex);
         },
         setInitialized(state) {
             state.isInitialized = true;
@@ -108,6 +142,7 @@ updateMultipleVacations(state, action: PayloadAction<VacationModel[]>) {
 export const {
     addVacation,
     setInitialized,
+    setCurrentPage,
     updateVacation,
     deleteVacationAction,
     setLoadingStatus,
