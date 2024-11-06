@@ -64,7 +64,7 @@ import { logoutUser } from './api/auth/authThunks';
 const App: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { count: apiCallCount, status } = useSelector((state: RootState) => state.auth);
-  const { auth } = useSelector((state: RootState) => state);
+//   const { auth } = useSelector((state: RootState) => state);
 
 
   useEffect(() => {

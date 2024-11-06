@@ -62,6 +62,8 @@ const vacationSlice = createSlice({
         setAllVacations(state, action: PayloadAction<VacationModel[]>) {
             state.vacations = action.payload;
             state.status = 'succeeded';
+            state.paginatedVacations = action.payload.slice(0, 10);
+
         },
   // Follower-related updates
   updateVacationFollowerInfo(state, action: PayloadAction<{ 
