@@ -75,7 +75,7 @@ const AddVacationForm: React.FC = () => {
             }
 
 
-            const response = await apiAddVacation(formData);
+            const response = await apiAddVacation(formData, token);
         
             // Create vacation object with the form data and returned vacationId
             const addedVacation = {

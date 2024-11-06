@@ -23,8 +23,8 @@ export const getVacations = async (id?: number, token?:string): Promise<Vacation
 
   
 // function to add vacation
-export const apiAddVacation = async (formData: FormData): Promise<VacationModel> => {
-let token = localStorage.getItem('token') || null;
+export const apiAddVacation = async (formData: FormData, token: string): Promise<VacationModel> => {
+// let token = localStorage.getItem('token') || null;
 
     try {
         const response = await axios.post(`${siteConfig.BASE_URL}vacations`, formData, {
