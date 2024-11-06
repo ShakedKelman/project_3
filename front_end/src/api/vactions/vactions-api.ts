@@ -1,12 +1,13 @@
 import axios from 'axios';
 import { VacationModel } from '../../model/VacationModel';
 import { siteConfig } from '../../utils/SiteConfig';
+import { store } from '../../store/store';
 
 
 
 
 // Fetch all vacations or a specific vacation by ID
-export const getVacations = async (id?: number, token?:string): Promise<VacationModel[]> => {
+export const getVacations = async (id?: number, token?: string): Promise<VacationModel[]> => {
     try {
         if (token === undefined || token === '' || token === null) throw new Error('no token provided');
 
@@ -21,10 +22,12 @@ export const getVacations = async (id?: number, token?:string): Promise<Vacation
 };
 
 
-  
+
 // function to add vacation
 export const apiAddVacation = async (formData: FormData): Promise<VacationModel> => {
-let token = localStorage.getItem('token') || null;
+    // let token = localStorage.getItem('token') || null;
+    const token = store.getState().auth.token;
+    if (!token) throw new Error('No token available');
 
     try {
         const response = await axios.post(`${siteConfig.BASE_URL}vacations`, formData, {
@@ -54,12 +57,12 @@ export const editVacation = async (id: number, formData: FormData, token: string
             },
             body: formData,
         });
-      // Check if the response is not successful
-      if (!response.ok) {
-        // Try to parse the error response as JSON
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update vacation');
-    }
+        // Check if the response is not successful
+        if (!response.ok) {
+            // Try to parse the error response as JSON
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to update vacation');
+        }
         console.log('Vacation updated successfully');
     } catch (error) {
         console.error("Error editing vacation:", error);
@@ -71,7 +74,7 @@ export const editVacation = async (id: number, formData: FormData, token: string
 
 // api/vactions-api.ts
 export const uploadVacationImage = async (vacationId: number, image: File, token: string): Promise<void> => {
-    
+
     const formData = new FormData();
     formData.append('image', image);
 
