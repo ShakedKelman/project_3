@@ -24,3 +24,5 @@ npm start
 
 9. to run tests in back end write in terminal:
 npm test
+
+10.if you would like to use the pre-made images go to the vacation-images file in the git repository and add the images.
