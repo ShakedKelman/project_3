@@ -49,26 +49,6 @@ imagesRoute.get(appConfig.routePrefix + "/images",
 );
 
 
-// imagesRoute.post(
-//     appConfig.routePrefix + "/image/:vacationId",
-//     async (req: Request, res: Response, next: NextFunction) => {
-//       try {
-//         const { vacationId } = req.params;
-//         const image = req.files?.image as UploadedFile;
-//         if (!image) {
-//           return res.status(StatusCode.BadRequest).send("Image file is required");
-//         }
-//         const imagePath = await saveVacationImage(Number(vacationId), image);      
-  
-//         res
-//           .status(StatusCode.Created)
-//           .json({ message: "Image added", imagePath });
-//       } catch (error) {
-//         next(error);
-//       }
-//     }
-//   );
-  
 
 
 imagesRoute.delete(appConfig.routePrefix + "/image/:vacationId/:imageName",

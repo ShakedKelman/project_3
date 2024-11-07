@@ -31,13 +31,6 @@ const decodeTokenAndGetUser = (token: string): UserModel | null => {
     }
 };
 
-// const initialState: AuthState = {
-//   user: null,
-//   token: localStorage.getItem('token') || null,
-//   status: 'idle',
-//   count: -1,
-//   error: null,
-// };
 // Update the initial state to decode token and set user only once
 const initialState: AuthState = {
     user: localStorage.getItem('token')
@@ -49,19 +42,11 @@ const initialState: AuthState = {
     error: null,
 };
 
-
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        // loginSuccess(state, action: PayloadAction<{ user: UserModel; token: string }>) {
-        //   state.user = action.payload.user;
-        //   state.token = action.payload.token;
-        //   state.status = 'succeeded';
-        //   state.error = null;
-        //   localStorage.setItem('user', JSON.stringify(action.payload.user));
-        //   localStorage.setItem('token', action.payload.token);
-        // },
+
         loginSuccess(state, action: PayloadAction<{ token: string }>) {
             state.token = action.payload.token;
             state.user = decodeTokenAndGetUser(action.payload.token);
@@ -69,12 +54,7 @@ const authSlice = createSlice({
             state.error = null;
             localStorage.setItem('token', action.payload.token);
         },
-        // loginFailure(state, action: PayloadAction<string>) {
-        //   state.error = action.payload;
-        //   state.status = 'failed';
-        //   state.token = null;
-        //   localStorage.removeItem('token');
-        // },
+    
         loginFailure(state, action: PayloadAction<string>) {
             state.error = action.payload;
             state.status = 'failed';
@@ -82,13 +62,7 @@ const authSlice = createSlice({
             localStorage.removeItem('token');
 
         },
-        // logout(state) {
-        //   state.user = null;
-        //   state.token = null;
-        //   state.status = 'idle';
-        //   localStorage.removeItem('user');
-        //   localStorage.removeItem('token');
-        // },
+ 
         logout(state) {
             state.user = null;
             state.token = null;
@@ -100,22 +74,6 @@ const authSlice = createSlice({
             state.status = 'loading';
             state.error = null;
         },
-        // registerSuccess(state, action: PayloadAction<{ user: UserModel; token: string }>) {
-        //   state.user = action.payload.user;
-        //   state.token = action.payload.token;
-        //   state.status = 'succeeded';
-        //   state.error = null;
-        //   localStorage.setItem('user', JSON.stringify(action.payload.user));
-        //   localStorage.setItem('token', action.payload.token);
-        // },
-        // registerSuccess(state, action: PayloadAction<{ user: UserModel; token: string }>) {
-        //     state.user = action.payload.user;
-        //     state.token = action.payload.token;
-        //     state.status = 'succeeded';
-        //     state.error = null;
-        //     localStorage.setItem('token', action.payload.token);
-
-        //   },
         // Update the registerSuccess action to only accept token
         registerSuccess(state, action: PayloadAction<{ token: string }>) {
             state.token = action.payload.token;
@@ -124,11 +82,7 @@ const authSlice = createSlice({
             state.error = null;
             localStorage.setItem('token', action.payload.token);
         },
-        // registerFailure(state, action: PayloadAction<string>) {
-        //   state.error = action.payload;
-        //   state.status = 'failed';
-        //   state.token = null;
-        // },
+   
         registerFailure(state, action: PayloadAction<string>) {
             state.error = action.payload;
             state.status = 'failed';

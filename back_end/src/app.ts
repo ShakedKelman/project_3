@@ -24,8 +24,6 @@ server.use(fileUpload({
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
 }));
 
-// Doorman security chcek
-// server.use(doorman);
 
 // log
 server.use(logMW);

@@ -109,8 +109,6 @@ async (req: Request, res: Response, next: NextFunction) => {
 
 
 
-
-
 // Route to get followers for a specific vacation
 vacationRoutes.get(appConfig.routePrefix + "/vacations/:id/followers", verifyToeknMW,
     async (req: Request, res: Response, next: NextFunction) => {

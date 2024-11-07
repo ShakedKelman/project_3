@@ -141,7 +141,6 @@ const copyImages = async () => {
     const sourceDir = path.join(__dirname, 'images');
     const targetDir = path.join(__dirname, '..','assets/images'); // Change to your desired target directory
 
-  // Delete existing files in the target directory
   // Delete existing files and subdirectories in the target directory
   const deleteFiles = (dir) => {
     fs.readdir(dir, (err, files) => {

@@ -32,8 +32,7 @@ const formatDate = (isoDate: string): string => {
 
 interface VacationCardProps {
     vacation: VacationModel;
-    // onChangeFn: Function;
-    // token: string;
+   
 }
 
 const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {

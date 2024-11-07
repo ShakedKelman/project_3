@@ -11,7 +11,6 @@ import VacationList from '../vacations/VacationsList';
 import Report from '../vacationReport';
 
 const SiteRoutes: React.FC = () => {
-//   const { status, user, count: apiCallCount } = useSelector((state: RootState) => state.auth);
   const { status, user } = useSelector((state: RootState) => state.auth);
   const isAuthenticated = status === 'succeeded' && user !== null;// && apiCallCount && apiCallCount > 0;
   const isAdmin = user?.isAdmin;

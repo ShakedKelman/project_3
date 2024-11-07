@@ -53,7 +53,6 @@ const RegisterComponent: React.FC = () => {
 
         try {
             const userToRegister: UserModel = { email, password, firstName, lastName, isAdmin };
-            //   const { user: registeredUser, token } = await register(userToRegister);
             const token = await register(userToRegister);
             dispatch(registerSuccess({ token }));
 

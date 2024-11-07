@@ -17,11 +17,6 @@ const VacationList: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { vacations, paginatedVacations, status: vacationStatus } = useSelector((state: RootState) => state.vacation);
     const { user, token } = useSelector((state: RootState) => state.auth);
-
-    // const { vacations, error } = useSelector((state: RootState) => state.vacation);
-    // const { user, token, status } = useSelector((state: RootState) => state.auth);
-    // const followedVacations = useSelector(selectVacations);
-
     const [filter, setFilter] = useState<string>('all');
     const [page, setPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(0);
@@ -33,7 +28,6 @@ const VacationList: React.FC = () => {
     useEffect(() => {
         let isSubscribed = true;
 
-        // if (loading) return; // Prevent fetching if loading is true
         if (!token) return;
 
         const fetchData = async () => {
@@ -60,10 +54,7 @@ const VacationList: React.FC = () => {
 
                 // Update store with complete vacation data
                 dispatch(setAllVacations(vacationsWithFollowers));
-
-
            
-              // Instead of dispatching fetchPaginatedVacations, directly set the paginated data
               const initialPaginatedData = vacationsWithFollowers.slice(0, 10);
               dispatch(setPaginatedVacations(initialPaginatedData));
 
@@ -133,9 +124,7 @@ const VacationList: React.FC = () => {
             .slice(start, end);
         dispatch(setPaginatedVacations(paginatedData));
     };
-    // const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    //     setPage(value);
-    // };
+  
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFilter(e.target.value);
@@ -144,30 +133,7 @@ const VacationList: React.FC = () => {
 
     if (vacationStatus === 'loading') return <div>Loading...</div>;
 
-    // if (status === 'loading' || loading) return <div>Loading...</div>;
-    // // Get displayed vacations based on filters and pagination
-    // const filteredVacations = isAdmin ? paginatedVacations : applyFilter(paginatedVacations, filter);
-    // const sortedVacations = [...filteredVacations].sort((a, b) => {
-    //     return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
-    // });
-
-    // let filteredVacations = allVacations;
-    // if (!isAdmin) {
-    //     // Filter vacations
-    //     filteredVacations = applyFilter(allVacations, filter);
-    // }
-
-    // // sort vacations
-    // const sortedVacations = [...filteredVacations].sort((a, b) => {
-    //     const dateA = new Date(a.startDate);
-    //     const dateB = new Date(b.startDate);
-    //     return dateA.getTime() - dateB.getTime();
-    // });
-
-    // // Apply pagination to sorted vacations
-    // const startIndex = (page - 1) * 10;
-    // const paginatedVacations = sortedVacations.slice(startIndex, startIndex + 10);
-
+   
     return (
         <div className="container">
             {!isAdmin && (

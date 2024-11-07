@@ -2,13 +2,13 @@ export class VacationModel {
     id?: number;
     destination: string;
     description: string;
-    startDate: string; // ISO date string or format you prefer
-    endDate: string; // ISO date string or format you prefer
+    startDate: string; 
+    endDate: string;
     price: number;
     imageFileName?: string;
     image_path?: string;
-    followerCount?: number; // Add this property
-    isFollowing?: boolean; // Add this property
+    followerCount?: number; 
+    isFollowing?: boolean; 
 
 
     constructor(obj: Partial<VacationModel>) {

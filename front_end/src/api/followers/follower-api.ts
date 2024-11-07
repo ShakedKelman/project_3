@@ -16,7 +16,7 @@ export const getFollowersForVacation = async (vacationId: number, token?:string)
         });
         // Log the number of followers received
         const followerCount = response.data.length;
-        console.log(`Number of followers: ${followerCount}`);
+        // console.log(`Number of followers: ${followerCount}`);
         
         return response.data.map((id: number) => ({ id })); // Ensure data structure is [{ id: number }]
     

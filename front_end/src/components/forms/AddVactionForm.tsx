@@ -7,7 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { apiAddVacation } from '../../api/vactions/vactions-api';
 import { addVacation } from '../../store/slices/vacationslice';
 import { fetchPaginatedVacations, fetchVacations } from '../../api/vactions/vacationsThunk';
-import '../../css/addVacationForm.css';  // Add this import at the top
+import '../../css/addVacationForm.css';  
 import { useSelector } from 'react-redux';
 
 
@@ -158,7 +158,7 @@ const AddVacationForm: React.FC = () => {
                             required
                             placeholder="Enter price"
                             min="0"
-                            step="1" // Change step to 1 to increment/decrement by 1
+                            step="1" 
                         />
                     </InputGroup>
                 </Form.Group>

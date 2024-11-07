@@ -11,7 +11,7 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     vacation: vacationReducer, 
-    followers: followersReducer, // Add followersReducer
+    followers: followersReducer, 
 
 
   },

@@ -18,7 +18,6 @@ export function verifyToken(token: string, adminRequired: boolean = false) {
     }
 
     const { password, ...userWithoutPassword } = decoded.userWithoutPassword;
-    // Explicitly include firstName and lastName
     
     const userInfo = {
         ...userWithoutPassword,

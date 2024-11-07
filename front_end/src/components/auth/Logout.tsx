@@ -12,7 +12,6 @@ const Logout: React.FC = () => {
   React.useEffect(() => {
     if (window.confirm('Are you sure you want to logout?')) {
         
-    //   dispatch(clearVacationsPerUser())
     dispatch(clearVacationsState());
     
       dispatch(logoutUser()); // Log the user out

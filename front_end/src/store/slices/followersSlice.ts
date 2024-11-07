@@ -16,16 +16,15 @@ interface FollowersState {
 
 const initialState: FollowersState = {
     followers: [],
-    vacations: [],  // Initialize this
+    vacations: [], 
     status: 'idle',
     error: null,
 };
-// ... existing imports ...
+
 const followersSlice = createSlice({
     name: 'followers',
     initialState,
     reducers: {
-        // State management
         clearVacationsState: (state) => {
             state.vacations = [];
             state.followers = [];
@@ -33,7 +32,6 @@ const followersSlice = createSlice({
             state.error = null;
         },
 
-        // Status updates
         setLoadingStatus: (state) => {
             state.status = 'loading';
             state.error = null;
@@ -93,7 +91,6 @@ const followersSlice = createSlice({
                 vacation.followerCount = action.payload.followerCount;
             }
         },
-
  
         // Batch updates
         updateBatchFollowerInfo: (state, action: PayloadAction<{

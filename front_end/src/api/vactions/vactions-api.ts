@@ -13,7 +13,7 @@ export const getVacations = async (id?: number, token?: string): Promise<Vacatio
 
         const url = id ? `${siteConfig.BASE_URL}vacations/${id}?token=${token}` : `${siteConfig.BASE_URL}vacations?token=${token}`;
         const response = await axios.get(url);
-        console.log('got vacations successfully', response.data);
+        // console.log('got vacations successfully', response.data);
         return response.data; // Ensure this matches `VacationModel[]`
     } catch (error) {
         console.error("Error fetching vacations:", error);
@@ -49,7 +49,7 @@ export const editVacation = async (id: number, formData: FormData, token: string
 
     try {
         const entries = Array.from(formData.entries());
-        console.log(entries); // Should log array of key-value pairs           
+        // console.log(entries); // Should log array of key-value pairs           
         const response = await fetch(`${siteConfig.BASE_URL}vacation/${id}`, {
             method: 'PUT',
             headers: {

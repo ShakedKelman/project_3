@@ -33,7 +33,6 @@ const NavbarWeb: React.FC = () => {
     };
 
     const isLoggedIn = status === 'succeeded' && user !== null;
-    // const isAdmin = user?.isAdmin;
     const isAdmin = Boolean(user?.isAdmin); // Converts 0 to false, 1 to true
 
 

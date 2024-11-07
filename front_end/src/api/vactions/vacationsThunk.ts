@@ -11,7 +11,7 @@ export const fetchVacations = createAsyncThunk(
     async ({ token } : {token?: string; }, thunkAPI) => {
         try {
             const vacations = await getVacations(undefined, token);
-            console.log('Fetched vacations:', vacations); // Add this log
+            // console.log('Fetched vacations:', vacations); // Add this log
 
             return vacations;
         } catch (error) {
@@ -42,7 +42,6 @@ export const deleteVacation = createAsyncThunk(
     async (id: number, thunkAPI) => {
         try {
             await deleteVacation(id);
-            // Optionally fetch the updated list of vacations
             return id;
         } catch (error) {
             return thunkAPI.rejectWithValue('Failed to delete vacation');

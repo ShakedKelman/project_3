@@ -5,8 +5,8 @@ interface VacationInterface {
     id?: number;
     destination: string;
     description: string;
-    startDate: string; // ISO date string or format you prefer
-    endDate: string; // ISO date string or format you prefer
+    startDate: string; 
+    endDate: string;
     price: number;
     imageFileName?: string;
     image_path?: string;
@@ -21,7 +21,7 @@ export default class VacationModel {
     startDate: string;
     endDate: string;
     price: number;
-    imageFileName?: string; // Make this optional
+    imageFileName?: string; 
     image_path?: string;
     image?: string;
 
@@ -34,8 +34,8 @@ export default class VacationModel {
         this.startDate = vacation.startDate;
         this.endDate = vacation.endDate;
         this.price = vacation.price;
-        this.imageFileName = vacation.imageFileName; // Optional field
-        this.image_path = vacation.image_path; // Optional field
+        this.imageFileName = vacation.imageFileName; 
+        this.image_path = vacation.image_path; 
         this.image = vacation.image;
 
     }
@@ -47,9 +47,9 @@ export default class VacationModel {
         startDate: Joi.date().required(),
         endDate: Joi.date().required().greater(Joi.ref('startDate')),
         price: Joi.number().required().positive().max(10000),
-        imageFileName: Joi.string().optional().allow('').max(255), // Allow empty string but not required
-        image_path: Joi.string().optional().allow('').max(255), // Allow empty string but not required
-        image: Joi.string().optional().allow('').max(255)  // dummy argument to allow PUT to send the file into req.files
+        imageFileName: Joi.string().optional().allow('').max(255), 
+        image_path: Joi.string().optional().allow('').max(255), 
+        image: Joi.string().optional().allow('').max(255)  
     });
 
     validate(): void {
