@@ -30,10 +30,36 @@ ChartJS.register(
     BarElement
 );
 
-// interface VacationsProps {
-//     token?: string;
-//  }
-
+const reportStyles = {
+    container: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        width: '100%',
+        padding: '20px',
+        fontFamily: "'Poppins', sans-serif",
+    },
+    reportCard: {
+        width: '800px',
+        padding: '30px',
+        borderRadius: '15px',
+        boxShadow: '0 8px 32px rgba(31, 38, 135, 0.15)',
+    },
+    title: {
+        color: '#2C3E50',
+        textAlign: 'center' as const,
+        marginBottom: '30px',
+        fontSize: '2.5rem',
+        textShadow: '2px 2px 4px rgba(0, 0, 0, 0.1)',
+    },
+    buttonContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '15px',
+        marginTop: '25px',
+    }
+};
 
 const Report: React.FC = () => {
     const { token, user } = useSelector((state: RootState) => state.auth);
@@ -126,37 +152,40 @@ const Report: React.FC = () => {
     };
 
     return (
-            <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                height: '100vh', 
-                width: '100vw',
-                overflow: 'auto'
-            }}>
-                <div style={{ 
-                    width: '700px', 
-                    height: '700px', 
-                    overflow: 'auto'
-                }}>
-                    <h2>Vacation Report</h2>
-                    <Bar data={chartData} options={chartOptions} />
-                    <div>
+        <div style={reportStyles.container}>
+            <div style={reportStyles.reportCard}>
+                <h2 style={reportStyles.title}>✈️ Vacation Destinations Report 🌴</h2>
+                <Bar data={chartData} options={chartOptions} />
+                <div style={reportStyles.buttonContainer}>
                     <Button 
                         variant="primary" 
                         className="me-2" 
                         onClick={handleExportExcel}
+                        style={{
+                            backgroundColor: '#4CAF50',
+                            borderColor: '#4CAF50',
+                        }}
                     >
-                        Export to Excel
-                    </Button>                        <CSVLink 
+                        📊 Export to Excel
+                    </Button>
+                    <CSVLink 
                         data={data} 
                         filename="vacation_report.csv"
+                        style={{ textDecoration: 'none' }}
                     >
-                        <Button variant="success">Export to CSV</Button>
+                        <Button 
+                            variant="success"
+                            style={{
+                                backgroundColor: '#2196F3',
+                                borderColor: '#2196F3',
+                            }}
+                        >
+                            📋 Export to CSV
+                        </Button>
                     </CSVLink>
-                    </div>
                 </div>
             </div>
+        </div>
         );
     };
     
