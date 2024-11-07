@@ -34,6 +34,8 @@ server.use(updateApiCount);
 // load body
 server.use(express.json());
 
+server.options('*', cors()); // Enable pre-flight for all routes
+
 // register controllers
 server.use("/", userRoutes);
 server.use("/", vacationRoutes);
