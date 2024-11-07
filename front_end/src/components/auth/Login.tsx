@@ -27,15 +27,14 @@ const LoginComponent: React.FC = () => {
 
     return (
         <div className="container mt-5">
-            <div style={{ backgroundColor: '#b4f9f2', padding: '20px', borderRadius: '8px' }}>
+            <div className="login-container">
 
-
-                <h2 style={{ color: 'black' }}>Login</h2>
-                {error && <Alert variant="danger">{error}</Alert>}
+            <h2 className="login-title">Welcome Back!</h2>
+            {error && <Alert variant="danger">{error}</Alert>}
 
                 <Form onSubmit={handleLogin}>
-                    <Form.Group className="mb-3" controlId="formEmail">
-                        <Form.Label>Email address</Form.Label>
+                <Form.Group className="mb-4" controlId="formEmail">
+                <Form.Label>Email address</Form.Label>
                         <Form.Control
                             type="email"
                             placeholder="Enter email"
@@ -46,7 +45,7 @@ const LoginComponent: React.FC = () => {
                         />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="formPassword">
+                    <Form.Group className="mb-4" controlId="formPassword">
                         <Form.Label>Password</Form.Label>
                         <Form.Control
                             type="password"
@@ -61,14 +60,15 @@ const LoginComponent: React.FC = () => {
                         className="login-button" // Use your custom button class
                         type="submit"
                         disabled={authStatus === 'loading'}
-                        style={{ backgroundColor: '#007B7F', color: 'white', marginTop: '20px', padding: '10px 20px' }}
 
                     >
                         {authStatus === 'loading' ? 'Logging in...' : 'Login'}
                     </Button>
 
                 </Form>
-                <p>Don't have an account? <Link to="/register">Register</Link></p>
+                <div className="register-link">
+                    <p>Don't have an account? <Link to="/register">Create one now</Link></p>
+                </div>
             </div>
         </div>
 

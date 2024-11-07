@@ -2,17 +2,18 @@ import React, { useState } from 'react';
 import { VacationModel } from '../../model/VacationModel';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Alert, InputGroup } from 'react-bootstrap';
-import { useAppDispatch } from '../../store/store';
+import { RootState, useAppDispatch } from '../../store/store';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { apiAddVacation } from '../../api/vactions/vactions-api';
 import { addVacation } from '../../store/slices/vacationslice';
 import { fetchPaginatedVacations, fetchVacations } from '../../api/vactions/vacationsThunk';
+import '../../css/addVacationForm.css';  // Add this import at the top
+import { useSelector } from 'react-redux';
 
-interface VacationsProps {
-    token?: string;
- }
 
-const AddVacationForm: React.FC<VacationsProps> = (props)  => {
+
+const AddVacationForm: React.FC = () => {
+    const { token } = useSelector((state: RootState) => state.auth);
     const [newVacation, setNewVacation] = useState<VacationModel>(new VacationModel({}));
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -20,7 +21,6 @@ const AddVacationForm: React.FC<VacationsProps> = (props)  => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const { token } = props;
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -48,6 +48,10 @@ const AddVacationForm: React.FC<VacationsProps> = (props)  => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!token) {
+            setError("Authentication required");
+            return;
+        }
         if (isDateInThePast(newVacation.startDate) || isDateInThePast(newVacation.endDate)) {
             setError("Start Date and End Date must be in the future.");
             return;
@@ -71,8 +75,12 @@ const AddVacationForm: React.FC<VacationsProps> = (props)  => {
 
             const addedVacation = await apiAddVacation(formData);
             dispatch(addVacation(addedVacation)); // Dispatch action to add vacation to Redux store
-            dispatch(fetchVacations({token})); // Fetch all vacations to update the dropdown
-            dispatch(fetchPaginatedVacations({ page: 1, limit: 10, token })); // Fetch paginated vacations
+            dispatch(fetchVacations({ token: token || undefined }));
+            dispatch(fetchPaginatedVacations({
+                page: 1,
+                limit: 10,
+                token: token || undefined
+            }));
             setSuccess("Vacation added successfully");
             navigate('/vacations');
         } catch (error: any) {
@@ -85,13 +93,13 @@ const AddVacationForm: React.FC<VacationsProps> = (props)  => {
             console.error("Error adding vacation:", error);
         }
     };
-    
+
     return (
-        <div className="container">
-<h2 className="my-4 text-center">Add New Vacation</h2>
+        <div className="add-vacation-container">
+            <h2 className="add-vacation-title">Add New Vacation</h2>
             {error && <Alert variant="danger">{error}</Alert>}
             {success && <Alert variant="success">{success}</Alert>}
-            <Form onSubmit={handleSubmit} style={{ maxWidth: '600px', margin: '0 auto', backgroundColor: '#007B7F', padding: '20px', borderRadius: '5px', color:"white" }}>
+            <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="formDestination">
                     <Form.Label>Destination</Form.Label>
                     <Form.Control
@@ -139,21 +147,21 @@ const AddVacationForm: React.FC<VacationsProps> = (props)  => {
                 </Form.Group>
 
                 <Form.Group controlId="formPrice">
-    <Form.Label>Price</Form.Label>
-    <InputGroup>
-        <InputGroup.Text>$</InputGroup.Text>
-        <Form.Control
-            type="number"
-            name="price"
-            value={newVacation.price || 0}
-            onChange={handlePriceChange}
-            required
-            placeholder="Enter price"
-            min="0"
-            step="1" // Change step to 1 to increment/decrement by 1
-        />
-    </InputGroup>
-</Form.Group>
+                    <Form.Label>Price</Form.Label>
+                    <InputGroup>
+                        <InputGroup.Text>$</InputGroup.Text>
+                        <Form.Control
+                            type="number"
+                            name="price"
+                            value={newVacation.price || 0}
+                            onChange={handlePriceChange}
+                            required
+                            placeholder="Enter price"
+                            min="0"
+                            step="1" // Change step to 1 to increment/decrement by 1
+                        />
+                    </InputGroup>
+                </Form.Group>
 
 
                 <Form.Group controlId="formImage">
@@ -165,11 +173,11 @@ const AddVacationForm: React.FC<VacationsProps> = (props)  => {
                         required
                     />
                 </Form.Group>
-
-                <Button 
-                    variant="success" 
-                    type="submit" 
-                    style={{ backgroundColor: '#85f5e9', color: 'black', marginTop: '20px', padding: '10px 20px' }}
+                <Button
+                    variant="outline-primary"
+                    type="submit"
+                    style={{ margin: '10px' }}
+                    className="submit-button"
                 >
                     Add Vacation
                 </Button>

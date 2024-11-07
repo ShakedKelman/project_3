@@ -7,9 +7,10 @@ export class VacationModel {
     price: number;
     imageFileName?: string;
     image_path?: string;
+    followerCount?: number; // Add this property
+    isFollowing?: boolean; // Add this property
 
 
-  
     constructor(obj: Partial<VacationModel>) {
         this.id = obj.id;
         this.destination = obj.destination ?? '';
@@ -19,7 +20,7 @@ export class VacationModel {
         this.price = obj.price ?? 0;
         this.imageFileName = obj.imageFileName;
         this.image_path = obj.image_path;
-
-
+        this.followerCount = obj.followerCount ?? 0; 
+        this.isFollowing = obj.isFollowing ?? false; 
     }
 }

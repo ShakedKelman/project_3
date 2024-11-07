@@ -1,8 +1,8 @@
-.login-container {
+.register-container {
     background: linear-gradient(135deg, 
-        rgba(135, 206, 235, 0.9), /* Sky Blue */
-        rgba(0, 119, 190, 0.8), /* Ocean Blue */
-        rgba(0, 87, 146, 0.9) /* Deep Ocean */
+        rgba(173, 216, 230, 0.9), /* Light Blue */
+        rgba(135, 206, 235, 0.8), /* Sky Blue */
+        rgba(176, 224, 230, 0.9)  /* Powder Blue */
     );
     padding: 40px;
     border-radius: 15px;
@@ -11,16 +11,17 @@
     margin: 0 auto;
 }
 
-.login-title {
-    color: #2C5282;
+.register-title {
+    color: #ffffff;
     font-size: 2.5rem;
     margin-bottom: 30px;
     font-weight: 600;
     text-align: center;
 }
 
-.login-button {
-    background-color: #2C5282;
+
+.register-button {
+    background-color: #87CEEB; /* Sky Blue */
     color: white;
     border: none;
     padding: 12px 30px;
@@ -29,13 +30,14 @@
     transition: all 0.3s ease;
 }
 
-.login-button:hover,
-.login-button:focus {
-    background-color: #1A365D;
+.register-button:hover,
+.register-button:focus {
+    background-color: #6CB4D1; /* Darker Sky Blue */
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
+
 
 .form-control {
     padding: 12px;
@@ -44,21 +46,21 @@
 }
 
 .form-control:focus {
-    border-color: #2C5282;
-    box-shadow: 0 0 0 3px rgba(44, 82, 130, 0.2);
+    border-color: #87CEEB; /* Sky Blue */
+    box-shadow: 0 0 0 3px rgba(135, 206, 235, 0.2);
 }
 
-.register-link {
+.login-link {
     text-align: center;
     margin-top: 20px;
 }
 
-.register-link a {
-    color: #e3e8ee;
+.login-link a {
+    color: #ffffff;
     text-decoration: none;
     font-weight: 500;
 }
 
-.register-link a:hover {
+.login-link a:hover {
     text-decoration: underline;
 }
