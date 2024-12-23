@@ -26,6 +26,8 @@ const LoginComponent: React.FC = () => {
     };
 
     return (
+        <div className="login-page">
+
         <div className="container mt-5">
             <div className="login-container">
 
@@ -34,7 +36,6 @@ const LoginComponent: React.FC = () => {
 
                 <Form onSubmit={handleLogin}>
                 <Form.Group className="mb-4" controlId="formEmail">
-                <Form.Label>Email address</Form.Label>
                         <Form.Control
                             type="email"
                             placeholder="Enter email"
@@ -46,7 +47,6 @@ const LoginComponent: React.FC = () => {
                     </Form.Group>
 
                     <Form.Group className="mb-4" controlId="formPassword">
-                        <Form.Label>Password</Form.Label>
                         <Form.Control
                             type="password"
                             placeholder="Password"
@@ -57,8 +57,9 @@ const LoginComponent: React.FC = () => {
                         />
                     </Form.Group>
                     <Button
-                        className="login-button" // Use your custom button class
+                       className="btn btn-white login-button" // Use your custom button class
                         type="submit"
+                        variant="outline-light"
                         disabled={authStatus === 'loading'}
 
                     >
@@ -70,6 +71,7 @@ const LoginComponent: React.FC = () => {
                     <p>Don't have an account? <Link to="/register">Create one now</Link></p>
                 </div>
             </div>
+        </div>
         </div>
 
     );

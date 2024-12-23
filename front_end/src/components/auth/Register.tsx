@@ -73,6 +73,8 @@ const RegisterComponent: React.FC = () => {
 
 
     return (
+        <div className="register-page">
+
         <Container className="mt-4">
             <div className="register-container">
 
@@ -80,7 +82,6 @@ const RegisterComponent: React.FC = () => {
                 {error && <Alert variant="danger">{error}</Alert>}
                 <Form>
                     <Form.Group className="mb-3" controlId="formFirstName">
-                        <Form.Label>First Name</Form.Label>
                         <Form.Control
                             type="text"
                             value={firstName}
@@ -89,7 +90,6 @@ const RegisterComponent: React.FC = () => {
                         />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formLastName">
-                        <Form.Label>Last Name</Form.Label>
                         <Form.Control
                             type="text"
                             value={lastName}
@@ -98,7 +98,6 @@ const RegisterComponent: React.FC = () => {
                         />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formEmail">
-                        <Form.Label>Email</Form.Label>
                         <Form.Control
                             type="email"
                             value={email}
@@ -107,7 +106,6 @@ const RegisterComponent: React.FC = () => {
                         />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formPassword">
-                        <Form.Label>Password</Form.Label>
                         <Form.Control
                             type="password"
                             value={password}
@@ -117,6 +115,7 @@ const RegisterComponent: React.FC = () => {
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Check
+                         className="text-start"
                             type="checkbox"
                             checked={isAdmin}
                             onChange={() => setIsAdmin(!isAdmin)}
@@ -126,15 +125,19 @@ const RegisterComponent: React.FC = () => {
                     <Button
                         className="register-button"
                         onClick={handleRegister}
+                        type="submit"
+                        variant="outline-light"
                     >
                         Register
                     </Button>
                 </Form>
-                <div className="login-link">
+                <div className="register-link">
                     <p>Already a member? <Link to="/login">Login</Link></p>
                 </div>
             </div>
         </Container>
+        </div>
+
     );
 };
 
