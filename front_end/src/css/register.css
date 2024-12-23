@@ -1,13 +1,18 @@
 /* Background for the entire page with vacation theme (sunset beach or tropical feel) */
 .register-page {
-    background-size: cover;
-    background: url('../../../../../../seamless-marine-pattern-shells-light-blue-graphic-background-seashells-64284249.webp') no-repeat center center fixed; /* Replace with a vacation-themed image */
+    background: url('../../../../../../Untitled\ 2.png') center center fixed;
+    background-size: auto; /* Ensures the image doesn't stretch */
+    background-repeat: repeat; /* Makes the background image repeat */
     height: 100vh;
     display: flex;
-    justify-content: flex-end; /* Align to the left */
+    justify-content: center;
     align-items: center;
-    padding-right: 20px; /* Adjust left padding */
+    padding: 0; /* Ensures there's no padding */
+    margin: 0; /* Ensures there's no margin */
+    overflow: hidden; /* Avoids any potential scrollbars that might appear */
 }
+
+
 
 /* Main register container with solid background and sleek design */
 .register-container {

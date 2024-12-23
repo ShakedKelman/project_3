@@ -174,7 +174,7 @@ const AddVacationForm: React.FC = () => {
                     />
                 </Form.Group>
                 <Button
-                    variant="outline-primary"
+                    variant="outline-light"
                     type="submit"
                     style={{ margin: '10px' }}
                     className="submit-button"

@@ -215,10 +215,10 @@ const EditVacationForm: React.FC = () => {
                     onChange={handleImageChange}
                 />
             </Form.Group>
-            <Button variant="outline-primary" type="submit" style={{ margin: '10px' }}>
+            <Button variant="outline-light" type="submit" style={{ margin: '10px' }}>
                 Update Vacation
             </Button>
-            <Button variant="outline-primary" onClick={handleCancel}>
+            <Button variant="outline-light" onClick={handleCancel}>
                 Cancel
             </Button>
         </Form>

@@ -40,7 +40,7 @@ const NavbarWeb: React.FC = () => {
  
     return (
         <Navbar className="navbar-lilac" variant="light">
-            <Container>
+            <Container className='navbar-text'>
                 <Navbar.Brand as={Link} to={isLoggedIn ? "/vacations" : "/login"}>
                     {isLoggedIn ? 'Vacations' : 'Login'}
                 </Navbar.Brand>

@@ -1,4 +1,4 @@
-
+/* Add Vacation Form */
 .add-vacation-container {
     max-width: 500px;
     margin: 1.5rem auto;
@@ -13,6 +13,7 @@
     text-align: center;
     margin-bottom: 1.5rem;
     color: #8cdad5; /* Updated color */
+    font-size: 2rem;
 }
 
 .add-vacation-form button {
@@ -23,6 +24,7 @@
     transition: all 0.2s ease-in-out;
     padding: 8px 16px;
     margin: 10px;
+    width: 100%;
 }
 
 .add-vacation-form button:hover {
@@ -48,19 +50,29 @@
     box-shadow: 0 2px 8px rgba(0, 123, 127, 0.1);
 }
 
-.add-vacation-form button {
-    background-color: white;
-    color: #8cdad5; /* Updated color */
-    border: 1px solid #007b7f4f;
-    border-radius: 6px;
-    transition: all 0.2s ease-in-out;
-    padding: 8px 16px;
-    margin: 10px;
+/* Custom Radio Button Styling */
+.custom-radio {
+    margin-bottom: 1rem;
 }
 
-.add-vacation-form button:hover {
-    background-color: #8cdad5 !important; /* Updated color */
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 123, 127, 0.1);
+.custom-radio .form-check-label {
+    font-weight: 500;
+}
+
+/* Form Group styling */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Input field Styling */
+.form-control {
+    padding: 1rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    background-color: #ffffff;
+}
+
+.form-control:focus {
+    border-color: #8cdad5;
+    box-shadow: 0 0 0 3px rgba(140, 218, 213, 0.2);
 }

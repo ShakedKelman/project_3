@@ -1,27 +1,67 @@
-.custom-radio {
-    margin-bottom: 1rem;
-}
-
-.custom-radio .form-check-label {
-    font-weight: 500;
-}
-
+/* Edit Vacation Form */
 .edit-vacation-form {
-    max-width: 500px;
+    max-width: 500px; /* Increased width for a wider form */
     margin: 1.5rem auto;
-    padding: 1.5rem;
-    background-color: rgba(140, 218, 213, 0.1);  /* Very light, translucent version of #8cdad5 */
-    border: 2px solid #8cdad5;  /* Updated color */
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    padding: 30px; /* Reduced padding to make the form shorter */
+    background-color: rgba(102, 186, 205, 0.8); /* Semi-transparent light turquoise, same as login */
+    border-radius: 20px; /* Same border-radius as login */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Same shadow effect */
+    text-align: center; /* Center the text */
+    transition: transform 0.3s ease;
+}
+
+.edit-vacation-form:hover {
+    transform: translateY(-5px); /* Light hover effect */
 }
 
 .form-title {
     text-align: center;
     margin-bottom: 1.5rem;
-    color: #8cdad5; /* Updated color */
+    color: #e8f0f0; /* Calming light teal color */
+    font-size: 2.5rem; /* Adjusted title size to be smaller */
+    font-weight: 600;
+    letter-spacing: 1px;
 }
 
+/* Button styling */
+.edit-vacation-form button {
+    color: white;
+    border: none;
+    padding: 12px 24px; /* Reduced padding for smaller button */
+    font-size: 1.1rem; /* Adjusted font size */
+    width: 100%;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.edit-vacation-form button:hover,
+.edit-vacation-form button:focus {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Group styling */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Input field Styling */
+.form-control {
+    padding: 14px; /* Reduced padding for smaller input fields */
+    border: 1px solid #E2E8F0;
+    border-radius: 10px; /* Same border-radius as login */
+    background-color: #ffffff;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 15px; /* Reduced margin */
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 3px rgba(43, 122, 119, 0.2);
+}
+
+/* Image Preview Styling */
 .image-preview {
     text-align: center;
     margin: 1.5rem 0;
@@ -34,36 +74,31 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.button-group button {
+.edit-vacation-form .submit-button {
     background-color: white;
-    color: #8cdad5; /* Updated color */
-    border: 1px solid #007b7f4f;
-    border-radius: 6px;
-    transition: all 0.2s ease-in-out;
-}
-
-.button-group button:hover { 
-    background-color: #f0f0f0;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 123, 127, 0.1);
-}
-
-.form-group {
-    margin-bottom: rem;
-}
-
-.edit-vacation-form button {
-    background-color: white;
-    color: #8cdad5; /* Updated color */
+    color: #8cdad5;
     border: 1px solid #007b7f4f;
     border-radius: 6px;
     transition: all 0.2s ease-in-out;
     padding: 8px 16px;
-    margin: 10px;
 }
 
-.edit-vacation-form button:hover {
-    background-color: #8cdad5; /* Updated color */
+.edit-vacation-form .submit-button:hover {
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 123, 127, 0.1);
+}
+
+/* Cancel Button */
+.cancel-button {
+    border: 1px solid #007b7f4f;
+    border-radius: 6px;
+    padding: 8px 16px;
+    margin-top: 10px;
+}
+
+.cancel-button:hover {
+    color: white;
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0, 123, 127, 0.1);
 }

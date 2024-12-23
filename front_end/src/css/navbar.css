@@ -1,5 +1,6 @@
 .navbar-lilac {
-    background-color: #8cdad5; /* Updated color */
+    background-color: #ebefef; /* Updated color */
+    background: url('../../../../../../Untitled\ 2.png') center center fixed;
     padding: 20px;
     margin-bottom: 30px;
 }
@@ -44,10 +45,18 @@
 .custom-dropdown-menu .dropdown-item {
     padding: 8px 16px;
     transition: all 0.2s ease;
-    
+
 }
 
 .custom-dropdown-menu .dropdown-item:hover {
     background-color: #f8f9fa;
     padding-left: 20px;
+}
+
+.navbar-text {
+    background-color: rgba(255, 255, 255, 0.5); /* White background with 80% opacity */
+    padding: 10px; /* Adds padding for better spacing */
+    border-radius: 8px; /* Optional, for rounded corners */
+    position: relative;
+    z-index: 2; /* Ensures the text section stays above the image */
 }

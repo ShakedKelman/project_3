@@ -146,7 +146,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                             {/* New container for Price + Icons within the image area */}
                             <div className="vacation-card-actions">
                                 <div className="vacation-card-price">
-                                    {`Price: $${vacation.price}`}
+                                    {` $${vacation.price}`}
                                 </div>
 
                                 {!user?.isAdmin ? (
