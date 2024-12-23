@@ -126,6 +126,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
             }
         }
     };
+   
     return (
         <div>
             <Row>
@@ -138,14 +139,15 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                                 src={`${siteConfig.BASE_URL}images/${vacation.id}`}
                                 alt={vacation.destination}
                             />
-                            <Card.Title className="vacation-card-title">{vacation.destination}</Card.Title>
-                        </div>
-                        <Card.Body className="vacation-card-body">
-                            <div className="vacation-card-text">
-                                <p>{vacation.description}</p>
-                                <p>{`Start Date: ${formatDate(vacation.startDate)}`}</p>
-                                <p>{`End Date: ${formatDate(vacation.endDate)}`}</p>
-                                <div className="vacation-card-price">{`Price: $${vacation.price}`}</div>
+                            <Card.Title className="vacation-card-title">
+                                {vacation.destination}
+                            </Card.Title>
+
+                            {/* New container for Price + Icons within the image area */}
+                            <div className="vacation-card-actions">
+                                <div className="vacation-card-price">
+                                    {`Price: $${vacation.price}`}
+                                </div>
 
                                 {!user?.isAdmin ? (
                                     <div className="vacation-card-favorites">
@@ -167,25 +169,34 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                                             </span>
                                         )}
                                     </div>
-                            ) : (
-                            <div className="vacation-card-buttons">
-                                <DeleteIcon
-                                    style={{ marginRight: '10px', cursor: 'pointer', color: 'red' }}
-                                    onClick={handleDeleteVacation}
-                                />
-                                <EditIcon
-                                    style={{ cursor: 'pointer', color: 'orange' }}
-                                    onClick={handleEditVacation}
-                                />
-                            </div>
+                                ) : (
+                                    <div className="vacation-card-buttons">
+                                        <DeleteIcon
+                                            style={{ marginRight: '10px', cursor: 'pointer', color: 'red' }}
+                                            onClick={handleDeleteVacation}
+                                        />
+                                        <EditIcon
+                                            style={{ cursor: 'pointer', color: 'orange' }}
+                                            onClick={handleEditVacation}
+                                        />
+                                    </div>
                                 )}
-                            {error && <div style={{ color: 'red' }}>{error}</div>}
+                            </div>
                         </div>
-                    </Card.Body>
-                </Card>
-            </Col>
-        </Row>
-        </div >
+
+                        {/* Body for description & dates */}
+                        <Card.Body className="vacation-card-body">
+                            <div className="vacation-card-text">
+                                <p>{vacation.description}</p>
+                                <p>{`Start Date: ${formatDate(vacation.startDate)}`}</p>
+                                <p>{`End Date: ${formatDate(vacation.endDate)}`}</p>
+                                {error && <div style={{ color: 'red' }}>{error}</div>}
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+        </div>
     );
 };
 

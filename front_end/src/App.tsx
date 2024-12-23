@@ -36,7 +36,7 @@ const App: React.FC = () => {
   }, [apiCallCount]);
 
   return (
-    <div>
+    <div className='body'>
         <NavbarWeb />
         <SiteRoutes />
     </div>

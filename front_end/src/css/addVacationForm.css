@@ -1,9 +1,10 @@
+
 .add-vacation-container {
     max-width: 500px;
     margin: 1.5rem auto;
     padding: 1.5rem;
-    background-color: rgba(75, 149, 209, 0.05);
-    border: 2px solid #4b95d1;
+    background-color: rgba(140, 218, 213, 0.1);  /* Very light, translucent version of #8cdad5 */
+    border: 2px solid #8cdad5;  /* Updated color */
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 }
@@ -11,12 +12,12 @@
 .add-vacation-title {
     text-align: center;
     margin-bottom: 1.5rem;
-    color: #4b95d1;
+    color: #8cdad5; /* Updated color */
 }
 
 .add-vacation-form button {
     background-color: white;
-    color: #4B95D1;
+    color: #8cdad5; /* Updated color */
     border: 1px solid #007b7f4f;
     border-radius: 6px;
     transition: all 0.2s ease-in-out;
@@ -25,26 +26,15 @@
 }
 
 .add-vacation-form button:hover {
-    background-color: #4b95d1;
+    background-color: #8cdad5; /* Updated color */
     color: white;
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0, 123, 127, 0.1);
 }
 
-.image-preview {
-    text-align: center;
-    margin: 1.5rem 0;
-    border: 1px solid #007b7f4f;
-}
-
-.image-preview img {
-    border-radius: 8px;
-    margin-top: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
 .add-vacation-form .submit-button.btn.btn-success {
     background-color: white;
-    color: #4B95D1 !important;
+    color: #8cdad5 !important; /* Updated color */
     margin: 10px;
     padding: 8px 16px;
     border: 1px solid #007b7f4f;
@@ -52,7 +42,7 @@
 }
 
 .add-vacation-form .submit-button.btn.btn-success:hover {
-    background-color: #4b95d1;
+    background-color: #8cdad5; /* Updated color */
     color: white !important;
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0, 123, 127, 0.1);
@@ -60,7 +50,7 @@
 
 .add-vacation-form button {
     background-color: white;
-    color: #4B95D1;
+    color: #8cdad5; /* Updated color */
     border: 1px solid #007b7f4f;
     border-radius: 6px;
     transition: all 0.2s ease-in-out;
@@ -69,7 +59,7 @@
 }
 
 .add-vacation-form button:hover {
-    background-color: #4b95d1 !important;
+    background-color: #8cdad5 !important; /* Updated color */
     color: white;
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0, 123, 127, 0.1);
