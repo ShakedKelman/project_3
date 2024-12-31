@@ -1,78 +1,110 @@
 /* Add Vacation Form */
 .add-vacation-container {
-    max-width: 500px;
+    max-width: 600px; /* Same width as Edit Vacation Form */
+    width: 100%; /* Ensure full width */
     margin: 1.5rem auto;
-    padding: 1.5rem;
-    background-color: rgba(140, 218, 213, 0.1);  /* Very light, translucent version of #8cdad5 */
-    border: 2px solid #8cdad5;  /* Updated color */
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+    padding: 40px; /* Same padding as Edit Vacation Form */
+    background-color: rgba(102, 186, 205, 0.8); /* Semi-transparent light turquoise */
+    border-radius: 20px; /* Same border-radius as Edit Vacation Form */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Same shadow effect */
+    text-align: center; /* Center the text */
+    transition: transform 0.3s ease;
+}
+
+.add-vacation-container:hover {
+    transform: translateY(-5px); /* Light hover effect */
 }
 
 .add-vacation-title {
     text-align: center;
-    margin-bottom: 1.5rem;
-    color: #8cdad5; /* Updated color */
-    font-size: 2rem;
+    margin-bottom: 1rem; /* Same margin as Edit Vacation Form */
+    color: #e8f0f0; /* Light teal color */
+    font-size: 2.5rem; /* Slightly smaller title */
+    font-weight: 600;
+    letter-spacing: 1px;
 }
 
+/* Button Styling */
 .add-vacation-form button {
-    background-color: white;
-    color: #8cdad5; /* Updated color */
-    border: 1px solid #007b7f4f;
-    border-radius: 6px;
-    transition: all 0.2s ease-in-out;
-    padding: 8px 16px;
-    margin: 10px;
-    width: 100%;
-}
-
-.add-vacation-form button:hover {
-    background-color: #8cdad5; /* Updated color */
     color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 123, 127, 0.1);
-}
-
-.add-vacation-form .submit-button.btn.btn-success {
-    background-color: white;
-    color: #8cdad5 !important; /* Updated color */
-    margin: 10px;
-    padding: 8px 16px;
-    border: 1px solid #007b7f4f;
-    transition: all 0.2s ease-in-out;
-}
-
-.add-vacation-form .submit-button.btn.btn-success:hover {
-    background-color: #8cdad5; /* Updated color */
-    color: white !important;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 123, 127, 0.1);
-}
-
-/* Custom Radio Button Styling */
-.custom-radio {
-    margin-bottom: 1rem;
-}
-
-.custom-radio .form-check-label {
-    font-weight: 500;
-}
-
-/* Form Group styling */
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-/* Input field Styling */
-.form-control {
-    padding: 1rem;
-    border: 1px solid #E2E8F0;
+    padding: 12px 24px; /* Same padding as Edit Vacation Form */
+    font-size: 1.1rem; /* Same font size */
+    width: 100%;
     border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-top: 15px; /* Same margin */
+}
+
+.add-vacation-form button:hover,
+.add-vacation-form button:focus {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Edit Button - White Border */
+.add-vacation-form button[type="submit"] {
+    border: 1px solid white; /* White border for the submit button */
+}
+
+/* Form Group Styling */
+.form-group {
+    margin-bottom: 1rem; /* Reduced margin for compact spacing */
+}
+
+/* Input Field Styling */
+.form-control {
+    padding: 10px; 
+    border: 1px solid #E2E8F0;
+    border-radius: 10px; /* Match border-radius with Edit Vacation Form */
     background-color: #ffffff;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 15px; /* Reduced margin */
 }
 
 .form-control:focus {
-    border-color: #8cdad5;
-    box-shadow: 0 0 0 3px rgba(140, 218, 213, 0.2);
+    border-color: #2B7A77; /* Same focus border color */
+    box-shadow: 0 0 0 3px rgba(43, 122, 119, 0.2);
+}
+
+/* Image Preview Styling */
+.image-preview {
+    text-align: center;
+    margin: 1rem 0; /* Consistent margin */
+}
+
+.image-preview img {
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Cancel Button - Same as Submit Button */
+.submit-button {
+    color: white;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    width: 75%;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+}
+
+.submit-button:hover,
+.submit-button:focus {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+/* Ensure the text in InputGroup aligns with the input */
+.input-group-text {
+    height: 100%; /* Match the height of the input */
+    line-height: 2.2rem; /* Ensure vertical alignment with the input field */
+    padding: 0 10px; /* Adjust padding to make the text fit nicely */
+    display: flex;
+    align-items: center; /* Vertically center the text inside */
+    padding: 4.5px;
+}
+* {
+    font-family: "Arial", sans-serif !important; /* Force Arial on all elements */
+    font-weight: 300 !important; /* Light Arial */
 }

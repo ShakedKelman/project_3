@@ -37,7 +37,7 @@ const NavbarWeb: React.FC = () => {
 
 
     if (!isLoggedIn || !user) return null;
- 
+
     return (
         <Navbar className="navbar-lilac" variant="light">
             <Container className='navbar-text'>
@@ -51,7 +51,7 @@ const NavbarWeb: React.FC = () => {
                                 <>
                                     <Nav.Link as={Link} to="/add-vacation">Add Vacation</Nav.Link>
                                     <Nav.Link as={Link} to="/report">Report</Nav.Link>
-                                    <Dropdown>     <Dropdown.Toggle className="dropdown-toggle-white" id="dropdown-basic">
+                                    <Dropdown>     <Dropdown.Toggle className="dropdown-toggle-white"  variant="outline-white"id="dropdown-basic">
                                         Edit Vacation
                                     </Dropdown.Toggle>
 

@@ -5,13 +5,16 @@ html, body, #root {
     margin: 0;
     padding: 0;
     background-color: rgb(221, 247, 251);
+}
 
-  }
-  
-  /* Apply font to the entire app */
-  body {
-    font-family: "Arial", sans-serif;
+/* Apply font to the entire app */
+html {
+    font-family: "Arial", sans-serif; /* Ensure all elements use Arial */
     font-weight: 300; /* Light Arial */
-    /* Optionally, set a global font size, color, etc. */
-  }
-  
+}
+
+/* Apply the font globally to all elements */
+* {
+    font-family: "Arial", sans-serif !important; /* Force Arial on all elements */
+    font-weight: 300 !important; /* Light Arial */
+}

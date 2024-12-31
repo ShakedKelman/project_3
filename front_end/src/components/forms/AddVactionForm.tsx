@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { VacationModel } from '../../model/VacationModel';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Alert, InputGroup } from 'react-bootstrap';
+import { Form, Button, Alert, InputGroup, Col, Row } from 'react-bootstrap';
 import { RootState, useAppDispatch } from '../../store/store';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { apiAddVacation } from '../../api/vactions/vactions-api';
@@ -100,8 +100,9 @@ const AddVacationForm: React.FC = () => {
             {error && <Alert variant="danger">{error}</Alert>}
             {success && <Alert variant="success">{success}</Alert>}
             <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="formDestination">
-                    <Form.Label>Destination</Form.Label>
+            <Form.Group as={Row} controlId="formDestination">
+                    <Form.Label column sm={3}>Destination</Form.Label>
+                    <Col sm={9}>
                     <Form.Control
                         type="text"
                         name="destination"
@@ -110,10 +111,12 @@ const AddVacationForm: React.FC = () => {
                         required
                         placeholder="Enter destination"
                     />
+                    </Col>  
                 </Form.Group>
 
-                <Form.Group controlId="formDescription">
-                    <Form.Label>Description</Form.Label>
+                <Form.Group as={Row} controlId="formDescription">
+                    <Form.Label column sm={3}>Description</Form.Label>
+                    <Col sm={9}>
                     <Form.Control
                         as="textarea"
                         name="description"
@@ -122,10 +125,12 @@ const AddVacationForm: React.FC = () => {
                         required
                         placeholder="Enter description"
                     />
+                    </Col>
                 </Form.Group>
 
-                <Form.Group controlId="formStartDate">
-                    <Form.Label>Start Date</Form.Label>
+                <Form.Group as={Row} controlId="formStartDate">
+                    <Form.Label column sm={3}>Start Date</Form.Label>
+                    <Col sm={9}>
                     <Form.Control
                         type="date"
                         name="startDate"
@@ -133,10 +138,12 @@ const AddVacationForm: React.FC = () => {
                         onChange={handleInputChange}
                         required
                     />
+                    </Col>
                 </Form.Group>
 
-                <Form.Group controlId="formEndDate">
-                    <Form.Label>End Date</Form.Label>
+                <Form.Group as={Row} controlId="formEndDate">
+                    <Form.Label column sm={3}>End Date</Form.Label>
+                    <Col sm={9}>
                     <Form.Control
                         type="date"
                         name="endDate"
@@ -144,10 +151,12 @@ const AddVacationForm: React.FC = () => {
                         onChange={handleInputChange}
                         required
                     />
+                    </Col>
                 </Form.Group>
 
-                <Form.Group controlId="formPrice">
-                    <Form.Label>Price</Form.Label>
+                <Form.Group as={Row} controlId="formPrice">
+                    <Form.Label column sm={3}>Price</Form.Label>
+                    <Col sm={9}>
                     <InputGroup>
                         <InputGroup.Text>$</InputGroup.Text>
                         <Form.Control
@@ -161,17 +170,20 @@ const AddVacationForm: React.FC = () => {
                             step="1" 
                         />
                     </InputGroup>
+                    </Col>
                 </Form.Group>
 
 
-                <Form.Group controlId="formImage">
-                    <Form.Label>Upload Image</Form.Label>
+                <Form.Group as={Row} controlId="formImage">
+                    <Form.Label column sm={3}>Upload Image</Form.Label>
+                    <Col sm={9}>
                     <Form.Control
                         type="file"
                         onChange={handleImageChange}
                         accept="image/*"
                         required
                     />
+                    </Col>
                 </Form.Group>
                 <Button
                     variant="outline-light"

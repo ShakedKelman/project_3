@@ -5,7 +5,7 @@ import { RootState } from '../../store/store';
 import { VacationModel } from '../../model/VacationModel';
 import { editVacation, getVacations } from '../../api/vactions/vactions-api';
 import { updateVacation } from '../../store/slices/vacationslice';
-import { Form, Button, Alert, Spinner, Image } from 'react-bootstrap';
+import { Form, Button, Alert, Spinner, Image, Col, Row } from 'react-bootstrap';
 import { siteConfig } from '../../utils/SiteConfig';
 import { getImageForVacation } from '../../api/images/images-api';
 import axios from 'axios';
@@ -58,7 +58,7 @@ const EditVacationForm: React.FC = () => {
         const formattedValue = e.target.value.replace(/[^0-9.]/g, '');
         setVacation(prev => prev ? { ...prev, price: parseFloat(formattedValue) || 0 } : prev);
     };
-    
+
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -154,75 +154,99 @@ const EditVacationForm: React.FC = () => {
 
     return (
         <div className="edit-vacation-form">
-        <h2 className="form-title">Edit Vacation</h2>
-        <Form onSubmit={handleSubmit}>
-            {error && <Alert variant="danger">{error}</Alert>}
-            {successMessage && <Alert variant="success">{successMessage}</Alert>}
+            <h2 className="form-title">Edit Vacation</h2>
+            <Form onSubmit={handleSubmit}>
+                {error && <Alert variant="danger">{error}</Alert>}
+                {successMessage && <Alert variant="success">{successMessage}</Alert>}
 
-            <Form.Group controlId="destination">
-                <Form.Label>Destination:</Form.Label>
-                <Form.Control
-                    type="text"
-                    value={vacation?.destination || ''}
-                    onChange={(e) => setVacation({ ...vacation!, destination: e.target.value })}
-                />
-            </Form.Group>
-            <Form.Group controlId="description">
-                <Form.Label>Description:</Form.Label>
-                <Form.Control
-                    as="textarea"
-                    rows={3}
-                    value={vacation?.description || ''}
-                    onChange={(e) => setVacation({ ...vacation!, description: e.target.value })}
-                />
-            </Form.Group>
-            <Form.Group controlId="startDate">
-                <Form.Label>Start Date:</Form.Label>
-                <Form.Control
-                    type="date"
-                    value={formatDate(vacation?.startDate)}
-                    onChange={(e) => setVacation({ ...vacation!, startDate: e.target.value })}
-                />
-            </Form.Group>
-            <Form.Group controlId="endDate">
-                <Form.Label>End Date:</Form.Label>
-                <Form.Control
-                    type="date"
-                    value={formatDate(vacation?.endDate)}
-                    onChange={(e) => setVacation({ ...vacation!, endDate: e.target.value })}
-                />
-            </Form.Group>
-            <Form.Group controlId="price">
-                <Form.Label>Price:</Form.Label>
-                <Form.Control
-                    type="number"
-                    value={vacation?.price || 0}
-                    onChange={handlePriceChange}
-                    min="0"
-                    step="1"
-                />
-            </Form.Group>
+                <Form.Group as={Row} controlId="destination">
+                    <Form.Label column sm={3}  className="form-label">Destination:</Form.Label>
+                    <Col sm={9}>
+                        <Form.Control
+                            type="text"
+                            value={vacation?.destination || ''}
+                            onChange={(e) => setVacation({ ...vacation!, destination: e.target.value })}
+                        />
+                    </Col>
+                </Form.Group>
 
-            <Form.Group>
-                <Form.Label>Current Image:</Form.Label>
+                <Form.Group as={Row} controlId="description">
+                    <Form.Label column sm={3}  className="form-label">Description:</Form.Label>
+                    <Col sm={9}>
+                        <Form.Control
+                            as="textarea"
+                            rows={3}
+                            value={vacation?.description || ''}
+                            onChange={(e) => setVacation({ ...vacation!, description: e.target.value })}
+                        />
+                    </Col>
+                </Form.Group>
+
+                <Form.Group as={Row} controlId="startDate">
+                    <Form.Label column sm={3}  className="form-label">Start Date:</Form.Label>
+                    <Col sm={9}>
+                        <Form.Control
+                            type="date"
+                            value={formatDate(vacation?.startDate)}
+                            onChange={(e) => setVacation({ ...vacation!, startDate: e.target.value })}
+                        />
+                    </Col>
+                </Form.Group>
+
+                <Form.Group as={Row} controlId="endDate">
+                    <Form.Label column sm={3}  className="form-label" >End Date:</Form.Label>
+                    <Col sm={9}>
+                        <Form.Control
+                            type="date"
+                            value={formatDate(vacation?.endDate)}
+                            onChange={(e) => setVacation({ ...vacation!, endDate: e.target.value })}
+                        />
+                    </Col>
+                </Form.Group>
+
+
+                <Form.Group as={Row} controlId="price">
+                    <Form.Label column sm={3}  className="form-label" >Price:</Form.Label>
+                    <Col sm={9}>
+                        <Form.Control
+                            type="number"
+                            value={vacation?.price || 0}
+                            onChange={handlePriceChange}
+                            min="0"
+                            step="1"
+                        />
+                    </Col>
+                </Form.Group>
+
+                <Form.Group as={Row} controlId="currentImage">
+    <Form.Label column sm={3}  className="form-label">Current Image:</Form.Label>
+    <Col sm={9}>
+        {thisVacationImg && (
+            <div className="image-preview">
                 {thisVacationImg}
-            </Form.Group>
-            <Form.Group controlId="newImage">
-                <Form.Label>New Image</Form.Label>
-                <Form.Control
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                />
-            </Form.Group>
-            <Button variant="outline-light" type="submit" style={{ margin: '10px' }}>
-                Update Vacation
-            </Button>
-            <Button variant="outline-light" onClick={handleCancel}>
-                Cancel
-            </Button>
-        </Form>
-    </div>
+            </div>
+        )}
+    </Col>
+</Form.Group>
+
+                <Form.Group as={Row} controlId="newImage">
+                    <Form.Label column sm={3}  className="form-label">New Image:</Form.Label>
+                    <Col sm={9}>
+                        <Form.Control
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                        />
+                    </Col>
+                </Form.Group>
+                <Button variant="outline-light" type="submit">
+                    Update Vacation
+                </Button>
+                <Button variant="outline-light" onClick={handleCancel}>
+                    Cancel
+                </Button>
+            </Form>
+        </div>
     );
 
 };

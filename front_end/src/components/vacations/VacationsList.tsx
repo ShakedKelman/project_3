@@ -185,15 +185,18 @@ const VacationList: React.FC = () => {
                     </Col>
                 ))}
             </Row>
-
+            <div className="pagination-container">
             <Stack spacing={2} className="mt-4">
                 <Pagination
                     count={totalPages}
                     page={page}
                     onChange={handlePageChange}
+                    className="fs-4" 
                 />
             </Stack>
         </div>
+        </div>
+
     );
 };
 

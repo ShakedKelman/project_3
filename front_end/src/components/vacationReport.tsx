@@ -38,7 +38,8 @@ const reportStyles = {
         minHeight: '100vh',
         width: '100%',
         padding: '20px',
-        fontFamily: "'Poppins', sans-serif",
+        fontFamily: "'Arial', sans-serif", // Apply Arial to the container for the entire Report component
+        fontWeight: '300',
     },
     reportCard: {
         width: '800px',
@@ -52,6 +53,8 @@ const reportStyles = {
         marginBottom: '30px',
         fontSize: '2.5rem',
         textShadow: '2px 2px 4px rgba(0, 0, 0, 0.1)',
+        fontFamily: "'Arial', sans-serif", // Apply Arial to the container for the entire Report component
+        fontWeight: '300',
     },
     buttonContainer: {
         display: 'flex',
@@ -99,7 +102,7 @@ const Report: React.FC = () => {
 
         fetchData();
     }, [vacations, token]); // Add token to dependencies
-    
+
     const chartData = {
         labels: data.map(item => item.destination),
         datasets: [
@@ -140,9 +143,9 @@ const Report: React.FC = () => {
             },
         },
     };
-    
-    
-    
+
+
+
 
     const handleExportExcel = () => {
         const ws = XLSX.utils.json_to_sheet(data);
@@ -157,27 +160,28 @@ const Report: React.FC = () => {
                 <h2 style={reportStyles.title}>✈️ Vacation Destinations Report 🌴</h2>
                 <Bar data={chartData} options={chartOptions} />
                 <div style={reportStyles.buttonContainer}>
-                    <Button 
-                        variant="primary" 
-                        className="me-2" 
+                    <Button
+                        variant="outline-light"
+                        className="me-2"
                         onClick={handleExportExcel}
                         style={{
-                            backgroundColor: '#4CAF50',
-                            borderColor: '#4CAF50',
+                            backgroundColor: 'rgba(102, 186, 205, 0.8)',
+                            // borderColor: '#4CAF50',
                         }}
                     >
                         📊 Export to Excel
                     </Button>
-                    <CSVLink 
-                        data={data} 
+                    <CSVLink
+                        data={data}
                         filename="vacation_report.csv"
                         style={{ textDecoration: 'none' }}
                     >
-                        <Button 
-                            variant="success"
+                        <Button
+                              variant="outline-light"
                             style={{
-                                backgroundColor: '#2196F3',
-                                borderColor: '#2196F3',
+
+                                backgroundColor: 'rgba(102, 186, 205, 0.8)',
+                                // borderColor: '#2196F3',
                             }}
                         >
                             📋 Export to CSV
@@ -186,8 +190,8 @@ const Report: React.FC = () => {
                 </div>
             </div>
         </div>
-        );
-    };
-    
+    );
+};
+
 
 export default Report;

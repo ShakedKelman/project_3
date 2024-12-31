@@ -1,3 +1,4 @@
+/* Navbar Styling */
 .navbar-lilac {
     background-color: #ebefef; /* Updated color */
     background: url('../../../../../../Untitled\ 2.png') center center fixed;
@@ -26,26 +27,29 @@
     }
 }
 
+/* Edit Vacation Button - No border, white background */
 .dropdown-toggle-white {
     background-color: white !important;
-    color: #121414 !important; /* Updated color */
-    border: 1px solid #007b7f4f;
+    color: #121414 !important; /* Dark text color */
+    border: none; /* Remove the border */
     border-radius: 6px;
     transition: all 0.2s ease-in-out;
+    padding: 10px 20px; /* Adjusted padding for a more button-like appearance */
 }
 
+/* Hover and Focus Styling for Edit Vacation Button */
 .dropdown-toggle-white:hover,
 .dropdown-toggle-white:focus {
     background-color: #f0f0f0 !important;
-    color: #59918e !important; /* Updated color */
+    color: #59918e !important; /* Updated color on hover */
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(0, 123, 127, 0.1);
 }
 
+/* Dropdown Menu Styling */
 .custom-dropdown-menu .dropdown-item {
     padding: 8px 16px;
     transition: all 0.2s ease;
-
 }
 
 .custom-dropdown-menu .dropdown-item:hover {
@@ -53,10 +57,16 @@
     padding-left: 20px;
 }
 
+/* Navbar Text Styling */
 .navbar-text {
     background-color: rgba(255, 255, 255, 0.5); /* White background with 80% opacity */
     padding: 10px; /* Adds padding for better spacing */
     border-radius: 8px; /* Optional, for rounded corners */
     position: relative;
     z-index: 2; /* Ensures the text section stays above the image */
+}
+
+* {
+    font-family: "Arial", sans-serif !important; /* Force Arial on all elements */
+    font-weight: 300 !important; /* Light Arial */
 }

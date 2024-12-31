@@ -1,35 +1,53 @@
-/* Edit Vacation Form */
-.edit-vacation-form {
-    max-width: 500px;
-    margin: 1.5rem auto;
-    padding: 60px; /* Match the padding of the login form */
-    background-color: rgba(102, 186, 205, 0.8); /* Semi-transparent light turquoise, similar to the login container */
-    border-radius: 20px; /* Match the border-radius of the login container */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Same shadow effect */
-    text-align: center; /* Center the text */
+/* Background for the entire page with vacation theme (sunset beach or tropical feel) */
+.login-page {
+    background: url('../../../../../../Untitled\ 2.png') center center fixed;
+    background-size: auto; /* Ensures the image doesn't stretch */
+    background-repeat: repeat; /* Makes the background image repeat */
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0; /* Ensures there's no padding */
+    margin: 0; /* Ensures there's no margin */
+    overflow: hidden; /* Avoids any potential scrollbars that might appear */
+}
+
+/* Main login container with solid background and sleek design */
+.login-container {
+    background-color: rgba(102, 186, 205, 0.8); /* Semi-transparent light turquoise for a vacation feel */
+    padding: 60px;
+    border-radius: 20px; /* Larger radius for a smooth look */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    max-width: 500px; /* Increased width for a larger form */
+    text-align: center;
     transition: transform 0.3s ease;
 }
 
-.edit-vacation-form:hover {
+/* Align checkbox label to the left */
+.form-check {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.login-container:hover {
     transform: translateY(-5px); /* Light hover effect */
 }
 
-.form-title {
-    text-align: center;
-    margin-bottom: 1.5rem;
+/* Title: Simplified, sleek font style */
+.login-title {
     color: #e8f0f0; /* Calming light teal color */
-    font-size: 3rem; /* Larger title, similar to login-title */
+    font-size: 3rem; /* Larger title */
+    margin-bottom: 40px;
     font-weight: 600;
     letter-spacing: 1px;
 }
 
-/* Button styling */
-.edit-vacation-form button {
-    background-color: #2B7A77; /* Dark teal for the button, similar to login button */
+/* Button with a sleek design in a contrasting color */
+.login-button {
     color: white;
-    border: none;
-    padding: 14px 28px; /* Larger padding */
-    font-size: 1.2rem; /* Larger font size */
+    padding: 14px 28px;
+    font-size: 1.2rem; /* Larger font size for the button */
     width: 100%;
     border-radius: 8px;
     font-weight: 500;
@@ -37,24 +55,18 @@
     margin-top: 20px;
 }
 
-.edit-vacation-form button:hover,
-.edit-vacation-form button:focus {
-    background-color: #1F5C58; /* Darker teal for hover */
+.login-button:hover,
+.login-button:focus {
     transform: translateY(-3px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Form Group styling */
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-/* Input field Styling */
+/* Form control: clean inputs with minimal borders */
 .form-control {
-    padding: 16px; /* Increased padding for larger inputs, like the login form */
+    padding: 16px; /* Increased padding for larger inputs */
     border: 1px solid #E2E8F0;
-    border-radius: 10px; /* Match the border radius of the login form */
-    background-color: #ffffff;
+    border-radius: 10px;
+    background-color: #FFFFFF; /* White background for input fields */
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
     margin-bottom: 20px;
 }
@@ -64,48 +76,29 @@
     box-shadow: 0 0 0 3px rgba(43, 122, 119, 0.2);
 }
 
-/* Image Preview Styling */
-.image-preview {
-    text-align: center;
-    margin: 1.5rem 0;
-    border: 1px solid #007b7f4f;
-}
-
-.image-preview img {
+/* Subtle error message styling */
+.alert {
+    margin-bottom: 20px;
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #C53030;
+    padding: 10px;
     border-radius: 8px;
+}
+
+/* Login link style: subtle and modern */
+.register-link {
     margin-top: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.edit-vacation-form .submit-button {
-    background-color: white;
-    color: #8cdad5;
-    border: 1px solid #007b7f4f;
-    border-radius: 6px;
-    transition: all 0.2s ease-in-out;
-    padding: 8px 16px;
+.register-link a {
+    color: #2B7A77; /* Calming teal color */
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    font-size: 0.95rem;
 }
 
-.edit-vacation-form .submit-button:hover {
-    background-color: #8cdad5; /* Updated color */
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 123, 127, 0.1);
-}
-
-/* Cancel Button */
-.cancel-button {
-    background-color: white;
-    color: #8cdad5;
-    border: 1px solid #007b7f4f;
-    border-radius: 6px;
-    padding: 8px 16px;
-    margin-top: 10px;
-}
-
-.cancel-button:hover {
-    background-color: #8cdad5;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 123, 127, 0.1);
+.register-link a:hover {
+    color: #1F5C58; /* Darker teal on hover */
+    text-decoration: underline;
 }

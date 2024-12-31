@@ -150,7 +150,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                                 </div>
 
                                 {!user?.isAdmin ? (
-                                    <div className="vacation-card-favorites">
+                                    <div className="vacation-card-favorites" style={{ marginLeft: '10px', backgroundColor:'white', borderRadius:'8px' }}>
                                         {vacation.isFollowing ? (
                                             <FavoriteIcon
                                                 style={{ marginRight: '5px', cursor: 'pointer', color: 'red' }}
@@ -164,7 +164,7 @@ const VacationCard: React.FC<VacationCardProps> = ({ vacation }) => {
                                         )}
                                         <span>{vacation.followerCount}</span>
                                         {user && vacation.isFollowing && (
-                                            <span className="following" style={{ marginLeft: '10px' }}>
+                                            <span className="following" style={{ marginLeft: '10px', backgroundColor:'white' }}>
                                                 You follow this vacation
                                             </span>
                                         )}

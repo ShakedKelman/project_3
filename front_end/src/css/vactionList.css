@@ -5,3 +5,14 @@
 .custom-radio .form-check-label {
     font-weight: 500; /* Make label bold */
 }
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem; /* Add some space at the top if needed */
+}
+
+.pagination-container .MuiPagination-ul {
+    display: flex;
+    justify-content: center;
+}

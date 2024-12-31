@@ -128,3 +128,8 @@
 .vacation-card-buttons button:hover {
     background-color: #0ABAB5;
 }
+
+* {
+    font-family: "Arial", sans-serif !important; /* Force Arial on all elements */
+    font-weight: 300 !important; /* Light Arial */
+}
